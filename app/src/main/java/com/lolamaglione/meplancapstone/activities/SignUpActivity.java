@@ -30,12 +30,17 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
-        setContentView(R.layout.activity_sign_up);
+        setContentView(view);
 
-        etUsername = findViewById(R.id.etUsernameSign);
-        etPassword = findViewById(R.id.etPasswordSign);
-        etEmail = findViewById(R.id.etEmailSign);
-        btnSignUp = findViewById(R.id.btnSignUpSign);
+//        etUsername = findViewById(R.id.etUsernameSign);
+//        etPassword = findViewById(R.id.etPasswordSign);
+//        etEmail = findViewById(R.id.etEmailSign);
+//        btnSignUp = findViewById(R.id.btnSignUpSign);
+
+        etUsername = binding.etUsernameSign;
+        etPassword = binding.etPasswordSign;
+        etEmail = binding.etEmailSign;
+        btnSignUp = binding.btnSignUpSign;
 
 //        btnSignUp.setOnClickListener(new View.OnClickListener() {
 //            @Override
