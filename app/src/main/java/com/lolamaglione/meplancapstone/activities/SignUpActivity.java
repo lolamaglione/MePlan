@@ -2,11 +2,13 @@ package com.lolamaglione.meplancapstone.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.databinding.ActivitySignUpBinding;
@@ -30,34 +32,53 @@ public class SignUpActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(R.layout.activity_sign_up);
 
-        etUsername = binding.etUsernameSign;
-        etPassword = binding.etPasswordSign;
-        etEmail = binding.etEmailSign;
-        btnSignUp = binding.btnSignUpSign;
+        etUsername = findViewById(R.id.etUsernameSign);
+        etPassword = findViewById(R.id.etPasswordSign);
+        etEmail = findViewById(R.id.etEmailSign);
+        btnSignUp = findViewById(R.id.btnSignUpSign);
+
+//        btnSignUp.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                System.out.println("CLICKED");
+//            }
+//        });
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("clicked");
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
                 String email = etEmail.getText().toString();
                 signUpUser(username, password, email);
+                goToMainActivity();
             }
         });
+    }
+
+    private void goToMainActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        this.startActivity(intent);
+        finish();
     }
 
     private void signUpUser(String username, String password, String email) {
         ParseUser newUser = new ParseUser();
         newUser.setUsername(username);
         newUser.setPassword(password);
-        newUser.setEmail(email);
+        newUser.put("email", email);
         newUser.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
                 if (e != null){
                     Log.e(TAG, "issue with Signup " + e);
+                    Toast.makeText(SignUpActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                    return;
                 }
             }
         });
     }
+
+
 }

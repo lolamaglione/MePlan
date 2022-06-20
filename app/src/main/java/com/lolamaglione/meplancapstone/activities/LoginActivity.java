@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.lolamaglione.meplancapstone.databinding.ActivityLoginBinding;
 import com.parse.LogInCallback;
@@ -61,16 +62,23 @@ public class LoginActivity extends AppCompatActivity {
             public void done(ParseUser user, ParseException e) {
                 if (e != null){
                     Log.e(TAG, "Issue with Login " + e);
+                    Toast.makeText(LoginActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                //goToMainActivity();
+                goToMainActivity();
             }
         });
+    }
+
+    private void goToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        this.startActivity(intent);
+        finish();
     }
 
     private void goToSignUp(){
         Intent intent = new Intent(this, SignUpActivity.class);
         this.startActivity(intent);
-        finish();
     }
 
 }
