@@ -1,4 +1,4 @@
-package com.lolamaglione.meplancapstone;
+package com.lolamaglione.meplancapstone.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -35,12 +35,21 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = binding.btnLogin;
         btnSignup = binding.btnSignup;
 
+        // go to MainActivity if the user is created in Parse
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
                 loginUser(username, password);
+            }
+        });
+
+        // going to SignUp activity to create a new ParseUser
+        btnSignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToSignUp();
             }
         });
 
@@ -60,7 +69,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void goToSignUp(){
         Intent intent = new Intent(this, SignUpActivity.class);
-
+        this.startActivity(intent);
+        finish();
     }
 
 }

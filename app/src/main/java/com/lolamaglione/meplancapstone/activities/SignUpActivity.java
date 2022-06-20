@@ -1,4 +1,4 @@
-package com.lolamaglione.meplancapstone;
+package com.lolamaglione.meplancapstone.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.databinding.ActivitySignUpBinding;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -47,9 +48,9 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void signUpUser(String username, String password, String email) {
         ParseUser newUser = new ParseUser();
-        newUser.put("username", username);
-        newUser.put("password", password);
-        newUser.put("email", email);
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+        newUser.setEmail(email);
         newUser.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
