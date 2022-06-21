@@ -45,4 +45,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1' // for logging API calls to LogCat
     implementation "androidx.appcompat:appcompat:${appCompatVersion}"
     implementation "com.google.android.material:material:${designSupportVersion}"
+    implementation 'com.codepath.libraries:asynchttpclient:2.2.0'
 }
