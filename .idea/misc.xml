@@ -5,8 +5,10 @@
       <map>
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.1765625" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21369934082031256" />
+        <entry key="app/src/main/res/layout/activity_recipe_detail.xml" value="0.21875152587890626" />
         <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.1765625" />
         <entry key="app/src/main/res/layout/fragment_feed.xml" value="0.19599151611328125" />
+        <entry key="app/src/main/res/layout/ingredient_list_item.xml" value="0.43072916666666666" />
         <entry key="app/src/main/res/layout/item_recipe.xml" value="0.40872039794921877" />
         <entry key="app/src/main/res/menu/menu_bottom_navigation.xml" value="0.1" />
         <entry key="app/src/main/res/menu/menu_search_bar.xml" value="0.21614583333333334" />

@@ -1,6 +1,7 @@
 package com.lolamaglione.meplancapstone.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.activities.RecipeDetailActivity;
 import com.lolamaglione.meplancapstone.models.Recipe;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -63,6 +67,19 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvUrl = itemView.findViewById(R.id.tvUrl);
             tvIngredients = itemView.findViewById(R.id.tvIngredientList);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION){
+                        Recipe recipe = recipes.get(position);
+                        Intent intent = new Intent(context, RecipeDetailActivity.class);
+                        intent.putExtra(Recipe.class.getSimpleName(), Parcels.wrap(recipe));
+                        context.startActivity(intent);
+                    }
+                }
+            });
         }
 
         public void bind(Recipe recipe){

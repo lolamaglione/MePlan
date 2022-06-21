@@ -3,16 +3,19 @@ package com.lolamaglione.meplancapstone.models;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Parcel
 public class Recipe {
 
     private String title;
     private String url;
     private List<String> ingredients;
     private List<String> instructions;
+    private String imageURL;
 
     public Recipe(){}
 
@@ -22,6 +25,7 @@ public class Recipe {
         recipe.title = jsonRecipe.getString("label");
         recipe.ingredients = getIngredientList(jsonRecipe.getJSONArray("ingredientLines"));
         recipe.url = jsonRecipe.getString("url");
+        recipe.imageURL = jsonRecipe.getString("image");
 
         return recipe;
     }
@@ -42,6 +46,8 @@ public class Recipe {
     public String getTitle(){
         return title;
     }
+
+    public String getImageURL() {return imageURL;}
 
     public static List<Recipe> fromJsonArray(JSONArray jsonArray) throws JSONException{
         List<Recipe> recipes = new ArrayList<>();

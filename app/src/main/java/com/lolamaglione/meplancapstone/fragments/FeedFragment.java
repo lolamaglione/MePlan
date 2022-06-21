@@ -126,9 +126,9 @@ public class FeedFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 // perform query here
                 populateRecipe(query, 0);
-                System.out.println("happening");
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
+                //TODO: fidn a way to clear the search bar once the user has submitted
                 searchView.clearFocus();
                 searchView.clearAnimation();
 
