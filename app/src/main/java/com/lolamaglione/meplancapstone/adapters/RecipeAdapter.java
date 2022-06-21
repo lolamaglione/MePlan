@@ -45,6 +45,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         return recipes.size();
     }
 
+    public void clear() {
+        recipes.clear();
+        notifyDataSetChanged();
+    }
+
+
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvTitle;

@@ -4,12 +4,21 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.ActionMenuItemView;
+
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -38,6 +47,7 @@ public class FeedFragment extends Fragment {
     private RecyclerView rvRecipes;
     private List<Recipe> allRecipes;
     private RecipeAdapter recipeAdapter;
+    private Toolbar searchBar;
     public static final String TAG = "Feed Fragment";
     private EdamamClient client;
 
@@ -80,6 +90,7 @@ public class FeedFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -93,18 +104,46 @@ public class FeedFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvRecipes = view.findViewById(R.id.rvRecipes);
-
+        //searchBar = (Toolbar) view.findViewById(R.id.tbSearch);
         allRecipes = new ArrayList<>();
         recipeAdapter = new RecipeAdapter(getContext(), allRecipes);
         client = new EdamamClient();
         rvRecipes.setAdapter(recipeAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipes.setLayoutManager(linearLayoutManager);
-        populateRecipe();
-
+        populateRecipe("chicken", 0);
     }
 
-    private void populateRecipe() {
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search_bar, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchItem.setActionView(searchView);
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // perform query here
+                populateRecipe(query, 0);
+                System.out.println("happening");
+                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+                searchView.clearFocus();
+                searchView.clearAnimation();
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void populateRecipe(String query, int page) {
         client.getRecipeFeed(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -112,6 +151,9 @@ public class FeedFragment extends Fragment {
                 try {
                     jsonArray = json.jsonObject.getJSONArray("hits");
                     Log.i(TAG, json.jsonObject.getJSONArray("hits").toString());
+                    if (page == 0){
+                        recipeAdapter.clear();
+                    }
                     allRecipes.addAll(Recipe.fromJsonArray(jsonArray));
                     System.out.println(allRecipes);
                     recipeAdapter.notifyDataSetChanged();
@@ -124,6 +166,6 @@ public class FeedFragment extends Fragment {
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG, "error: " + throwable);
             }
-        }, "chicken");
+        }, query, page);
     }
 }
