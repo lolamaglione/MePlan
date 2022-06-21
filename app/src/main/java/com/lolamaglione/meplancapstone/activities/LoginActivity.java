@@ -31,6 +31,10 @@ public class LoginActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
+        if(ParseUser.getCurrentUser() != null){
+            goToMainActivity();
+        }
+
         etUsername = binding.etUsername;
         etPassword = binding.etPassword;
         btnLogin = binding.btnLogin;
