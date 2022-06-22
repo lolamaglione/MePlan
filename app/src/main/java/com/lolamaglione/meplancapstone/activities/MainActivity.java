@@ -18,10 +18,13 @@ import com.lolamaglione.meplancapstone.databinding.ActivityMainBinding;
 import com.lolamaglione.meplancapstone.fragments.FeedFragment;
 import com.parse.ParseUser;
 
+/**
+ * MainActivity handles the Main Fragments to make the app functionable, like the feedFragment
+ * where you can see all the recipes and the list fragment, where you can see your grocery list
+ * It also has a bottom naviagtion view to access these fragments
+ */
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvUsername;
-    private ImageView ivProfile;
     private BottomNavigationView bottomNavigationView;
     private ActivityMainBinding binding;
     final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -32,12 +35,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-//        tvUsername = binding.tvUsernameMain;
-//        ivProfile = binding.ivProfile;
         bottomNavigationView = binding.bottomNavigation;
-
-
-        //tvUsername.setText(ParseUser.getCurrentUser().getUsername());
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -46,10 +44,8 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.action_home:
                         fragment = new FeedFragment();
-                        Toast.makeText(MainActivity.this, "home!", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_list:
-                        Toast.makeText(MainActivity.this, "List!", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         fragment = new FeedFragment();

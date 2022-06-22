@@ -15,6 +15,11 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
+/**
+ * Used to Login if a user is authorized through back4App
+ * Can connect to SignupActivity if the user is not already a user.
+ */
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername;
@@ -31,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
+        // if user is already logged in
         if(ParseUser.getCurrentUser() != null){
             goToMainActivity();
         }
@@ -60,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    // use the logInInBasckground method to login with username and password
     private void loginUser(String username, String password) {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
@@ -74,12 +81,14 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    // create new Intent to MainActivity
     private void goToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         this.startActivity(intent);
         finish();
     }
 
+    // go to SignUp activity
     private void goToSignUp(){
         Intent intent = new Intent(this, SignUpActivity.class);
         this.startActivity(intent);

@@ -8,6 +8,9 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.RequestParams;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
+/**
+ * this class enables us to comunicate with the API
+ */
 public class EdamamClient {
 
     public static final String REST_URL = "https://api.edamam.com";

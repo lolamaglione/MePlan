@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.activities.RecipeDetailActivity;
+import com.lolamaglione.meplancapstone.fragments.FeedFragment;
 import com.lolamaglione.meplancapstone.models.Recipe;
+import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
@@ -71,11 +73,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //AppCompatActivity activity = (AppCompatActivity) v.getContext();
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION){
                         Recipe recipe = recipes.get(position);
                         Intent intent = new Intent(context, RecipeDetailActivity.class);
                         intent.putExtra(Recipe.class.getSimpleName(), Parcels.wrap(recipe));
+                        intent.putExtra("query", ParseUser.getCurrentUser().getString("last_query"));
                         context.startActivity(intent);
                     }
                 }
@@ -85,7 +89,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         public void bind(Recipe recipe){
             tvUrl.setText(recipe.getURL());
             tvTitle.setText(recipe.getTitle());
-            tvIngredients.setText(recipe.getIngredients().toString());
+            tvIngredients.setText(recipe.getSpecificIngredients().toString());
         }
     }
 }

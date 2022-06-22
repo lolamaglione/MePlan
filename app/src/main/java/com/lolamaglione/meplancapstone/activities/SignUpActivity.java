@@ -16,6 +16,9 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+/**
+ * this activity enables users to signup and then login
+ */
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText etUsername;

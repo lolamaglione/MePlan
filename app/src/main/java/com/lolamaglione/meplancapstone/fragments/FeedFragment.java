@@ -27,6 +27,7 @@ import com.lolamaglione.meplancapstone.EdamamClient;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
 import com.lolamaglione.meplancapstone.models.Recipe;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +42,8 @@ import okhttp3.Headers;
  * A simple {@link Fragment} subclass.
  * Use the {@link FeedFragment#newInstance} factory method to
  * create an instance of this fragment.
+ * This fragment shows the recipe feed in the home button frgament
+ * connects to recipe detail fragment and suggesting recipes with similar ingredients
  */
 public class FeedFragment extends Fragment {
 
@@ -50,6 +53,8 @@ public class FeedFragment extends Fragment {
     private Toolbar searchBar;
     public static final String TAG = "Feed Fragment";
     private EdamamClient client;
+    private String current_query;
+    private String default_query = "chicken";
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -107,11 +112,12 @@ public class FeedFragment extends Fragment {
         //searchBar = (Toolbar) view.findViewById(R.id.tbSearch);
         allRecipes = new ArrayList<>();
         recipeAdapter = new RecipeAdapter(getContext(), allRecipes);
+        ParseUser.getCurrentUser().put("last_query", default_query);
         client = new EdamamClient();
         rvRecipes.setAdapter(recipeAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipes.setLayoutManager(linearLayoutManager);
-        populateRecipe("chicken", 0);
+        populateRecipe(default_query, 0);
     }
 
     @Override
@@ -124,6 +130,7 @@ public class FeedFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                ParseUser.getCurrentUser().put("last_query", query);
                 // perform query here
                 populateRecipe(query, 0);
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used

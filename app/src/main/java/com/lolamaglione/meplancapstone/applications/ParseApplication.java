@@ -7,6 +7,10 @@ import com.parse.Parse;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+/**
+ * This enables the code to communicate with ParseApplication in order to create
+ * new users and keep track of current users.
+ */
 public class ParseApplication extends Application {
 
     @Override
