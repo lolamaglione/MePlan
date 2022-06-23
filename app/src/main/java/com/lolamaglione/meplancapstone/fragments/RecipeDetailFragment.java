@@ -104,8 +104,9 @@ public class RecipeDetailFragment extends Fragment {
         btnAddToSched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppCompatActivity activity = new AppCompatActivity();
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
                 showAddScheduleDialog();
+
             }
         });
 
@@ -114,6 +115,9 @@ public class RecipeDetailFragment extends Fragment {
     private void showAddScheduleDialog() {
         FragmentManager fm = getActivity().getSupportFragmentManager();
         AddToCalendarFragment addToCal = new AddToCalendarFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Recipe.class.getSimpleName(), Parcels.wrap(mRecipe_obj));
+        addToCal.setArguments(bundle);
         addToCal.show(fm, "fragment_add_to_calendar");
     }
 }

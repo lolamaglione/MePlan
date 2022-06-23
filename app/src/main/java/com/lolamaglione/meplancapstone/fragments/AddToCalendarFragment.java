@@ -7,15 +7,27 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
+import com.google.gson.Gson;
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.models.Recipe;
+import com.lolamaglione.meplancapstone.models.UserRecipe;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.SaveCallback;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.sql.Array;
 
@@ -28,7 +40,7 @@ public class AddToCalendarFragment extends DialogFragment {
 
     Spinner dropDown;
     Button btnConfirm;
-
+    String day;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -85,6 +97,43 @@ public class AddToCalendarFragment extends DialogFragment {
         String[] daysOfTheWeek = new String[] {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
         SpinnerAdapter adapter = ArrayAdapter.createFromResource(getContext(), R.array.days_array, android.R.layout.simple_spinner_item);
         dropDown.setAdapter(adapter);
+                dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                day = (String) parent.getItemAtPosition(position);
 
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                day = "";
+            }
+        });
+        btnConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserRecipe addedRecipe = new UserRecipe();
+                Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
+                addedRecipe.setIngredientsArray(recipe.getSpecificIngredients());
+                addedRecipe.setKeyUrl(recipe.getURL());
+                addedRecipe.setKeyDayOfWeek(day);
+                addedRecipe.setKeyTitle(recipe.getTitle());
+                addedRecipe.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e!= null){
+                            Log.e("addActivity", "error:" + e);
+
+                        } else {
+                            System.out.println("saved");
+
+                        }
+
+                        // add a progress bar here
+                    }
+                });
+                dismiss();
+            }
+        });
     }
 }

@@ -14,16 +14,16 @@ import java.util.List;
 @Parcel
 public class Recipe {
 
-    private String title;
-    private String url;
-    private List<String> specificIngredients;
-    private List<String> instructions;
-    private String imageURL;
+    public String title;
+    public String url;
+    public List<String> specificIngredients;
+    public String imageURL;
     private List<String> generalIngredients;
     private int percentageMatch;
 
     public Recipe(){}
 
+    // create a new recipe and set all the attributes by querying from the JSON file
     public static Recipe fromJson(JSONObject jsonObject) throws JSONException {
         Recipe recipe = new Recipe();
         JSONObject jsonRecipe = (JSONObject) jsonObject.get("recipe");
@@ -70,6 +70,7 @@ public class Recipe {
     }
 
     public String getImageURL() {return imageURL;}
+
 
     public static List<Recipe> fromJsonArray(JSONArray jsonArray) throws JSONException{
         List<Recipe> recipes = new ArrayList<>();
