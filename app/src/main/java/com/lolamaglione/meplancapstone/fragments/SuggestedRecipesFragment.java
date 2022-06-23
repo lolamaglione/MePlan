@@ -99,7 +99,7 @@ public class SuggestedRecipesFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipeSuggested.setLayoutManager(linearLayoutManager);
-        queryRecipes(mQuery, 0);
+        queryRecipes(mQuery + ", " + mList_ing.get(1), 0);
 
     }
 

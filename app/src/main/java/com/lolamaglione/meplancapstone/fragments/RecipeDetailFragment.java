@@ -4,13 +4,17 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -34,6 +38,7 @@ public class RecipeDetailFragment extends Fragment {
     TextView tvDetailUrl;
     ListView lvIngredients;
     TextView tvTotalTimeCook;
+    ImageButton btnAddToSched;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -51,7 +56,6 @@ public class RecipeDetailFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
      * @return A new instance of fragment RecipeDetailFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -87,6 +91,7 @@ public class RecipeDetailFragment extends Fragment {
         ivRecipePicture = view.findViewById(R.id.ivDetail);
         tvDetailUrl = view.findViewById(R.id.tvUrlDetail);
         lvIngredients = view.findViewById(R.id.lvIngredientList);
+        btnAddToSched = view.findViewById(R.id.ibAddToSched);
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(getContext(), R.layout.ingredient_list_item, mRecipe_obj.getSpecificIngredients());
 
@@ -96,5 +101,19 @@ public class RecipeDetailFragment extends Fragment {
 
         Glide.with(this).load(mRecipe_obj.getImageURL()).into(ivRecipePicture);
 
+        btnAddToSched.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppCompatActivity activity = new AppCompatActivity();
+                showAddScheduleDialog();
+            }
+        });
+
+    }
+
+    private void showAddScheduleDialog() {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        AddToCalendarFragment addToCal = new AddToCalendarFragment();
+        addToCal.show(fm, "fragment_add_to_calendar");
     }
 }

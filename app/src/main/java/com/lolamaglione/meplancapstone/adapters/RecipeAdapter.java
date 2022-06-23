@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.activities.RecipeDetailActivity;
 import com.lolamaglione.meplancapstone.fragments.FeedFragment;
@@ -61,15 +63,12 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvTitle;
-        private TextView tvUrl;
-        private TextView tvIngredients;
+        private ImageView ivFeedRecipe;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvUrl = itemView.findViewById(R.id.tvUrl);
-            tvIngredients = itemView.findViewById(R.id.tvIngredientList);
-
+            ivFeedRecipe = itemView.findViewById(R.id.ivFeedRecipe);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -87,9 +86,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         }
 
         public void bind(Recipe recipe){
-            tvUrl.setText(recipe.getURL());
             tvTitle.setText(recipe.getTitle());
-            tvIngredients.setText(recipe.getSpecificIngredients().toString());
+            Glide.with(context).load(recipe.getImageURL()).into(ivFeedRecipe);
         }
     }
 }

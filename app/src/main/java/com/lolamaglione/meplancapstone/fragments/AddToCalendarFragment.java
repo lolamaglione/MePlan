@@ -2,20 +2,32 @@ package com.lolamaglione.meplancapstone.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import com.lolamaglione.meplancapstone.R;
+
+import java.sql.Array;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link AddToCalendarFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddToCalendarFragment extends Fragment {
+public class AddToCalendarFragment extends DialogFragment {
+
+    Spinner dropDown;
+    Button btnConfirm;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -62,5 +74,17 @@ public class AddToCalendarFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_add_to_calendar, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        dropDown = view.findViewById(R.id.dropDown);
+        btnConfirm = view.findViewById(R.id.btnConfirm);
+        String[] daysOfTheWeek = new String[] {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+        SpinnerAdapter adapter = ArrayAdapter.createFromResource(getContext(), R.array.days_array, android.R.layout.simple_spinner_item);
+        dropDown.setAdapter(adapter);
+
     }
 }
