@@ -1,13 +1,11 @@
 package com.lolamaglione.meplancapstone.models;
 
+import com.parse.Parse;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
-import org.json.JSONArray;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 
 @ParseClassName("Recipe")
@@ -18,13 +16,20 @@ public class UserRecipe extends ParseObject{
     public static final String KEY_IMAGE = "image";
     public static final String KEY_URL = "url";
     public static final String KEY_TITLE = "title";
+    public static final String KEY_USER = "user";
 
     private class myUserRecipe extends Recipe {
 
     }
 
 
+    public ParseUser getUser() {
+        return getParseUser(KEY_USER);
+    }
 
+    public void setUser(ParseUser user) {
+        put(KEY_USER, user);
+    }
     public List<String> getIngredients(){
         return (List<String>) get(KEY_INGREDIENTS);
     }
@@ -58,5 +63,9 @@ public class UserRecipe extends ParseObject{
     }
 
     public void setKeyTitle(String title) { put(KEY_TITLE, title); }
+
+    public String getKeyTitle () {
+        return get(KEY_TITLE).toString();
+    }
 
 }
