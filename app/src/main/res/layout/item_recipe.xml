@@ -32,14 +32,13 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="chicken Picata"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
+            android:drawableTop="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:drawableTop="@color/black"/>
-
+            tools:text="chicken Picata" />
 
 
     </androidx.cardview.widget.CardView>

@@ -12,4 +12,10 @@
         android:icon="@android:drawable/checkbox_on_background"
         android:title="List"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_plan"
+        android:icon="@android:drawable/ic_dialog_dialer"
+        android:title="Meal Plan"
+        app:showAsAction="always" />
 </menu>

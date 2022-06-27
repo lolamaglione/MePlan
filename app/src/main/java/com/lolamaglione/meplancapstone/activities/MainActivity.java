@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,6 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.databinding.ActivityMainBinding;
 import com.lolamaglione.meplancapstone.fragments.FeedFragment;
+import com.lolamaglione.meplancapstone.fragments.MealPlanFragment;
 import com.parse.ParseUser;
 
 /**
@@ -28,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private ActivityMainBinding binding;
     final FragmentManager fragmentManager = getSupportFragmentManager();
+    public static final String TAG = "Main Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.action_list:
                         break;
+                    case R.id.action_plan:
+                        Toast.makeText(MainActivity.this, "mealPlan!", Toast.LENGTH_SHORT).show();
+                        fragment = new MealPlanFragment();
+                        break;
                     default:
                         fragment = new FeedFragment();
                         break;
@@ -55,5 +64,29 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.action_logout){
+            logoutUser();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void logoutUser() {
+        Log.i(TAG, "attempting ot logout user");
+        ParseUser.logOut();
+        ParseUser currentUser = ParseUser.getCurrentUser();
+
+        Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
     }
 }

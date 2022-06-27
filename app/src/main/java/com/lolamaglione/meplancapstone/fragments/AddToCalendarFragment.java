@@ -17,30 +17,37 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
-import com.google.gson.Gson;
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Recipe;
-import com.lolamaglione.meplancapstone.models.UserRecipe;
+import com.lolamaglione.meplancapstone.controllers.RecipeController;
+import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseFile;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.parceler.Parcels;
 
-import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link AddToCalendarFragment#newInstance} factory method to
  * create an instance of this fragment.
+ *
+ * This Fragment incorportated modular activity in order to be able to add a recipe to the meal plan
  */
 public class AddToCalendarFragment extends DialogFragment {
 
+    private static final String TAG = "addActivity";
     Spinner dropDown;
     Button btnConfirm;
     String day;
+    public HashMap<String, Integer> dayToInt;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -91,7 +98,8 @@ public class AddToCalendarFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        dayToInt = new HashMap<>();
+        fillHashMap(dayToInt);
         dropDown = view.findViewById(R.id.dropDown);
         btnConfirm = view.findViewById(R.id.btnConfirm);
         String[] daysOfTheWeek = new String[] {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
@@ -112,28 +120,64 @@ public class AddToCalendarFragment extends DialogFragment {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserRecipe addedRecipe = new UserRecipe();
-                Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
-                addedRecipe.setIngredientsArray(recipe.getSpecificIngredients());
-                addedRecipe.setKeyUrl(recipe.getURL());
-                addedRecipe.setKeyDayOfWeek(day);
-                addedRecipe.setKeyTitle(recipe.getTitle());
-                addedRecipe.saveInBackground(new SaveCallback() {
+                RecipeController recipeController = null;
+                try {
+                    recipeController = createDBRecipe();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                ;
+                ScheduleController scheduleController = new ScheduleController();
+                scheduleController.setUser(ParseUser.getCurrentUser());
+                scheduleController.setRecipe(recipeController);
+                scheduleController.setDayOfWeek(dayToInt.get(day));
+                scheduleController.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e!= null){
-                            Log.e("addActivity", "error:" + e);
-
-                        } else {
-                            System.out.println("saved");
-
+                            Log.e("addActivity", "error: " + e);
                         }
-
-                        // add a progress bar here
+                        Log.i("addActivity", "success!");
                     }
                 });
                 dismiss();
             }
         });
+    }
+
+    private void fillHashMap(HashMap<String, Integer> dayToInt){
+        List<String> daysOfWeek = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+        for (int i = 0; i < daysOfWeek.size(); i++){
+            dayToInt.putIfAbsent(daysOfWeek.get(i), i);
+        }
+//        Files.lines(Paths.get("dayToInt.txt.properties")).map(s->s.split("=")).
+//                forEach(a-> dayToInt.put(a[0], Integer.valueOf(a[1])));
+    }
+
+    public RecipeController createDBRecipe() throws ParseException {
+
+        // recipe we want to add
+        Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
+        String title = recipe.getTitle();
+        // querying all the recipes that are already in the DataBase
+        ParseQuery<RecipeController> query = ParseQuery.getQuery(RecipeController.class);
+        query.whereEqualTo("title", title);
+        query.include(RecipeController.KEY_TITLE);
+
+        List<RecipeController> recipesWithSameTitle = query.find();
+        Log.i(TAG, "this is the recipe with the same titles: " + recipesWithSameTitle);
+        if (recipesWithSameTitle.size() == 0){
+            RecipeController recipeController = new RecipeController();
+            recipeController.setSpecificIngredientsArray(recipe.getSpecificIngredients());
+            recipeController.setUrl(recipe.getURL());
+            recipeController.setGeneralIngredientsArray(recipe.getGeneralIngredients());
+            recipeController.setTitle(recipe.getTitle());
+            recipeController.setImage(recipe.getImageURL());
+            recipeController.saveInBackground();
+            return recipeController;
+        }
+        RecipeController recipeController = recipesWithSameTitle.get(0);
+
+        return recipeController;
     }
 }

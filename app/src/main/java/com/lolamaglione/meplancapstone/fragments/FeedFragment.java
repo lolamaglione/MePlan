@@ -4,8 +4,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.ActionMenuItemView;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -24,6 +22,7 @@ import android.view.ViewGroup;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.lolamaglione.meplancapstone.EdamamClient;
+import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
 import com.lolamaglione.meplancapstone.models.Recipe;
@@ -31,7 +30,6 @@ import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,11 +48,10 @@ public class FeedFragment extends Fragment {
     private RecyclerView rvRecipes;
     private List<Recipe> allRecipes;
     private RecipeAdapter recipeAdapter;
-    private Toolbar searchBar;
     public static final String TAG = "Feed Fragment";
     private EdamamClient client;
-    private String current_query;
     private String default_query = "chicken";
+    private ParseRecipe parse;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -108,6 +105,7 @@ public class FeedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        parse = new ParseRecipe();
         rvRecipes = view.findViewById(R.id.rvRecipes);
         //searchBar = (Toolbar) view.findViewById(R.id.tbSearch);
         allRecipes = new ArrayList<>();
@@ -161,7 +159,7 @@ public class FeedFragment extends Fragment {
                     if (page == 0){
                         recipeAdapter.clear();
                     }
-                    allRecipes.addAll(Recipe.fromJsonArray(jsonArray));
+                    allRecipes.addAll(parse.fromJsonArray(jsonArray));
                     System.out.println(allRecipes);
                     recipeAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {

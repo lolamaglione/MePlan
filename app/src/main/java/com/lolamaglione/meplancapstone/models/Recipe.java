@@ -20,37 +20,56 @@ public class Recipe {
     public String imageURL;
     private List<String> generalIngredients;
     private int percentageMatch;
+    private boolean hasBeenSaved;
 
-    public Recipe(){}
-
-    // create a new recipe and set all the attributes by querying from the JSON file
-    public static Recipe fromJson(JSONObject jsonObject) throws JSONException {
-        Recipe recipe = new Recipe();
-        JSONObject jsonRecipe = (JSONObject) jsonObject.get("recipe");
-        recipe.title = jsonRecipe.getString("label");
-        recipe.specificIngredients = getSpecificIngredientList(jsonRecipe.getJSONArray("ingredientLines"));
-        recipe.url = jsonRecipe.getString("url");
-        recipe.imageURL = jsonRecipe.getString("image");
-        recipe.generalIngredients = getGeneralIngredientList(jsonRecipe.getJSONArray("ingredients"));
-        return recipe;
+    public Recipe(String title, String url, List<String> specificIngredients, String imageURL,
+                  List<String> generalIngredients, boolean hasBeenSaved){
+        this.title = title;
+        this.url = url;
+        this.specificIngredients = specificIngredients;
+        this.imageURL = imageURL;
+        this.generalIngredients = generalIngredients;
+        this.hasBeenSaved = hasBeenSaved;
     }
 
-    private static List<String> getSpecificIngredientList(JSONArray ingredientLines) throws JSONException {
-        List<String> ingredientList = new ArrayList<>();
-        for (int i = 0; i < ingredientLines.length(); i++){
-            ingredientList.add(ingredientLines.getString(i));
-        }
+    public Recipe(){
 
-        return ingredientList;
     }
 
-    private static List<String> getGeneralIngredientList(JSONArray ingredients) throws JSONException {
-        List<String> ingredientList = new ArrayList<>();
-        for (int i = 0; i < ingredients.length(); i++){
-            String ingredient = ingredients.getJSONObject(i).getString("food");
-            ingredientList.add(ingredient);
-        }
-        return  ingredientList;
+    public String getTitle(){
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getURL(){
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public List<String> getSpecificIngredients() {
+        return specificIngredients;
+    }
+
+    public void setSpecificIngredients(List<String> specificIngredients){
+        this.specificIngredients = specificIngredients;
+    }
+
+    public String getImageURL() {return imageURL;}
+
+    public void setImageUrl(String imageUrl) {
+        this.imageURL = imageUrl;
+    }
+
+    public List<String> getGeneralIngredients() { return  generalIngredients; }
+
+    public void setGeneralIngredients(List<String> generalIngredients){
+        this.generalIngredients = generalIngredients;
     }
 
     public int getPercentageMatch(){
@@ -61,29 +80,10 @@ public class Recipe {
         percentageMatch = percentage;
     }
 
-    public String getURL(){
-        return url;
-    }
+    public boolean getHasBeenSaved() { return hasBeenSaved;}
 
-    public String getTitle(){
-        return title;
-    }
-
-    public String getImageURL() {return imageURL;}
+    public void setHasBeenSaved(boolean saved) {hasBeenSaved = saved;}
 
 
-    public static List<Recipe> fromJsonArray(JSONArray jsonArray) throws JSONException{
-        List<Recipe> recipes = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++){
-            recipes.add(fromJson(jsonArray.getJSONObject(i)));
-        }
 
-        return recipes;
-    }
-
-    public List<String> getSpecificIngredients() {
-        return specificIngredients;
-    }
-
-    public List<String> getGeneralIngredients() { return  generalIngredients; }
 }

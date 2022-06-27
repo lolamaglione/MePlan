@@ -1,5 +1,6 @@
-package com.lolamaglione.meplancapstone.models;
+package com.lolamaglione.meplancapstone.controllers;
 
+import com.lolamaglione.meplancapstone.models.Recipe;
 import com.parse.Parse;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
@@ -10,61 +11,48 @@ import java.util.List;
 
 @ParseClassName("Recipe")
 // extend recipe class
-public class UserRecipe extends ParseObject{
-    public static final String KEY_INGREDIENTS = "ingredients";
-    public static final String KEY_DAY_OF_WEEK = "dayOfTheWeek";
-    public static final String KEY_IMAGE = "image";
+public class RecipeController extends ParseObject{
+    public static final String KEY_SPECIFC_INGREDIENTS = "specificIngredients";
+    public static final String KEY_IMAGE = "imageURL";
     public static final String KEY_URL = "url";
     public static final String KEY_TITLE = "title";
-    public static final String KEY_USER = "user";
+    public static final String KEY_GENERAL_INGREDIENTS = "generalIngredients";
 
-    private class myUserRecipe extends Recipe {
-
+    public List<String> getSpecificIngredients(){
+        return (List<String>) get(KEY_SPECIFC_INGREDIENTS);
     }
 
-
-    public ParseUser getUser() {
-        return getParseUser(KEY_USER);
+    public void setSpecificIngredientsArray(List<String> ingredients){
+        put(KEY_SPECIFC_INGREDIENTS, ingredients);
     }
 
-    public void setUser(ParseUser user) {
-        put(KEY_USER, user);
-    }
-    public List<String> getIngredients(){
-        return (List<String>) get(KEY_INGREDIENTS);
+    public List<String> getGeneralIngredients(){
+        return (List<String>) get(KEY_GENERAL_INGREDIENTS);
     }
 
-    public void setIngredientsArray(List<String> ingredients){
-        put(KEY_INGREDIENTS, ingredients);
+    public void setGeneralIngredientsArray(List<String> ingredients){
+        put(KEY_GENERAL_INGREDIENTS, ingredients);
     }
 
-    public String getKeyDayOfWeek(){
-        return getString(KEY_DAY_OF_WEEK);
+    public String getImageURL(){
+        return getString(KEY_IMAGE);
     }
 
-    public void setKeyDayOfWeek(String dayOfWeek){
-        put(KEY_DAY_OF_WEEK, dayOfWeek);
+    public void setImage(String imageURL){
+        put(KEY_IMAGE, imageURL);
     }
 
-    public ParseFile getImage(){
-        return getParseFile(KEY_IMAGE);
-    }
-
-    public void setImage(ParseFile image){
-        put(KEY_IMAGE, image);
-    }
-
-    public String getKeyUrl(){
+    public String getUrl(){
         return getString(KEY_URL);
     }
 
-    public void setKeyUrl(String url){
+    public void setUrl(String url){
         put(KEY_URL, url);
     }
 
-    public void setKeyTitle(String title) { put(KEY_TITLE, title); }
+    public void setTitle(String title) { put(KEY_TITLE, title); }
 
-    public String getKeyTitle () {
+    public String getTitle () {
         return get(KEY_TITLE).toString();
     }
 

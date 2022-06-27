@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.lolamaglione.meplancapstone.EdamamClient;
+import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.SuggestRecipeAdapter;
 import com.lolamaglione.meplancapstone.models.Recipe;
@@ -49,6 +50,7 @@ public class SuggestedRecipesFragment extends Fragment {
     private List<Recipe> finalList;
     private RecyclerView rvRecipeSuggested;
     private SuggestRecipeAdapter adapter;
+    private ParseRecipe parse;
 
     public SuggestedRecipesFragment() {
         // Required empty public constructor
@@ -93,6 +95,7 @@ public class SuggestedRecipesFragment extends Fragment {
         percentageIngredients = new TreeMap<>();
         finalList = new ArrayList<>();
         rvRecipeSuggested = view.findViewById(R.id.rvSuggestedRecipes);
+        parse = new ParseRecipe();
 
         adapter = new SuggestRecipeAdapter(getContext(), finalList);
         rvRecipeSuggested.setAdapter(adapter);
@@ -111,7 +114,7 @@ public class SuggestedRecipesFragment extends Fragment {
                 JSONArray jsonArray = null;
                 try {
                     jsonArray = json.jsonObject.getJSONArray("hits");
-                    queriedRecipes.addAll(Recipe.fromJsonArray(jsonArray));
+                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray));
                     fillPercentageMap(queriedRecipes);
                     if(percentageIngredients.keySet().size() != 0){
                         addToFinalRecipeList();

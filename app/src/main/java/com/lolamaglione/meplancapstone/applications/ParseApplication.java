@@ -2,12 +2,10 @@ package com.lolamaglione.meplancapstone.applications;
 
 import android.app.Application;
 
-import com.lolamaglione.meplancapstone.models.UserRecipe;
+import com.lolamaglione.meplancapstone.controllers.RecipeController;
+import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.parse.Parse;
 import com.parse.ParseObject;
-
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * This enables the code to communicate with ParseApplication in order to create
@@ -19,7 +17,8 @@ public class ParseApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        ParseObject.registerSubclass(UserRecipe.class);
+        ParseObject.registerSubclass(RecipeController.class);
+        ParseObject.registerSubclass(ScheduleController.class);
         // set applicationId, and server server based on the values in the back4app settings.
         // any network interceptors must be added with the Configuration Builder given this syntax
         Parse.initialize(new Parse.Configuration.Builder(this)
