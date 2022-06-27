@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.lolamaglione.meplancapstone.EdamamClient;
+import com.lolamaglione.meplancapstone.EndlessRecyclerViewScrollListener;
 import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.SuggestRecipeAdapter;
@@ -51,6 +52,9 @@ public class SuggestedRecipesFragment extends Fragment {
     private RecyclerView rvRecipeSuggested;
     private SuggestRecipeAdapter adapter;
     private ParseRecipe parse;
+    private EndlessRecyclerViewScrollListener scrollListener;
+    private String nextPage = "";
+
 
     public SuggestedRecipesFragment() {
         // Required empty public constructor
@@ -102,11 +106,25 @@ public class SuggestedRecipesFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipeSuggested.setLayoutManager(linearLayoutManager);
-        queryRecipes(mQuery + ", " + mList_ing.get(1), 0);
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvRecipeSuggested.addOnScrollListener(scrollListener);
+        queryRecipes(mQuery + ", " + mList_ing.get(1), 0, nextPage);
 
     }
 
-    public void queryRecipes(String query, int page){
+    private void loadNextDataFromApi(int page) {
+        queryRecipes(mQuery, page, nextPage);
+    }
+
+    public void queryRecipes(String query, int page, String nextPage){
         List<Recipe> queriedRecipes = new ArrayList<>();
         client.getRecipeFeed(new JsonHttpResponseHandler() {
             @Override
@@ -128,7 +146,7 @@ public class SuggestedRecipesFragment extends Fragment {
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
 
             }
-        }, query, page, "");
+        }, query, page, nextPage);
     }
 
     private void addToFinalRecipeList() {
@@ -161,6 +179,12 @@ public class SuggestedRecipesFragment extends Fragment {
             }
         }
         return (int) (match/mList_ing.size()*100);
+    }
+
+    private void getNextPage(JsonHttpResponseHandler.JSON json) throws JSONException {
+        String next = json.jsonObject.getJSONObject("_links").getJSONObject("next").getString("href");
+        nextPage = next;
+        System.out.println("Happening: " + nextPage);
     }
 
     // query all the recipes
