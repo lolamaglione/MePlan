@@ -128,7 +128,7 @@ public class SuggestedRecipesFragment extends Fragment {
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
 
             }
-        }, query, page);
+        }, query, page, "");
     }
 
     private void addToFinalRecipeList() {

@@ -28,6 +28,7 @@ import android.widget.AutoCompleteTextView;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.lolamaglione.meplancapstone.EdamamClient;
+import com.lolamaglione.meplancapstone.EndlessRecyclerViewScrollListener;
 import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
@@ -36,8 +37,12 @@ import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -58,6 +63,9 @@ public class FeedFragment extends Fragment {
     private EdamamClient client;
     private String default_query = "chicken";
     private ParseRecipe parse;
+    private EndlessRecyclerViewScrollListener scrollListener;
+    private String next_page = "";
+    private String current_query = default_query;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -121,7 +129,26 @@ public class FeedFragment extends Fragment {
         rvRecipes.setAdapter(recipeAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipes.setLayoutManager(linearLayoutManager);
-        populateRecipe(default_query, 0);
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvRecipes.addOnScrollListener(scrollListener);
+        populateRecipe(default_query, 0, "");
+    }
+
+    private void loadNextDataFromApi(int page) {
+        // Send an API request to retrieve appropriate paginated data
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
+        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+        populateRecipe(current_query, page, next_page);
     }
 
     @Override
@@ -147,13 +174,16 @@ public class FeedFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 ParseUser.getCurrentUser().put("last_query", query);
                 // perform query here
-                populateRecipe(query, 0);
+                populateRecipe(query, 0, "");
+                current_query = query;
+                INGREDIENTS = ingredientListKey.toArray(new String[ingredientListKey.size()]);
+                adapter.notifyDataSetChanged();
+                System.out.println("new ingredients: " + INGREDIENTS);
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
                 //TODO: fidn a way to clear the search bar once the user has submitted
                 searchView.clearFocus();
                 searchView.clearAnimation();
-
                 return true;
             }
 
@@ -165,15 +195,29 @@ public class FeedFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private static final String[] INGREDIENTS = new String[] {
-            "chicken", "beef", "shrimp"
-    };
+    private HashMap<String, Integer> ingredientList = new HashMap<>();
+    private String[] INGREDIENTS = new String[] {
+            "chicken", "beef", "shrimp", "canola oil" , "extra-virgin olive oil" , "toasted sesame oil", "balsamic vinegar", "distilled white vinegar", "red wine vinegar", "rice vinegar",
+            "ketchup", "mayonnaise", "dijon mustard", "soy sauce", "chili paste", "hot sauce", "worcestershire", "kosher salt", "salt", "black peppers", "bay leaves",
+            "cayenne pepper", "crushed red pepper", "cumin", "ground coriander", "oregano", "paprika", "rosemary", "thyme leaves", "cinnamon", "cloves", "allspice", "ginger",
+            "nutmeg", "chili powder", "curry powder", "italian seasoning", "vanilla extract", "black beans", "cannellini", "chickpeas", "kidney beans", "capers", "olives", "peanut butter",
+            "jelly", "chicken stock", "chicken broth", "canned tomatoes", "tomatoes", "tomato paste", "salsa", "tuna", "salmon", "panko breadcrumbs", "breadcrumbs", "dried lentils",
+            "pasta", "whole wheat pasta", "white rice", "rice", "whole wheat rice", "jasmine rice", "barley", "millet", "quinoa", "honey", "sugar", "roasted beef", "raisins", "apples"};
 
-    private void populateRecipe(String query, int page) {
+    private ArrayList<String> ingredientListKey = new ArrayList<>();
+//    private String[] INGREDIENTS = null;
+
+
+    private void populateRecipe(String query, int page, String nextPage) {
         client.getRecipeFeed(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 JSONArray jsonArray = null;
+                try {
+                    getNextPage(json);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 try {
                     jsonArray = json.jsonObject.getJSONArray("hits");
                     Log.i(TAG, json.jsonObject.getJSONArray("hits").toString());
@@ -181,17 +225,34 @@ public class FeedFragment extends Fragment {
                         recipeAdapter.clear();
                     }
                     allRecipes.addAll(parse.fromJsonArray(jsonArray));
-                    System.out.println(allRecipes);
+                    for (Recipe recipe : parse.fromJsonArray(jsonArray)){
+                        List<String> recipeIngredients = recipe.getGeneralIngredients();
+                        for (String ingredient : recipeIngredients){
+                            if(!ingredientList.keySet().contains(ingredient)){
+                                ingredientList.put(ingredient, 0);
+                                ingredientListKey.add(ingredient);
+                            }
+                            ingredientList.put(ingredient, ingredientList.get(ingredient) + 1);
+                        }
+                    }
                     recipeAdapter.notifyDataSetChanged();
+                    INGREDIENTS = ingredientListKey.toArray(new String[ingredientListKey.size()]);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG, "error: " + throwable);
             }
-        }, query, page);
+        }, query, page, nextPage);
     }
+
+    private void getNextPage(JsonHttpResponseHandler.JSON json) throws JSONException {
+        String next = json.jsonObject.getJSONObject("_links").getJSONObject("next").getString("href");
+        next_page = next;
+        System.out.println("Happening: " + next_page);
+    }
+
+
 }

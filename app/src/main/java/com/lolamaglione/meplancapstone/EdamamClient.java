@@ -19,9 +19,11 @@ public class EdamamClient {
     public AsyncHttpClient client = new AsyncHttpClient();
 
 
-    public void getRecipeFeed(JsonHttpResponseHandler handler, String q, int page){
+    public void getRecipeFeed(JsonHttpResponseHandler handler, String q, int page, String nextPage){
         String apiUrl = "https://api.edamam.com/api/recipes/v2";
-
+        if (nextPage != ""){
+            apiUrl = nextPage;
+        }
         RequestParams params = new RequestParams();
         params.put("app_id", REST_APP_ID);
         params.put("app_key", REST_APP_KEY);
