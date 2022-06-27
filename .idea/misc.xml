@@ -4,11 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.21555217831813578" />
+        <entry key="../../Library/Android/sdk/platforms/android-32/data/res/layout/simple_dropdown_item_1line.xml" value="0.307518115942029" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.1765625" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21369934082031256" />
         <entry key="app/src/main/res/layout/activity_recipe_detail.xml" value="0.21875152587890626" />
         <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.1765625" />
-        <entry key="app/src/main/res/layout/day_item.xml" value="0.25559105431309903" />
+        <entry key="app/src/main/res/layout/autofill_item.xml" value="0.20871327254305977" />
+        <entry key="app/src/main/res/layout/autofill_list.xml" value="0.20871327254305977" />
+        <entry key="app/src/main/res/layout/day_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_add_to_calendar.xml" value="0.5663462939354182" />
         <entry key="app/src/main/res/layout/fragment_feed.xml" value="0.19599151611328125" />
         <entry key="app/src/main/res/layout/fragment_meal_plan.xml" value="0.1" />

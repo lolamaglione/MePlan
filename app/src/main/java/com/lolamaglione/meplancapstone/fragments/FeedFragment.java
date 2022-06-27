@@ -1,10 +1,12 @@
 package com.lolamaglione.meplancapstone.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
@@ -13,12 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.lolamaglione.meplancapstone.EdamamClient;
@@ -125,6 +131,17 @@ public class FeedFragment extends Fragment {
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchItem.setActionView(searchView);
         searchView.setSubmitButtonEnabled(true);
+        SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete) searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.autofill_item, INGREDIENTS);
+        searchAutoComplete.setAdapter(adapter);
+        searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String searchString = parent.getItemAtPosition(position).toString();
+                searchAutoComplete.setText("" + searchString);
+
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -147,6 +164,10 @@ public class FeedFragment extends Fragment {
         });
         super.onCreateOptionsMenu(menu, inflater);
     }
+
+    private static final String[] INGREDIENTS = new String[] {
+            "chicken", "beef", "shrimp"
+    };
 
     private void populateRecipe(String query, int page) {
         client.getRecipeFeed(new JsonHttpResponseHandler() {

@@ -106,8 +106,10 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                 public void onClick(View v) {
                     if(rlExpandaleLayout.getVisibility() == View.VISIBLE){
                         rlExpandaleLayout.setVisibility(View.GONE);
+                        ivArrow.setImageResource(R.drawable.arrow_down);
                     } else{
                         rlExpandaleLayout.setVisibility(View.VISIBLE);
+                        ivArrow.setImageResource(R.drawable.arrow_up);
                     }
                     dailyRecipes = addedRecipes.get(position);
                     List<Recipe> recipesInDB = new ArrayList<>();
