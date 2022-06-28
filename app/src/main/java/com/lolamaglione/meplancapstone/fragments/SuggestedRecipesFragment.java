@@ -13,10 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.facebook.stetho.common.ArrayListAccumulator;
 import com.lolamaglione.meplancapstone.EdamamClient;
 import com.lolamaglione.meplancapstone.EndlessRecyclerViewScrollListener;
 import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
 import com.lolamaglione.meplancapstone.adapters.SuggestRecipeAdapter;
 import com.lolamaglione.meplancapstone.models.Recipe;
 
@@ -24,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
@@ -50,7 +53,7 @@ public class SuggestedRecipesFragment extends Fragment {
     private SortedMap<Integer, List<Recipe>> percentageIngredients;
     private List<Recipe> finalList;
     private RecyclerView rvRecipeSuggested;
-    private SuggestRecipeAdapter adapter;
+    private RecipeAdapter adapter;
     private ParseRecipe parse;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String nextPage = "";
@@ -96,12 +99,12 @@ public class SuggestedRecipesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         client = new EdamamClient();
-        percentageIngredients = new TreeMap<>();
+        percentageIngredients = new TreeMap<>(Collections.reverseOrder());
         finalList = new ArrayList<>();
         rvRecipeSuggested = view.findViewById(R.id.rvSuggestedRecipes);
         parse = new ParseRecipe();
 
-        adapter = new SuggestRecipeAdapter(getContext(), finalList);
+        adapter = new RecipeAdapter(getContext(), finalList);
         rvRecipeSuggested.setAdapter(adapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -117,12 +120,43 @@ public class SuggestedRecipesFragment extends Fragment {
         // Adds the scroll listener to RecyclerView
         rvRecipeSuggested.addOnScrollListener(scrollListener);
         queryRecipes(mQuery + ", " + mList_ing.get(1), 0, nextPage);
+        queryRecipes(mQuery, 1, nextPage);
+        queryRecipes(mQuery, 2, nextPage);
 
     }
 
     private void loadNextDataFromApi(int page) {
         queryRecipes(mQuery, page, nextPage);
     }
+
+//    public void queryRecipes(String query, int page, String nextPage){
+//        List<Recipe> queriedRecipes = new ArrayList<>();
+//        client.getRecipeFeed(new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Headers headers, JSON json) {
+//                JSONArray jsonArray = null;
+//                try {
+//                    jsonArray = json.jsonObject.getJSONArray("hits");
+//                    if(page == 0) {
+//                        adapter.clear();
+//                    }
+//                    getNextPage(json);
+//                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray));
+//                    fillPercentageMap(queriedRecipes);
+//                    if(percentageIngredients.keySet().size() != 0){
+//                        addToFinalRecipeList();
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+//
+//            }
+//        }, query, page, nextPage);
+//    }
 
     public void queryRecipes(String query, int page, String nextPage){
         List<Recipe> queriedRecipes = new ArrayList<>();
@@ -132,7 +166,55 @@ public class SuggestedRecipesFragment extends Fragment {
                 JSONArray jsonArray = null;
                 try {
                     jsonArray = json.jsonObject.getJSONArray("hits");
+                    getNextPage(json);
                     queriedRecipes.addAll(parse.fromJsonArray(jsonArray));
+                    if(page == 0) {
+                        adapter.clear();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
+            }
+        }, query, page, nextPage);
+
+        client.getRecipeFeed(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                JSONArray jsonArray = null;
+                try {
+                    jsonArray = json.jsonObject.getJSONArray("hits");
+                    getNextPage(json);
+                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray));
+                    if(page == 0) {
+                        adapter.clear();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
+            }
+        }, query, page, this.nextPage);
+
+        client.getRecipeFeed(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                JSONArray jsonArray = null;
+                try {
+                    jsonArray = json.jsonObject.getJSONArray("hits");
+                    getNextPage(json);
+                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray));
+                    if(page == 0) {
+                        adapter.clear();
+                    }
                     fillPercentageMap(queriedRecipes);
                     if(percentageIngredients.keySet().size() != 0){
                         addToFinalRecipeList();
@@ -146,7 +228,9 @@ public class SuggestedRecipesFragment extends Fragment {
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
 
             }
-        }, query, page, nextPage);
+        }, query, page, this.nextPage);
+
+
     }
 
     private void addToFinalRecipeList() {
@@ -155,8 +239,10 @@ public class SuggestedRecipesFragment extends Fragment {
             List<Recipe> recipeList = percentageIngredients.get(key);
             for (Recipe recipe : recipeList) {
                 recipe.setPercentageMatch(key);
-                finalList.add(recipe);
-                adapter.notifyDataSetChanged();;
+                if (!finalList.contains(recipe)){
+                    finalList.add(recipe);
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
     }

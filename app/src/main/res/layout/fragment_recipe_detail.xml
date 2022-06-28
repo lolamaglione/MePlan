@@ -13,21 +13,27 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="9dp"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="1dp"
+        android:autoSizeMaxTextSize="50sp"
+        android:gravity="center_horizontal"
+        android:textSize="24sp"
         android:textStyle="bold"
         tools:text="Chicken Picata" />
 
     <ImageView
         android:id="@+id/ivDetail"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="397dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/tvLabelDetail"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="11dp"
-        tools:srcCompat="@tools:sample/avatars"
-        android:contentDescription="Recipe Picture" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="0dp"
+        android:contentDescription="Recipe Picture"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/tvUrlDetail"
