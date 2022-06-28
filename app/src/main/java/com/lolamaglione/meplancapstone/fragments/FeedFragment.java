@@ -196,6 +196,8 @@ public class FeedFragment extends Fragment {
     }
 
     private HashMap<String, Integer> ingredientList = new HashMap<>();
+
+    //TODO: make this into a text file and make sure I can add to it.
     private String[] INGREDIENTS = new String[] {
             "chicken", "beef", "shrimp", "canola oil" , "extra-virgin olive oil" , "toasted sesame oil", "balsamic vinegar", "distilled white vinegar", "red wine vinegar", "rice vinegar",
             "ketchup", "mayonnaise", "dijon mustard", "soy sauce", "chili paste", "hot sauce", "worcestershire", "kosher salt", "salt", "black peppers", "bay leaves",

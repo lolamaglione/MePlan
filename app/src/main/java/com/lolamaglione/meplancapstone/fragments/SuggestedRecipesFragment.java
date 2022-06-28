@@ -52,6 +52,7 @@ public class SuggestedRecipesFragment extends Fragment {
     private EdamamClient client;
     private SortedMap<Integer, List<Recipe>> percentageIngredients;
     private List<Recipe> finalList;
+    private List<String> addedRecipesTitle;
     private RecyclerView rvRecipeSuggested;
     private RecipeAdapter adapter;
     private ParseRecipe parse;
@@ -101,6 +102,7 @@ public class SuggestedRecipesFragment extends Fragment {
         client = new EdamamClient();
         percentageIngredients = new TreeMap<>(Collections.reverseOrder());
         finalList = new ArrayList<>();
+        addedRecipesTitle = new ArrayList<>();
         rvRecipeSuggested = view.findViewById(R.id.rvSuggestedRecipes);
         parse = new ParseRecipe();
 
@@ -239,7 +241,8 @@ public class SuggestedRecipesFragment extends Fragment {
             List<Recipe> recipeList = percentageIngredients.get(key);
             for (Recipe recipe : recipeList) {
                 recipe.setPercentageMatch(key);
-                if (!finalList.contains(recipe)){
+                if (!addedRecipesTitle.contains(recipe.getTitle())){
+                    addedRecipesTitle.add(recipe.getTitle());
                     finalList.add(recipe);
                     adapter.notifyDataSetChanged();
                 }

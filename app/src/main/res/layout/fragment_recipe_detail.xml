@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".fragments.RecipeDetailFragment">
 
+
     <TextView
         android:id="@+id/tvLabelDetail"
         android:layout_width="wrap_content"

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.models.Recipe;
 
@@ -39,6 +41,8 @@ public class RecipeDetailFragment extends Fragment {
     ListView lvIngredients;
     TextView tvTotalTimeCook;
     ImageButton btnAddToSched;
+    Toolbar toolBar;
+    CollapsingToolbarLayout collapsingToolbar;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -87,6 +91,8 @@ public class RecipeDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        toolBar = view.findViewById(R.id.toolbar);
+        collapsingToolbar = view.findViewById(R.id.collapsing_toolbar);
         tvLabel = view.findViewById(R.id.tvLabelDetail);
         ivRecipePicture = view.findViewById(R.id.ivDetail);
         tvDetailUrl = view.findViewById(R.id.tvUrlDetail);
