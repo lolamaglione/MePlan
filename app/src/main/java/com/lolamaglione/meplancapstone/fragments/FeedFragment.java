@@ -226,8 +226,8 @@ public class FeedFragment extends Fragment {
                     if (page == 0){
                         recipeAdapter.clear();
                     }
-                    allRecipes.addAll(parse.fromJsonArray(jsonArray));
-                    for (Recipe recipe : parse.fromJsonArray(jsonArray)){
+                    allRecipes.addAll(parse.fromJsonArray(jsonArray, query));
+                    for (Recipe recipe : parse.fromJsonArray(jsonArray, query)){
                         List<String> recipeIngredients = recipe.getGeneralIngredients();
                         for (String ingredient : recipeIngredients){
                             if(!ingredientList.keySet().contains(ingredient)){

@@ -28,21 +28,22 @@
 
 <!--</RelativeLayout>-->
 
-<androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_margin="10dp"
-    app:cardCornerRadius="8dp"
+    android:foregroundTint="#008F2626"
     android:minHeight="70dp"
+    app:cardCornerRadius="8dp"
     app:cardElevation="6dp">
 
     <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/linear_layout">
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -54,14 +55,13 @@
                 android:layout_height="70dp"
                 android:layout_gravity="center"
                 android:gravity="center"
-                tools:text="Monday"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                />
+                tools:text="Monday" />
 
             <ImageView
                 android:id="@+id/ivArrow"
@@ -75,12 +75,26 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/arrow_down" />
 
+            <Button
+                android:id="@+id/btnClear"
+                android:layout_width="89dp"
+                android:layout_height="33dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:background="#FFFFFF"
+                android:backgroundTint="#006A1818"
+                android:text="Clear"
+                android:textSize="8sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvDay"
+                app:srcCompat="@android:drawable/ic_notification_clear_all" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RelativeLayout
+            android:id="@+id/rlExpandaleLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/rlExpandaleLayout">
+            android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvDailyRecipes"

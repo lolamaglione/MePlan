@@ -1,5 +1,6 @@
 package com.lolamaglione.meplancapstone.fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,26 +9,28 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
-import com.facebook.stetho.common.ArrayListAccumulator;
 import com.lolamaglione.meplancapstone.EdamamClient;
 import com.lolamaglione.meplancapstone.EndlessRecyclerViewScrollListener;
 import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
-import com.lolamaglione.meplancapstone.adapters.SuggestRecipeAdapter;
+import com.lolamaglione.meplancapstone.applications.EdamamApplication;
+import com.lolamaglione.meplancapstone.applications.ParseApplication;
 import com.lolamaglione.meplancapstone.models.Recipe;
+import com.lolamaglione.meplancapstone.models.RecipeDao;
+import com.parse.Parse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -46,7 +49,7 @@ public class SuggestedRecipesFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String CURR_ING = "current_ingredients";
     private static final String QUERY = "query";
-
+    private static final String TAG = "suggest recipe";
     private List<String> mList_ing;
     private String mQuery;
     private EdamamClient client;
@@ -58,6 +61,8 @@ public class SuggestedRecipesFragment extends Fragment {
     private ParseRecipe parse;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String nextPage = "";
+    RecipeDao recipeDao;
+   // private static InMemoryCacheWithDelayQueue cache = new InMemoryCacheWithDelayQueue();
 
 
     public SuggestedRecipesFragment() {
@@ -105,7 +110,7 @@ public class SuggestedRecipesFragment extends Fragment {
         addedRecipesTitle = new ArrayList<>();
         rvRecipeSuggested = view.findViewById(R.id.rvSuggestedRecipes);
         parse = new ParseRecipe();
-
+        recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
         adapter = new RecipeAdapter(getContext(), finalList);
         rvRecipeSuggested.setAdapter(adapter);
 
@@ -121,9 +126,25 @@ public class SuggestedRecipesFragment extends Fragment {
         };
         // Adds the scroll listener to RecyclerView
         rvRecipeSuggested.addOnScrollListener(scrollListener);
-        queryRecipes(mQuery + ", " + mList_ing.get(1), 0, nextPage);
-        queryRecipes(mQuery, 1, nextPage);
-        queryRecipes(mQuery, 2, nextPage);
+
+        //query for existing tweets in the DB
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "showing data from databse");
+                List<Recipe> recipes = recipeDao.recentItems(mQuery);
+                adapter.clear();
+                adapter.addAll(recipes);
+            }
+        });
+//        if (cache.get(mQuery) != null){
+//            finalList = cache.get(mQuery);
+//            adapter.notifyDataSetChanged();
+//        } else {
+            queryRecipes(mQuery, 0, nextPage);
+//            queryRecipes(mQuery, 1, nextPage);
+//            queryRecipes(mQuery, 2, nextPage);
+//        }
 
     }
 
@@ -162,80 +183,65 @@ public class SuggestedRecipesFragment extends Fragment {
 
     public void queryRecipes(String query, int page, String nextPage){
         List<Recipe> queriedRecipes = new ArrayList<>();
-        client.getRecipeFeed(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                JSONArray jsonArray = null;
-                try {
-                    jsonArray = json.jsonObject.getJSONArray("hits");
-                    getNextPage(json);
-                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray));
-                    if(page == 0) {
-                        adapter.clear();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+        getRecipes(query, page, queriedRecipes);
 
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-
-            }
-        }, query, page, nextPage);
+        getRecipes(query, page, queriedRecipes);
 
         client.getRecipeFeed(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                JSONArray jsonArray = null;
-                try {
-                    jsonArray = json.jsonObject.getJSONArray("hits");
-                    getNextPage(json);
-                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray));
-                    if(page == 0) {
-                        adapter.clear();
+                @Override
+                public void onSuccess(int statusCode, Headers headers, JSON json) {
+                    JSONArray jsonArray = null;
+                    try {
+                        jsonArray = json.jsonObject.getJSONArray("hits");
+                        getNextPage(json);
+                        queriedRecipes.addAll(parse.fromJsonArray(jsonArray, query));
+
+//                        if(page == 0) {
+//                            adapter.clear();
+//                        }
+                        fillPercentageMap(queriedRecipes);
+                        if(percentageIngredients.keySet().size() != 0){
+                            addToFinalRecipeList(query);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-            }
 
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                @Override
+                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
 
-            }
-        }, query, page, this.nextPage);
-
-        client.getRecipeFeed(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                JSONArray jsonArray = null;
-                try {
-                    jsonArray = json.jsonObject.getJSONArray("hits");
-                    getNextPage(json);
-                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray));
-                    if(page == 0) {
-                        adapter.clear();
-                    }
-                    fillPercentageMap(queriedRecipes);
-                    if(percentageIngredients.keySet().size() != 0){
-                        addToFinalRecipeList();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-
-            }
-        }, query, page, this.nextPage);
-
+            }, query, page, this.nextPage);
 
     }
 
-    private void addToFinalRecipeList() {
+    private void getRecipes(String query, int page, List<Recipe> queriedRecipes) {
+        client.getRecipeFeed(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                JSONArray jsonArray = null;
+                try {
+                    jsonArray = json.jsonObject.getJSONArray("hits");
+                    getNextPage(json);
+                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray, query));
+//                        if(page == 0) {
+//                            adapter.clear();
+//                        }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
+            }
+        }, query, page, this.nextPage);
+    }
+
+    private void addToFinalRecipeList(String query) {
+        long hour = 60*60*1000;
         int position = 0;
         for (int key : percentageIngredients.keySet()){
             List<Recipe> recipeList = percentageIngredients.get(key);
@@ -244,10 +250,15 @@ public class SuggestedRecipesFragment extends Fragment {
                 if (!addedRecipesTitle.contains(recipe.getTitle())){
                     addedRecipesTitle.add(recipe.getTitle());
                     finalList.add(recipe);
+                   // cache.add(query, recipe, hour);
                     adapter.notifyDataSetChanged();
                 }
             }
         }
+
+        int size = finalList.size();
+
+        //cache.add(query, finalList, hour);
     }
 
     private void fillPercentageMap(List<Recipe> queriedRecipes) {

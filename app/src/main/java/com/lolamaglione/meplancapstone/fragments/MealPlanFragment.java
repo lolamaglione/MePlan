@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -102,6 +105,23 @@ public class MealPlanFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvDays.setLayoutManager(linearLayoutManager);
         queryUserRecipes();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_clear, menu);
+        MenuItem clear = menu.findItem(R.id.action_clear);
+
+        clear.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
+                query.whereEqualTo(ParseUser.getCurrentUser().getObjectId(), ScheduleController.KEY_USER);
+
+                return false;
+            }
+        });
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void fillHashMap(List<String> daysOfWeek) {

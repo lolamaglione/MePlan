@@ -15,7 +15,7 @@ public class ParseRecipe {
 
     }
 
-    public static Recipe fromJson(JSONObject jsonObject) throws JSONException {
+    public static Recipe fromJson(JSONObject jsonObject, String query) throws JSONException {
         Recipe recipe = new Recipe();
         JSONObject jsonRecipe = (JSONObject) jsonObject.get("recipe");
         recipe.setTitle(jsonRecipe.getString("label"));
@@ -23,6 +23,7 @@ public class ParseRecipe {
         recipe.setUrl(jsonRecipe.getString("url"));
         recipe.setImageUrl(jsonRecipe.getString("image"));
         recipe.setGeneralIngredients(getGeneralIngredientList(jsonRecipe.getJSONArray("ingredients")));
+        recipe.setQuery(query);
         return recipe;
     }
 
@@ -44,10 +45,10 @@ public class ParseRecipe {
         return  ingredientList;
     }
 
-    public static List<Recipe> fromJsonArray(JSONArray jsonArray) throws JSONException{
+    public static List<Recipe> fromJsonArray(JSONArray jsonArray, String query) throws JSONException{
         List<Recipe> recipes = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++){
-            recipes.add(fromJson(jsonArray.getJSONObject(i)));
+            recipes.add(fromJson(jsonArray.getJSONObject(i), query));
         }
         return recipes;
     }

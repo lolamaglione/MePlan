@@ -2,6 +2,9 @@ package com.lolamaglione.meplancapstone.applications;
 
 import android.app.Application;
 
+import androidx.room.Room;
+
+import com.lolamaglione.meplancapstone.MyDatabase;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.parse.Parse;
@@ -12,6 +15,7 @@ import com.parse.ParseObject;
  * new users and keep track of current users.
  */
 public class ParseApplication extends Application {
+    private static MyDatabase myDatabase;
 
     @Override
     public void onCreate() {
@@ -27,5 +31,12 @@ public class ParseApplication extends Application {
                 .server("https://parseapi.back4app.com")
                 .build()
         );
+
+        myDatabase = Room.databaseBuilder(this, MyDatabase.class, MyDatabase.NAME).fallbackToDestructiveMigration().build();
+
+    }
+
+    public MyDatabase getMyDatabase() {
+        return myDatabase;
     }
 }

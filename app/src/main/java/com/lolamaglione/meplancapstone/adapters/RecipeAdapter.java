@@ -58,6 +58,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
+    public void addAll(List<Recipe> list) {
+        recipes.addAll(list);
+        notifyDataSetChanged();
+    }
+
 
 
     class ViewHolder extends RecyclerView.ViewHolder {

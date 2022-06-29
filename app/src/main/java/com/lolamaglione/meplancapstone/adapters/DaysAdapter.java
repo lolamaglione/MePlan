@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -15,7 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
+import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Recipe;
+import com.parse.FindCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +72,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
         private LinearLayout linear_layout;
         private RelativeLayout rlExpandaleLayout;
         private ImageView ivArrow;
+        private Button btnClear;
 
         RecipeAdapter adapter;
         List<RecipeController> dailyRecipes;
@@ -76,6 +84,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
             linear_layout = itemView.findViewById(R.id.linear_layout);
             rlExpandaleLayout = itemView.findViewById(R.id.rlExpandaleLayout);
             ivArrow = itemView.findViewById(R.id.ivArrow);
+            btnClear = itemView.findViewById(R.id.btnClear);
             // break down recipes for each day in order to send to each recipeAdapter
             // for the specific day recyclerView
         }
@@ -130,6 +139,29 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                     }
                 }
             });
+
+
+            btnClear.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
+                    query.whereEqualTo(ScheduleController.KEY_USER, ParseUser.getCurrentUser());
+                    query.whereEqualTo(ScheduleController.KEY_DAY, position);
+
+                    query.findInBackground(new FindCallback<ScheduleController>() {
+                        @Override
+                        public void done(List<ScheduleController> objects, ParseException e) {
+                            for (ScheduleController object : objects){
+                                recipesInDB.remove(object);
+                                object.deleteInBackground();
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    });
+                }
+            });
+
+
         }
     }
 }

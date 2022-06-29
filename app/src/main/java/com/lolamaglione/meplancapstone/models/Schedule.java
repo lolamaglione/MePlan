@@ -1,11 +1,14 @@
 package com.lolamaglione.meplancapstone.models;
 
 
+import androidx.room.Entity;
+
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Schedule {
 
     private String userID;
