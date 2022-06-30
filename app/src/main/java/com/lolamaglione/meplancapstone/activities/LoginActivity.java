@@ -76,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     return;
                 }
+                Log.i(TAG, "attempting to login: " + username);
                 goToMainActivity();
             }
         });

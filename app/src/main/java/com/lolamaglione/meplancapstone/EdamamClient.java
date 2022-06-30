@@ -21,7 +21,7 @@ public class EdamamClient {
 
     public void getRecipeFeed(JsonHttpResponseHandler handler, String q, int page, String nextPage){
         String apiUrl = "https://api.edamam.com/api/recipes/v2";
-        if (nextPage != ""){
+        if (page != 0){
             apiUrl = nextPage;
         }
         RequestParams params = new RequestParams();

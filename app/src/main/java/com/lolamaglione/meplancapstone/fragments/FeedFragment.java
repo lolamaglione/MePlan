@@ -192,6 +192,7 @@ public class FeedFragment extends Fragment {
                 return false;
             }
         });
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
