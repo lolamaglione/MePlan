@@ -14,44 +14,25 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginStart="116dp"
+        android:layout_marginTop="6dp"
         android:autoSizeMaxTextSize="50sp"
         android:gravity="center_horizontal"
         android:textSize="24sp"
         android:textStyle="bold"
         tools:text="Chicken Picata" />
 
-    <ImageView
-        android:id="@+id/ivDetail"
-        android:layout_width="397dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvLabelDetail"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="0dp"
-        android:contentDescription="Recipe Picture"
-        tools:srcCompat="@tools:sample/avatars" />
-
     <TextView
         android:id="@+id/tvUrlDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivDetail"
+        android:layout_below="@+id/tvLabelDetail"
         android:layout_alignParentStart="true"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="14dp"
-        tools:text="URL"
+        android:layout_marginTop="10dp"
         android:autoLink="all"
-        android:clickable="true"/>
-
-    <ListView
-        android:id="@+id/lvIngredientList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvUrlDetail" />
+        android:clickable="true"
+        tools:text="URL" />
 
     <ImageButton
         android:id="@+id/ibAddToSched"
@@ -62,7 +43,16 @@
         android:layout_marginTop="2dp"
         android:layout_marginEnd="5dp"
         android:backgroundTint="#FFFFFF"
-        android:src="@android:drawable/ic_menu_add"
-        android:tint="#03A9F4" />
+        android:src="@android:drawable/ic_menu_add" />
+
+
+    <ListView
+        android:id="@+id/lvIngredientList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvUrlDetail" />
+
+
+
 
 </RelativeLayout>

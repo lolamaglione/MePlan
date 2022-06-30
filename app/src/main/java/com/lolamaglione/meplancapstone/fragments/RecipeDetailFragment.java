@@ -94,7 +94,7 @@ public class RecipeDetailFragment extends Fragment {
         toolBar = view.findViewById(R.id.toolbar);
         collapsingToolbar = view.findViewById(R.id.collapsing_toolbar);
         tvLabel = view.findViewById(R.id.tvLabelDetail);
-        ivRecipePicture = view.findViewById(R.id.ivDetail);
+        //ivRecipePicture = view.findViewById(R.id.ivDetail);
         tvDetailUrl = view.findViewById(R.id.tvUrlDetail);
         lvIngredients = view.findViewById(R.id.lvIngredientList);
         btnAddToSched = view.findViewById(R.id.ibAddToSched);
@@ -105,7 +105,7 @@ public class RecipeDetailFragment extends Fragment {
         tvLabel.setText(mRecipe_obj.getTitle());
         tvDetailUrl.setText(mRecipe_obj.getURL());
 
-        Glide.with(this).load(mRecipe_obj.getImageURL()).into(ivRecipePicture);
+        //Glide.with(this).load(mRecipe_obj.getImageURL()).into(ivRecipePicture);
 
         btnAddToSched.setOnClickListener(new View.OnClickListener() {
             @Override
