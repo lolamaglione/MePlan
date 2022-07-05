@@ -62,7 +62,7 @@ public class SuggestedRecipesFragment extends Fragment {
     private ParseRecipe parse;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String nextPage = "";
-    RecipeDao recipeDao;
+
    // private static InMemoryCacheWithDelayQueue cache = new InMemoryCacheWithDelayQueue();
 
 
@@ -111,7 +111,6 @@ public class SuggestedRecipesFragment extends Fragment {
         addedRecipesTitle = new ArrayList<>();
         rvRecipeSuggested = view.findViewById(R.id.rvSuggestedRecipes);
         parse = new ParseRecipe();
-        recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
         adapter = new RecipeAdapter(getContext(), finalList);
         rvRecipeSuggested.setAdapter(adapter);
 
@@ -127,18 +126,6 @@ public class SuggestedRecipesFragment extends Fragment {
         };
         // Adds the scroll listener to RecyclerView
         rvRecipeSuggested.addOnScrollListener(scrollListener);
-
-        //query for existing tweets in the DB
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "showing data from database");
-                List<Recipe> recipes = recipeDao.recentItems(mQuery);
-                adapter.clear();
-                adapter.addAll(recipes);
-            }
-        });
-
         queryRecipes(mQuery, 0, nextPage);
 
 
@@ -292,13 +279,6 @@ public class SuggestedRecipesFragment extends Fragment {
 
         int size = finalList.size();
         //cache.add(query, finalList, hour);
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "saving data into the database");
-                RecipeDao.insertModel(finalList.toArray(new Recipe[0]));
-            }
-        });
     }
 
     private void fillPercentageMap(List<Recipe> queriedRecipes) {

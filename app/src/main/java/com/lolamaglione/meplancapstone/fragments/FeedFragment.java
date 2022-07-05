@@ -1,6 +1,7 @@
 package com.lolamaglione.meplancapstone.fragments;
 
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -32,7 +33,9 @@ import com.lolamaglione.meplancapstone.EndlessRecyclerViewScrollListener;
 import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
+import com.lolamaglione.meplancapstone.applications.ParseApplication;
 import com.lolamaglione.meplancapstone.models.Recipe;
+import com.lolamaglione.meplancapstone.models.RecipeDao;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -67,6 +70,8 @@ public class FeedFragment extends Fragment {
     private String next_page = "";
     private String current_query = default_query;
 
+    // implementing database
+    private RecipeDao recipeDao;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -139,6 +144,21 @@ public class FeedFragment extends Fragment {
         };
         // Adds the scroll listener to RecyclerView
         rvRecipes.addOnScrollListener(scrollListener);
+
+        // implementing database
+        recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
+
+        //query for existing recipes in the DB:
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "fetching data from database");
+                List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
+                recipeAdapter.clear();
+                recipeAdapter.addAll(recipesFromDB);
+            }
+        });
+
         populateRecipe(default_query, 0, "");
     }
 
@@ -211,6 +231,7 @@ public class FeedFragment extends Fragment {
 //    private String[] INGREDIENTS = null;
 
 
+
     private void populateRecipe(String query, int page, String nextPage) {
         client.getRecipeFeed(new JsonHttpResponseHandler() {
             @Override
@@ -227,7 +248,15 @@ public class FeedFragment extends Fragment {
                     if (page == 0){
                         recipeAdapter.clear();
                     }
-                    allRecipes.addAll(parse.fromJsonArray(jsonArray, query));
+                    final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
+                    allRecipes.addAll(recipesFromNetwork);
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.i(TAG, "saving data into the database");
+                            recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
+                        }
+                    });
                     for (Recipe recipe : parse.fromJsonArray(jsonArray, query)){
                         List<String> recipeIngredients = recipe.getGeneralIngredients();
                         for (String ingredient : recipeIngredients){

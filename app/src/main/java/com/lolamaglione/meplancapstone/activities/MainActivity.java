@@ -19,6 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.databinding.ActivityMainBinding;
 import com.lolamaglione.meplancapstone.fragments.FeedFragment;
+import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;
 import com.lolamaglione.meplancapstone.fragments.MealPlanFragment;
 import com.parse.ParseUser;
 
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
                         fragment = new FeedFragment();
                         break;
                     case R.id.action_list:
+                        fragment = new GroceryListFragment();
                         break;
                     case R.id.action_plan:
                         Toast.makeText(MainActivity.this, "mealPlan!", Toast.LENGTH_SHORT).show();

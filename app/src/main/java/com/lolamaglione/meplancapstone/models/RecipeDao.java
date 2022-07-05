@@ -13,12 +13,10 @@ import java.util.List;
 @Dao
 public interface RecipeDao {
 
-    @Query("SELECT Recipe.title FROM Recipe where Recipe.`query` = :this_query")
+    @Query("SELECT Recipe.* FROM Recipe WHERE Recipe.`query` = :this_query LIMIT 3")
     List<Recipe> recentItems(String this_query);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    static void insertModel(Recipe... recipes) {
-
-    }
+    void insertModel(Recipe... recipes);
 
 }

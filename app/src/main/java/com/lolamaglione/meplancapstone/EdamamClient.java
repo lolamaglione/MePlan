@@ -16,10 +16,17 @@ public class EdamamClient {
     public static final String REST_URL = "https://api.edamam.com";
     public static final String REST_APP_ID = "49c4a7b7";
     public static final String REST_APP_KEY = "27ea06df50c6b95aa310fadc03f4faf2";
-    public AsyncHttpClient client = new AsyncHttpClient();
+    public AsyncHttpClient client;
+
+    public EdamamClient(){
+        client = new AsyncHttpClient();
+    }
 
 
     public void getRecipeFeed(JsonHttpResponseHandler handler, String q, int page, String nextPage){
+        if(client == null){
+            client = new AsyncHttpClient();
+        }
         String apiUrl = "https://api.edamam.com/api/recipes/v2";
         if (page != 0){
             apiUrl = nextPage;
