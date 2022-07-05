@@ -93,28 +93,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
             dailyRecipes = addedRecipes.get(position);
             List<Recipe> recipesInDB = new ArrayList<>();
-            if (dailyRecipes.size() > 0) {
-                for (RecipeController recipe : dailyRecipes) {
-                    Recipe newRecipe = new Recipe();
-                    newRecipe.setUrl(recipe.getUrl());
-                    newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
-                    newRecipe.setImageUrl(recipe.getImageURL());
-                    newRecipe.setTitle(recipe.getTitle());
-                    newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
-                    recipesInDB.add(newRecipe);
-                }
-                ingredientAmount = new ArrayList<>();
-                for (Recipe recipe : recipesInDB){
-                    for (String ingredient : recipe.getGeneralIngredients()){
-                        ingredientAmount.add(ingredient);
-                    }
-                }
-                adapter = new SpecificListAdapter(context, ingredientAmount);
-                rvRecipes.setAdapter(adapter);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-                rvRecipes.setLayoutManager(linearLayoutManager);
-                ingredientAmount.clear();
-            }
+            ingredientAmount = new ArrayList<>();
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
             linear_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -141,6 +120,9 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                         ingredientAmount = new ArrayList<>();
                         for (Recipe recipe : recipesInDB){
                             for (String ingredient : recipe.getGeneralIngredients()){
+                                if(ingredientAmount.contains(ingredient)){
+                                    continue;
+                                }
                                 ingredientAmount.add(ingredient);
                             }
                         }
@@ -148,7 +130,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                         rvRecipes.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
                         rvRecipes.setLayoutManager(linearLayoutManager);
-                        ingredientAmount.clear();
+                        //ingredientAmount.clear();
                     }
                 }
             });

@@ -14,13 +14,14 @@ import com.lolamaglione.meplancapstone.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapter.ListViewHolder>{
 
     private Context context;
-    private ArrayList<String> ingredients;
+    private List<String> ingredients;
 
-    public SpecificListAdapter(Context context, ArrayList<String> ingredients){
+    public SpecificListAdapter(Context context, List<String> ingredients){
         this.context = context;
         this.ingredients = ingredients;
     }

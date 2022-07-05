@@ -91,24 +91,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
 
         public void bind(String dayOfWeek, int position, boolean isExpandable) {
             day.setText(dayOfWeek);
-
-            dailyRecipes = addedRecipes.get(position);
             List<Recipe> recipesInDB = new ArrayList<>();
-            if (dailyRecipes.size() > 0) {
-                for (RecipeController recipe : dailyRecipes) {
-                    Recipe newRecipe = new Recipe();
-                    newRecipe.setUrl(recipe.getUrl());
-                    newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
-                    newRecipe.setImageUrl(recipe.getImageURL());
-                    newRecipe.setTitle(recipe.getTitle());
-                    newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
-                    recipesInDB.add(newRecipe);
-                }
-                adapter = new RecipeAdapter(context, recipesInDB);
-                rvRecipes.setAdapter(adapter);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-                rvRecipes.setLayoutManager(linearLayoutManager);
-            }
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
             linear_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
