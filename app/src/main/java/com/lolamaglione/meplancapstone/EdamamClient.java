@@ -1,6 +1,7 @@
 package com.lolamaglione.meplancapstone;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -17,6 +18,7 @@ public class EdamamClient {
     public static final String REST_APP_ID = "49c4a7b7";
     public static final String REST_APP_KEY = "27ea06df50c6b95aa310fadc03f4faf2";
     public AsyncHttpClient client;
+    public static final String TAG = "client";
 
     public EdamamClient(){
         client = new AsyncHttpClient();
@@ -38,6 +40,7 @@ public class EdamamClient {
         params.put("q", q);
         //params.put("q", "tomato, chicken, garlic");
         //params.put("cuisineType", null);
+        Log.i(TAG, "url: " + apiUrl + " q: " + q);
         client.get(apiUrl, params, handler);
     }
 

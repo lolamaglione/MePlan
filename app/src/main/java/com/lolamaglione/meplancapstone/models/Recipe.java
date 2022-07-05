@@ -21,6 +21,8 @@ import java.util.List;
 public class Recipe {
 
     @ColumnInfo
+    @PrimaryKey
+    @NonNull
     public String title;
 
     @ColumnInfo
@@ -42,8 +44,6 @@ public class Recipe {
     private boolean hasBeenSaved;
 
     @ColumnInfo
-    @PrimaryKey
-    @NonNull
     private String query;
 
     public Recipe(String title, String url, List<String> specificIngredients, String imageURL,
