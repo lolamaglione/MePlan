@@ -62,6 +62,8 @@ public class SuggestedRecipesFragment extends Fragment {
     private ParseRecipe parse;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String nextPage = "";
+    private boolean dataBaseWasCalled = true;
+    private RecipeDao recipeDao;
 
    // private static InMemoryCacheWithDelayQueue cache = new InMemoryCacheWithDelayQueue();
 
@@ -116,6 +118,26 @@ public class SuggestedRecipesFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipeSuggested.setLayoutManager(linearLayoutManager);
+
+        // implementing database
+        recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
+
+        //query for existing recipes in the DB:
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "fetching data from database");
+                List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
+                if (recipesFromDB != null){
+                    dataBaseWasCalled = true;
+                } else{
+                    dataBaseWasCalled = false;
+                }
+                adapter.clear();
+                adapter.addAll(recipesFromDB);
+            }
+        });
+
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -177,7 +199,15 @@ public class SuggestedRecipesFragment extends Fragment {
                     jsonArray = json.jsonObject.getJSONArray("hits");
                     String nextPage1 = getNextPage(json);
                     next_page_array.add(nextPage1);
-                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray, query));
+                    final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
+                    queriedRecipes.addAll(recipesFromNetwork);
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.i(TAG, "saving data into the database");
+                            recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
+                        }
+                    });
                     client.getRecipeFeed(new JsonHttpResponseHandler() {
                         @Override
                         public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -186,7 +216,15 @@ public class SuggestedRecipesFragment extends Fragment {
                                 jsonArray = json.jsonObject.getJSONArray("hits");
                                 String nextPage1 = getNextPage(json);
                                 next_page_array.add(nextPage1);
-                                queriedRecipes.addAll(parse.fromJsonArray(jsonArray, query));
+                                final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
+                                queriedRecipes.addAll(recipesFromNetwork);
+                                AsyncTask.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Log.i(TAG, "saving data into the database");
+                                        recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
+                                    }
+                                });
                                 client.getRecipeFeed(new JsonHttpResponseHandler() {
                                     @Override
                                     public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -195,7 +233,15 @@ public class SuggestedRecipesFragment extends Fragment {
                                             jsonArray = json.jsonObject.getJSONArray("hits");
                                             String next_page1 = getNextPage(json);
                                             next_page_array.add(next_page1);
-                                            queriedRecipes.addAll(parse.fromJsonArray(jsonArray, query));
+                                            final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
+                                            queriedRecipes.addAll(recipesFromNetwork);
+                                            AsyncTask.execute(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Log.i(TAG, "saving data into the database");
+                                                    recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
+                                                }
+                                            });
                                             fillPercentageMap(queriedRecipes);
                                             if(percentageIngredients.keySet().size() != 0){
                                                 addToFinalRecipeList(query);

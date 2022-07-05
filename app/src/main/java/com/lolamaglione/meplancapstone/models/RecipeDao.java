@@ -16,6 +16,9 @@ public interface RecipeDao {
     @Query("SELECT Recipe.* FROM Recipe WHERE Recipe.`query` = :this_query LIMIT 100")
     List<Recipe> recentItems(String this_query);
 
+    @Query("SELECT Recipe.* FROM Recipe WHERE Recipe.`query` = :this_query ORDER BY percentageMatch DESC LIMIT 100")
+    List<Recipe> sortedSuggestions(String this_query);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertModel(Recipe[] recipes);
 

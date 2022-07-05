@@ -36,6 +36,7 @@ import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
 import com.lolamaglione.meplancapstone.applications.ParseApplication;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.models.RecipeDao;
+import com.parse.Parse;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -64,11 +65,12 @@ public class FeedFragment extends Fragment {
     private RecipeAdapter recipeAdapter;
     public static final String TAG = "Feed Fragment";
     private EdamamClient client;
-    private String default_query = "chicken";
+    private String default_query;
     private ParseRecipe parse;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String next_page = "";
     private String current_query = default_query;
+    private boolean dataBaseWasCalled = true;
 
     // implementing database
     private RecipeDao recipeDao;
@@ -125,11 +127,13 @@ public class FeedFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         parse = new ParseRecipe();
+        default_query = ParseUser.getCurrentUser().getString("last_query");
+        current_query = default_query;
         rvRecipes = view.findViewById(R.id.rvRecipes);
         //searchBar = (Toolbar) view.findViewById(R.id.tbSearch);
         allRecipes = new ArrayList<>();
         recipeAdapter = new RecipeAdapter(getContext(), allRecipes);
-        ParseUser.getCurrentUser().put("last_query", default_query);
+        ParseUser.getCurrentUser().put("last_query", current_query);
         client = new EdamamClient();
         rvRecipes.setAdapter(recipeAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -145,23 +149,32 @@ public class FeedFragment extends Fragment {
             public void run() {
                 Log.i(TAG, "fetching data from database");
                 List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
+                if (recipesFromDB != null){
+                    dataBaseWasCalled = true;
+                } else{
+                    dataBaseWasCalled = false;
+                }
                 recipeAdapter.clear();
                 recipeAdapter.addAll(recipesFromDB);
             }
         });
 
-        populateRecipe(default_query, 0, "");
+        if(!dataBaseWasCalled){
+            Log.i(TAG, "fetching data from api");
+            System.out.println("this is happening");
+            populateRecipe(current_query, 0, "");
 
-        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
-                loadNextDataFromApi(page);
-            }
-        };
-        // Adds the scroll listener to RecyclerView
-        rvRecipes.addOnScrollListener(scrollListener);
+            scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    // Triggered only when new data needs to be appended to the list
+                    // Add whatever code is needed to append new items to the bottom of the list
+                    loadNextDataFromApi(page);
+                }
+            };
+            // Adds the scroll listener to RecyclerView
+            rvRecipes.addOnScrollListener(scrollListener);
+        }
     }
 
     private void loadNextDataFromApi(int page) {
@@ -199,6 +212,7 @@ public class FeedFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 ParseUser.getCurrentUser().put("last_query", query);
+                ParseUser.getCurrentUser().saveInBackground();
                 // perform query here
                 populateRecipe(query, 0, "");
                 current_query = query;
