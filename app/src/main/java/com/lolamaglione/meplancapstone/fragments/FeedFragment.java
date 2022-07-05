@@ -1,22 +1,18 @@
 package com.lolamaglione.meplancapstone.fragments;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.lolamaglione.meplancapstone.EdamamClient;
@@ -36,17 +31,13 @@ import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
 import com.lolamaglione.meplancapstone.applications.ParseApplication;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.models.RecipeDao;
-import com.parse.Parse;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -71,6 +62,7 @@ public class FeedFragment extends Fragment {
     private String next_page = "";
     private String current_query = default_query;
     private boolean dataBaseWasCalled = true;
+    LinearLayoutManager linearLayoutManager;
 
     // implementing database
     private RecipeDao recipeDao;
@@ -136,7 +128,7 @@ public class FeedFragment extends Fragment {
         ParseUser.getCurrentUser().put("last_query", current_query);
         client = new EdamamClient();
         rvRecipes.setAdapter(recipeAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipes.setLayoutManager(linearLayoutManager);
 
 
@@ -144,25 +136,17 @@ public class FeedFragment extends Fragment {
         recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
 
         //query for existing recipes in the DB:
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "fetching data from database");
-                List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
-                if (recipesFromDB != null){
-                    dataBaseWasCalled = true;
-                } else{
-                    dataBaseWasCalled = false;
-                }
-                recipeAdapter.clear();
-                recipeAdapter.addAll(recipesFromDB);
-            }
-        });
+
+        populateRecipe(linearLayoutManager);
+    }
+
+    private void populateRecipe(LinearLayoutManager linearLayoutManager) {
+        populateRecipesFromDataBase();
 
         if(!dataBaseWasCalled){
             Log.i(TAG, "fetching data from api");
             System.out.println("this is happening");
-            populateRecipe(current_query, 0, "");
+            populateRecipeFromAPI(current_query, 0, "");
 
             scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
                 @Override
@@ -177,6 +161,30 @@ public class FeedFragment extends Fragment {
         }
     }
 
+    private void populateRecipesFromDataBase() {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "fetching data from database");
+                List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
+                if (recipesFromDB.size() == 0){
+                    dataBaseWasCalled = false;
+                } else{
+                    dataBaseWasCalled = true;
+                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        recipeAdapter.clear();
+                        recipeAdapter.addAll(recipesFromDB);
+                    }
+                });
+
+            }
+        });
+    }
+
     private void loadNextDataFromApi(int page) {
         // Send an API request to retrieve appropriate paginated data
         //  --> Send the request including an offset value (i.e `page`) as a query parameter.
@@ -186,7 +194,7 @@ public class FeedFragment extends Fragment {
         if(next_page == ""){
             page = 0;
         }
-        populateRecipe(current_query, page, next_page);
+        populateRecipeFromAPI(current_query, page, next_page);
 
     }
 
@@ -213,11 +221,12 @@ public class FeedFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 ParseUser.getCurrentUser().put("last_query", query);
                 ParseUser.getCurrentUser().saveInBackground();
+
                 // perform query here
-                populateRecipe(query, 0, "");
+                populateRecipe(linearLayoutManager);
                 current_query = query;
-                INGREDIENTS = ingredientListKey.toArray(new String[ingredientListKey.size()]);
-                adapter.notifyDataSetChanged();
+                INGREDIENTS = ingredientListKey.toArray(new String[0]);
+                adapter.addAll(INGREDIENTS);
                 System.out.println("new ingredients: " + INGREDIENTS);
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
@@ -248,11 +257,8 @@ public class FeedFragment extends Fragment {
             "pasta", "whole wheat pasta", "white rice", "rice", "whole wheat rice", "jasmine rice", "barley", "millet", "quinoa", "honey", "sugar", "roasted beef", "raisins", "apples"};
 
     private ArrayList<String> ingredientListKey = new ArrayList<>();
-//    private String[] INGREDIENTS = null;
 
-
-
-    private void populateRecipe(String query, int page, String nextPage) {
+    private void populateRecipeFromAPI(String query, int page, String nextPage) {
         client.getRecipeFeed(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -277,18 +283,16 @@ public class FeedFragment extends Fragment {
                             recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
                         }
                     });
-                    for (Recipe recipe : parse.fromJsonArray(jsonArray, query)){
+                    for (Recipe recipe : recipesFromNetwork){
                         List<String> recipeIngredients = recipe.getGeneralIngredients();
                         for (String ingredient : recipeIngredients){
-                            if(!ingredientList.keySet().contains(ingredient)){
-                                ingredientList.put(ingredient, 0);
+                            if(!ingredientListKey.contains(ingredient)){
                                 ingredientListKey.add(ingredient);
                             }
-                            ingredientList.put(ingredient, ingredientList.get(ingredient) + 1);
                         }
                     }
+                    INGREDIENTS = ingredientListKey.toArray(new String[0]);
                     recipeAdapter.notifyDataSetChanged();
-                    INGREDIENTS = ingredientListKey.toArray(new String[ingredientListKey.size()]);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

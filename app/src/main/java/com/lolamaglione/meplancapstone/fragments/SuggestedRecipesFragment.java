@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.loader.content.AsyncTaskLoader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,11 +20,9 @@ import com.lolamaglione.meplancapstone.EndlessRecyclerViewScrollListener;
 import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
-import com.lolamaglione.meplancapstone.applications.EdamamApplication;
 import com.lolamaglione.meplancapstone.applications.ParseApplication;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.models.RecipeDao;
-import com.parse.Parse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,6 +120,11 @@ public class SuggestedRecipesFragment extends Fragment {
         recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
 
         //query for existing recipes in the DB:
+        populateRecipe(linearLayoutManager);
+
+    }
+
+    private void queryRecipeFromDB() {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -137,63 +139,39 @@ public class SuggestedRecipesFragment extends Fragment {
                 adapter.addAll(recipesFromDB);
             }
         });
-
-        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
-                loadNextDataFromApi(page);
-            }
-        };
-        // Adds the scroll listener to RecyclerView
-        rvRecipeSuggested.addOnScrollListener(scrollListener);
-        queryRecipes(mQuery, 0, nextPage);
-
-
     }
+
+    private void populateRecipe(LinearLayoutManager linearLayoutManager) {
+        queryRecipeFromDB();
+
+        if(!dataBaseWasCalled){
+            Log.i(TAG, "from API");
+            scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    // Triggered only when new data needs to be appended to the list
+                    // Add whatever code is needed to append new items to the bottom of the list
+                    loadNextDataFromApi(page);
+                }
+            };
+            // Adds the scroll listener to RecyclerView
+            rvRecipeSuggested.addOnScrollListener(scrollListener);
+            queryRecipesFromAPI(mQuery, 0, nextPage);
+        }
+    }
+
 
     private void loadNextDataFromApi(int page) {
-        queryRecipes(mQuery, page, nextPage);
+        queryRecipesFromAPI(mQuery, page, nextPage);
     }
 
-//    public void queryRecipes(String query, int page, String nextPage){
-//        List<Recipe> queriedRecipes = new ArrayList<>();
-//        client.getRecipeFeed(new JsonHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Headers headers, JSON json) {
-//                JSONArray jsonArray = null;
-//                try {
-//                    jsonArray = json.jsonObject.getJSONArray("hits");
-//                    if(page == 0) {
-//                        adapter.clear();
-//                    }
-//                    getNextPage(json);
-//                    queriedRecipes.addAll(parse.fromJsonArray(jsonArray));
-//                    fillPercentageMap(queriedRecipes);
-//                    if(percentageIngredients.keySet().size() != 0){
-//                        addToFinalRecipeList();
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-//
-//            }
-//        }, query, page, nextPage);
-//    }
-
-    public void queryRecipes(String query, int page, String nextPage){
+    public void queryRecipesFromAPI(String query, int page, String nextPage){
         ArrayList<String> next_page_array = new ArrayList<>();
         final List<Recipe> queriedRecipes = new ArrayList<>();
         next_page_array.add(nextPage);
         client.getRecipeFeed(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
-                Log.i(TAG, "heppning");
                 JSONArray jsonArray = null;
                 try {
                     jsonArray = json.jsonObject.getJSONArray("hits");
@@ -282,30 +260,6 @@ public class SuggestedRecipesFragment extends Fragment {
 //
 //
 
-    }
-
-    private List<Recipe> getRecipesQueried(int page){
-        List<Recipe> retList = new ArrayList<>();
-        client.getRecipeFeed(new JsonHttpResponseHandler() {
-            JSONArray jsonArray = null;
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                try {
-                    jsonArray = json.jsonObject.getJSONArray("hits");
-                    getNextPage(json);
-                    retList.addAll(parse.fromJsonArray(jsonArray, mQuery));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.e(TAG, "issue getting recipes");
-            }
-        }, mQuery, page, this.nextPage);
-
-        return retList;
     }
 
     private void addToFinalRecipeList(String query) {
