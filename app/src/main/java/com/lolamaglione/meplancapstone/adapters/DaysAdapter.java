@@ -119,11 +119,12 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                             newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
                             recipesInDB.add(newRecipe);
                         }
-                        adapter = new RecipeAdapter(context, recipesInDB);
-                        rvRecipes.setAdapter(adapter);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-                        rvRecipes.setLayoutManager(linearLayoutManager);
                     }
+                    adapter = new RecipeAdapter(context, recipesInDB);
+                    rvRecipes.setAdapter(adapter);
+
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+                    rvRecipes.setLayoutManager(linearLayoutManager);
                 }
             });
 
@@ -152,7 +153,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                     });
                 }
             });
-             // change this to double tap;
             btnClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -164,16 +164,16 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                         @Override
                         public void done(List<ScheduleController> objects, ParseException e) {
                             for (ScheduleController object : objects){
-                                recipesInDB.remove(object);
                                 object.deleteInBackground();
-                                adapter.notifyDataSetChanged();
                             }
+                            recipesInDB.removeAll(objects);
+                            adapter.clear();
                         }
                     });
+                    rlExpandaleLayout.setVisibility(View.GONE);
+                    ivArrow.setImageResource(R.drawable.arrow_down);
                 }
             });
-
-
         }
     }
 }
