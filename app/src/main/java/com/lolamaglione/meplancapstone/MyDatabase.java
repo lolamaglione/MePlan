@@ -12,7 +12,7 @@ import com.lolamaglione.meplancapstone.models.Schedule;
 
 import java.util.List;
 
-@Database(entities={Recipe.class}, version=3)
+@Database(entities={Recipe.class}, version=4)
 @TypeConverters({ListConverter.class})
 public abstract class MyDatabase extends RoomDatabase {
     public abstract RecipeDao recipeDao();

@@ -1,6 +1,7 @@
 package com.lolamaglione.meplancapstone.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -14,11 +15,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.lolamaglione.meplancapstone.DoubleClickListener;
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.SwipeToDeleteCallback;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Recipe;
@@ -125,6 +129,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
 
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
                     rvRecipes.setLayoutManager(linearLayoutManager);
+                    enableSwipeToDeleteAndUndo();
                 }
             });
 
@@ -174,6 +179,34 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                     ivArrow.setImageResource(R.drawable.arrow_down);
                 }
             });
+        }
+
+        private void enableSwipeToDeleteAndUndo() {
+            SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(context) {
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    final int position = viewHolder.getAbsoluteAdapterPosition();
+                    final Recipe item = adapter.getRecipe().get(position);
+                    adapter.removeItem(position);
+
+                    Snackbar snackbar = Snackbar.make(itemView, "Item was removed from the list.", Snackbar.LENGTH_LONG);
+                    snackbar.setAction("UNDO", new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            adapter.restoreItem(item, position);
+                            rvRecipes.scrollToPosition(position);
+                        }
+                    });
+
+                    snackbar.setActionTextColor(Color.YELLOW);
+                    snackbar.show();
+                    super.onSwiped(viewHolder, direction);
+                }
+            };
+
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallback);
+            itemTouchHelper.attachToRecyclerView(rvRecipes);
         }
     }
 }

@@ -220,6 +220,7 @@ public class SuggestedRecipesFragment extends Fragment {
                                                     recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
                                                 }
                                             });
+                                            //TODO: change this to a trie algorithm
                                             fillPercentageMap(queriedRecipes);
                                             if(percentageIngredients.keySet().size() != 0){
                                                 addToFinalRecipeList(query);

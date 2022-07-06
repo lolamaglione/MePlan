@@ -63,17 +63,33 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
+    public List<Recipe> getRecipe() {
+        return recipes;
+    }
+
+    public void removeItem(int position) {
+        recipes.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void restoreItem(Recipe item, int position) {
+        recipes.add(position, item);
+        notifyItemInserted(position);
+    }
+
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvTitle;
         private ImageView ivFeedRecipe;
+        private TextView tvCookTime;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             ivFeedRecipe = itemView.findViewById(R.id.ivFeedRecipe);
+            tvCookTime = itemView.findViewById(R.id.tvCookTime);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -92,7 +108,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
 
         public void bind(Recipe recipe){
             tvTitle.setText(recipe.getTitle());
-            Glide.with(context).load(recipe.getImageURL()).into(ivFeedRecipe);
+            tvCookTime.setText("" + recipe.getCookTime());
+            Glide.with(context).load(recipe.getImageURL()).centerCrop().into(ivFeedRecipe);
         }
     }
 }

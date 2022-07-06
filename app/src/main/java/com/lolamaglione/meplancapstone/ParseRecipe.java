@@ -23,6 +23,7 @@ public class ParseRecipe {
         recipe.setUrl(jsonRecipe.getString("url"));
         recipe.setImageUrl(jsonRecipe.getString("image"));
         recipe.setGeneralIngredients(getGeneralIngredientList(jsonRecipe.getJSONArray("ingredients")));
+        recipe.setCookTime(jsonRecipe.getInt("totalTime"));
         recipe.setQuery(query);
         return recipe;
     }

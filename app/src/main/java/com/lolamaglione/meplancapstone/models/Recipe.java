@@ -46,6 +46,9 @@ public class Recipe {
     @ColumnInfo
     private String query;
 
+    @ColumnInfo
+    private int cookTime;
+
     public Recipe(String title, String url, List<String> specificIngredients, String imageURL,
                   List<String> generalIngredients, boolean hasBeenSaved, String query){
         this.title = title;
@@ -113,6 +116,14 @@ public class Recipe {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public int getCookTime() {
+        return cookTime;
+    }
+
+    public void setCookTime(int cookTime) {
+        this.cookTime = cookTime;
     }
 
 
