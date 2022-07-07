@@ -29,7 +29,6 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
     private List<String> daysOfWeek;
     private HashMap<Integer, List<RecipeController>> addedRecipes;
     private HashMap<Integer, String> intToDay;
-    private RecipeSuggestions.Trie trie = new RecipeSuggestions.Trie();
 
     public DaysListAdapter(Context context, HashMap<Integer, String> intToDay, HashMap<Integer, List<RecipeController>> addedRecipes){
         this.context = context;
@@ -88,43 +87,24 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
         public void bind(String dayOfWeek, int position, boolean isExpandable) {
             day.setText(dayOfWeek);
-
+            // get recipe for a specific day
             dailyRecipesList = addedRecipes.get(position);
+            // recipes queried from the DataBase
             List<Recipe> recipesInDB = new ArrayList<>();
+            // Ingredients from the dataBase
             ingredientAmount = new ArrayList<>();
+            RecipeSuggestions.Trie trie = new RecipeSuggestions.Trie();
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
             linear_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(rlExpandaleLayout.getVisibility() == View.VISIBLE){
-                        rlExpandaleLayout.setVisibility(View.GONE);
-                        ivArrow.setImageResource(R.drawable.arrow_down);
-                    } else{
-                        rlExpandaleLayout.setVisibility(View.VISIBLE);
-                        ivArrow.setImageResource(R.drawable.arrow_up);
-                    }
+                    expandLayoutAndImage();
                     dailyRecipesList = addedRecipes.get(position);
                     List<Recipe> recipesInDB = new ArrayList<>();
                     if (dailyRecipesList.size() > 0) {
-                        for (RecipeController recipe : dailyRecipesList) {
-                            Recipe newRecipe = new Recipe();
-                            newRecipe.setUrl(recipe.getUrl());
-                            newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
-                            newRecipe.setImageUrl(recipe.getImageURL());
-                            newRecipe.setTitle(recipe.getTitle());
-                            newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
-                            recipesInDB.add(newRecipe);
-                        }
+                        makeRecipesInDB(recipesInDB);
                         ingredientAmount = new ArrayList<>();
-                        for (Recipe recipe : recipesInDB){
-                            for (String ingredient : recipe.getGeneralIngredients()){
-                                if(ingredientAmount.contains(ingredient)){
-                                    continue;
-                                }
-                                trie.insertIngredient(ingredient);
-                                ingredientAmount.add(ingredient);
-                            }
-                        }
+                        addToIngredientList(recipesInDB, trie);
                         adapter = new SpecificListAdapter(context, ingredientAmount);
                         rvRecipes.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
@@ -147,6 +127,41 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                 }
             });
 
+        }
+
+        // call when you cant to change visibility of the expandable layout
+        private void expandLayoutAndImage() {
+            if(rlExpandaleLayout.getVisibility() == View.VISIBLE){
+                rlExpandaleLayout.setVisibility(View.GONE);
+                ivArrow.setImageResource(R.drawable.arrow_down);
+            } else{
+                rlExpandaleLayout.setVisibility(View.VISIBLE);
+                ivArrow.setImageResource(R.drawable.arrow_up);
+            }
+        }
+
+        private void addToIngredientList(List<Recipe> recipesInDB, RecipeSuggestions.Trie trie) {
+            for (Recipe recipe : recipesInDB){
+                for (String ingredient : recipe.getGeneralIngredients()){
+                    if(ingredientAmount.contains(ingredient)){
+                        continue;
+                    }
+                    trie.insertIngredient(ingredient);
+                    ingredientAmount.add(ingredient);
+                }
+            }
+        }
+
+        private void makeRecipesInDB(List<Recipe> recipesInDB) {
+            for (RecipeController recipe : dailyRecipesList) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.setUrl(recipe.getUrl());
+                newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
+                newRecipe.setImageUrl(recipe.getImageURL());
+                newRecipe.setTitle(recipe.getTitle());
+                newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
+                recipesInDB.add(newRecipe);
+            }
         }
     }
 }
