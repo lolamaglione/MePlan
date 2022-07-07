@@ -61,7 +61,7 @@ public class FeedFragment extends Fragment {
     private EndlessRecyclerViewScrollListener scrollListener;
     private String next_page = "";
     private String current_query = default_query;
-    private boolean dataBaseWasCalled = true;
+    private boolean dataBaseWasCalled = false;
     LinearLayoutManager linearLayoutManager;
 
     // implementing database
@@ -134,14 +134,16 @@ public class FeedFragment extends Fragment {
 
         // implementing database
         recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
-
         //query for existing recipes in the DB:
 
-        populateRecipe(linearLayoutManager);
+        populateRecipesFromDataBase();
     }
 
     private void populateRecipe(LinearLayoutManager linearLayoutManager) {
-        populateRecipesFromDataBase();
+
+        if (dataBaseWasCalled){
+            populateRecipesFromDataBase();
+        }
 
         if(!dataBaseWasCalled){
             Log.i(TAG, "fetching data from api");
@@ -162,27 +164,36 @@ public class FeedFragment extends Fragment {
     }
 
     private void populateRecipesFromDataBase() {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "fetching data from database");
-                List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
-                if (recipesFromDB.size() == 0){
-                    dataBaseWasCalled = false;
-                } else{
-                    dataBaseWasCalled = true;
-                }
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+//        AsyncTask.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.i(TAG, "fetching data from database");
+//                List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
+//                if (recipesFromDB.size() == 0 || recipesFromDB == null){
+//                    dataBaseWasCalled = false;
+//                } else{
+//                    dataBaseWasCalled = true;
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                            recipeAdapter.clear();
+//                            recipeAdapter.addAll(recipesFromDB);
+//                        }
+//                    });
+//                }
+//            }
+//        });
 
-                        recipeAdapter.clear();
-                        recipeAdapter.addAll(recipesFromDB);
-                    }
-                });
+        Log.i(TAG, "fetching data from database");
+        List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
+        if (recipesFromDB.size() == 0 || recipesFromDB == null){
+            populateRecipeFromAPI(current_query, 0, next_page);
+        } else {
+            recipeAdapter.clear();
+            recipeAdapter.addAll(recipesFromDB);
+        }
 
-            }
-        });
     }
 
     private void loadNextDataFromApi(int page) {
@@ -226,7 +237,7 @@ public class FeedFragment extends Fragment {
 
                 // perform query here
                 current_query = query;
-                populateRecipe(linearLayoutManager);
+                populateRecipesFromDataBase();
                 INGREDIENTS = ingredientListKey.toArray(new String[0]);
                 adapter.addAll(INGREDIENTS);
                 System.out.println("new ingredients: " + INGREDIENTS);
