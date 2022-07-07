@@ -59,7 +59,7 @@ public class RecipeSuggestions {
                 }
                 node = node.children[ch];
             }
-            node.recipes.add(ingredient);
+            node.recipes.add(ingredient.substring(1));
         }
 
         //find the node with prefix's last char, then call helper to find all words using recursion

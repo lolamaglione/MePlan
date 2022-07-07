@@ -162,6 +162,25 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                     final int position = viewHolder.getAbsoluteAdapterPosition();
                     final Recipe item = adapter.getRecipe().get(position);
+                    ParseQuery<RecipeController> queryRecipe = ParseQuery.getQuery(RecipeController.class);
+                    queryRecipe.whereEqualTo(RecipeController.KEY_TITLE, item.title);
+                    queryRecipe.findInBackground(new FindCallback<RecipeController>() {
+                        @Override
+                        public void done(List<RecipeController> objects, ParseException e) {
+                            for (RecipeController object : objects){
+                                ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
+                                query.whereEqualTo(ScheduleController.KEY_RECIPE, object.getObjectId());
+                                query.findInBackground(new FindCallback<ScheduleController>() {
+                                    @Override
+                                    public void done(List<ScheduleController> objects, ParseException e) {
+                                        for (ScheduleController object : objects){
+                                            object.deleteInBackground();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
                     adapter.removeItem(position);
 
                     Snackbar snackbar = Snackbar.make(itemView, "Item was removed from the list.", Snackbar.LENGTH_LONG);
@@ -173,7 +192,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                             rvRecipes.scrollToPosition(position);
                         }
                     });
-
                     snackbar.setActionTextColor(Color.YELLOW);
                     snackbar.show();
                     super.onSwiped(viewHolder, direction);

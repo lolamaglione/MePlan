@@ -18,6 +18,8 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.RecipeSuggestions;
+import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
@@ -52,6 +54,7 @@ public class AddToCalendarFragment extends DialogFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -123,10 +126,16 @@ public class AddToCalendarFragment extends DialogFragment {
                 RecipeController recipeController = null;
                 try {
                     recipeController = createDBRecipe();
+                    List<String> generalIngredients = recipeController.getGeneralIngredients();
+                    int day_int = dayToInt.get(day);
+                    List<String> updateIngredients = new ArrayList<>();
+                    for (String ingredient : generalIngredients){
+                        updateIngredients.add("" + day_int + ingredient);
+                    }
+                    DaysListAdapter.updateTrie(updateIngredients);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                ;
                 ScheduleController scheduleController = new ScheduleController();
                 scheduleController.setUser(ParseUser.getCurrentUser());
                 scheduleController.setRecipe(recipeController);

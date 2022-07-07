@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
+import com.lolamaglione.meplancapstone.fragments.AddToCalendarFragment;
 import com.lolamaglione.meplancapstone.models.Recipe;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
     private List<String> daysOfWeek;
     private HashMap<Integer, List<RecipeController>> addedRecipes;
     private HashMap<Integer, String> intToDay;
+    public static RecipeSuggestions.Trie trie = new RecipeSuggestions.Trie();
+    //private AddToCalendarFragment fragment = new AddToCalendarFragment();
 
     public DaysListAdapter(Context context, HashMap<Integer, String> intToDay, HashMap<Integer, List<RecipeController>> addedRecipes){
         this.context = context;
@@ -60,6 +63,12 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public static void updateTrie(List<String> ingredientsToAdd){
+        for (String ingredient : ingredientsToAdd){
+            trie.insertIngredient(ingredient);
+        }
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView day;
@@ -87,13 +96,13 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
         public void bind(String dayOfWeek, int position, boolean isExpandable) {
             day.setText(dayOfWeek);
+
             // get recipe for a specific day
             dailyRecipesList = addedRecipes.get(position);
             // recipes queried from the DataBase
             List<Recipe> recipesInDB = new ArrayList<>();
             // Ingredients from the dataBase
             ingredientAmount = new ArrayList<>();
-            RecipeSuggestions.Trie trie = new RecipeSuggestions.Trie();
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
             linear_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -104,7 +113,8 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                     if (dailyRecipesList.size() > 0) {
                         makeRecipesInDB(recipesInDB);
                         ingredientAmount = new ArrayList<>();
-                        addToIngredientList(recipesInDB, trie);
+                        addToIngredientList(recipesInDB, trie, position);
+                        adapter = new SpecificListAdapter(context, ingredientAmount);
                         adapter = new SpecificListAdapter(context, ingredientAmount);
                         rvRecipes.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
@@ -118,7 +128,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
                             @Override
                             public boolean onQueryTextChange(String newText) {
-                                List<String> autocomplete = trie.autocomplete(newText);
+                                List<String> autocomplete = trie.autocomplete("" + position + newText);
                                 adapter.reshapeList(autocomplete);
                                 return false;
                             }
@@ -140,14 +150,14 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             }
         }
 
-        private void addToIngredientList(List<Recipe> recipesInDB, RecipeSuggestions.Trie trie) {
+        private void addToIngredientList(List<Recipe> recipesInDB, RecipeSuggestions.Trie trie, int position) {
             for (Recipe recipe : recipesInDB){
                 for (String ingredient : recipe.getGeneralIngredients()){
                     if(ingredientAmount.contains(ingredient)){
                         continue;
                     }
-                    trie.insertIngredient(ingredient);
                     ingredientAmount.add(ingredient);
+                    //trie.insertIngredient("" + position + ingredient);
                 }
             }
         }
