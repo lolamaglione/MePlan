@@ -30,13 +30,14 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
     private List<String> daysOfWeek;
     private HashMap<Integer, List<RecipeController>> addedRecipes;
     private HashMap<Integer, String> intToDay;
-    public static RecipeSuggestions.Trie trie = new RecipeSuggestions.Trie();
+    private RecipeSuggestions.Trie trie;
     //private AddToCalendarFragment fragment = new AddToCalendarFragment();
 
-    public DaysListAdapter(Context context, HashMap<Integer, String> intToDay, HashMap<Integer, List<RecipeController>> addedRecipes){
+    public DaysListAdapter(Context context, HashMap<Integer, String> intToDay, HashMap<Integer, List<RecipeController>> addedRecipes, RecipeSuggestions.Trie trie){
         this.context = context;
         this.intToDay = intToDay;
         this.addedRecipes = addedRecipes;
+        this.trie = trie;
     }
 
     @NonNull
@@ -61,12 +62,6 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
     public void clear() {
         addedRecipes.clear();
         notifyDataSetChanged();
-    }
-
-    public static void updateTrie(List<String> ingredientsToAdd){
-        for (String ingredient : ingredientsToAdd){
-            trie.insertIngredient(ingredient);
-        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

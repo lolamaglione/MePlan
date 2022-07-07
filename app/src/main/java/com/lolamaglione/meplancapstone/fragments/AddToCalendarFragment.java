@@ -132,7 +132,7 @@ public class AddToCalendarFragment extends DialogFragment {
                     for (String ingredient : generalIngredients){
                         updateIngredients.add("" + day_int + ingredient);
                     }
-                    DaysListAdapter.updateTrie(updateIngredients);
+                    GroceryListFragment.updateTrie(updateIngredients);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

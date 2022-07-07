@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
@@ -42,6 +43,7 @@ public class GroceryListFragment extends Fragment {
     private DaysListAdapter listAdapter;
     HashMap<Integer, String> intToDay = new HashMap<>();
     public static final String TAG = "grocery list fragment";
+    private static RecipeSuggestions.Trie trie = new RecipeSuggestions.Trie();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -102,7 +104,7 @@ public class GroceryListFragment extends Fragment {
         fillHashMap(daysOfWeek);
 
         // setting up adapter and layout manager
-        listAdapter = new DaysListAdapter(getContext(), intToDay, allAddedRecipes);
+        listAdapter = new DaysListAdapter(getContext(), intToDay, allAddedRecipes, trie);
         rvDaysList.setAdapter(listAdapter);
         rvDaysList.setLayoutManager(new LinearLayoutManager(getContext()));
         queryUserRecipes();
@@ -113,6 +115,12 @@ public class GroceryListFragment extends Fragment {
         for(int i = 0; i < daysOfWeek.size(); i++){
             intToDay.putIfAbsent(i, daysOfWeek.get(i));
             allAddedRecipes.putIfAbsent(i, new ArrayList<>());
+        }
+    }
+
+    public static void updateTrie(List<String> ingredientsToAdd){
+        for (String ingredient : ingredientsToAdd){
+            trie.insertIngredient(ingredient);
         }
     }
 
