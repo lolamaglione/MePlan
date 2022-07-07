@@ -208,10 +208,12 @@ public class FeedFragment extends Fragment {
         SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete) searchView.findViewById(androidx.appcompat.R.id.search_src_text);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.autofill_item, INGREDIENTS);
         searchAutoComplete.setAdapter(adapter);
+
         searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String searchString = parent.getItemAtPosition(position).toString();
+                adapter.notifyDataSetChanged();
                 searchAutoComplete.setText("" + searchString);
 
             }
@@ -223,8 +225,8 @@ public class FeedFragment extends Fragment {
                 ParseUser.getCurrentUser().saveInBackground();
 
                 // perform query here
-                populateRecipe(linearLayoutManager);
                 current_query = query;
+                populateRecipe(linearLayoutManager);
                 INGREDIENTS = ingredientListKey.toArray(new String[0]);
                 adapter.addAll(INGREDIENTS);
                 System.out.println("new ingredients: " + INGREDIENTS);
@@ -276,11 +278,13 @@ public class FeedFragment extends Fragment {
                     }
                     final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
                     allRecipes.addAll(recipesFromNetwork);
+                    recipeAdapter.notifyDataSetChanged();
                     AsyncTask.execute(new Runnable() {
                         @Override
                         public void run() {
                             Log.i(TAG, "saving data into the database");
                             recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
+                            dataBaseWasCalled = true;
                         }
                     });
                     for (Recipe recipe : recipesFromNetwork){

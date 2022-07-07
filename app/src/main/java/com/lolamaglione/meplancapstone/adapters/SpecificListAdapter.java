@@ -50,6 +50,12 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
         notifyDataSetChanged();
     }
 
+    public void reshapeList(List<String> newIngredients) {
+        ingredients.clear();
+        ingredients.addAll(newIngredients);
+        notifyDataSetChanged();
+    }
+
 
     class ListViewHolder extends RecyclerView.ViewHolder{
 

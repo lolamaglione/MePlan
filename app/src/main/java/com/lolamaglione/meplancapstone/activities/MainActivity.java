@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -22,6 +20,8 @@ import com.lolamaglione.meplancapstone.fragments.FeedFragment;
 import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;
 import com.lolamaglione.meplancapstone.fragments.MealPlanFragment;
 import com.parse.ParseUser;
+
+import java.util.List;
 
 /**
  * MainActivity handles the Main Fragments to make the app functionable, like the feedFragment
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
         bottomNavigationView = binding.bottomNavigation;
+
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

@@ -133,31 +133,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                 }
             });
 
-            itemView.setOnClickListener(new DoubleClickListener() {
-                @Override
-                public void onSingleClick(View v) {
-
-                }
-
-                @Override
-                public void onDoubleClick(View v) {
-                    Toast.makeText(itemView.getContext(), "Clear!", Toast.LENGTH_SHORT);
-                    ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
-                    query.whereEqualTo(ScheduleController.KEY_USER, ParseUser.getCurrentUser());
-                    query.whereEqualTo(ScheduleController.KEY_DAY, position);
-
-                    query.findInBackground(new FindCallback<ScheduleController>() {
-                        @Override
-                        public void done(List<ScheduleController> objects, ParseException e) {
-                            for (ScheduleController object : objects){
-                                recipesInDB.remove(object);
-                                object.deleteInBackground();
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                    });
-                }
-            });
             btnClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

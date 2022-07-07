@@ -4,25 +4,20 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
-import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Recipe;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +29,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
     private List<String> daysOfWeek;
     private HashMap<Integer, List<RecipeController>> addedRecipes;
     private HashMap<Integer, String> intToDay;
+    private RecipeSuggestions.Trie trie = new RecipeSuggestions.Trie();
 
     public DaysListAdapter(Context context, HashMap<Integer, String> intToDay, HashMap<Integer, List<RecipeController>> addedRecipes){
         this.context = context;
@@ -74,8 +70,9 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
         private ImageView ivArrow;
 
         SpecificListAdapter adapter;
-        List<RecipeController> dailyRecipes;
+        List<RecipeController> dailyRecipesList;
         ArrayList<String> ingredientAmount;
+        SearchView svIngredients;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -84,6 +81,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             linear_layout = itemView.findViewById(R.id.linear_layout_list);
             rlExpandaleLayout = itemView.findViewById(R.id.rlExpandaleLayout_list);
             ivArrow = itemView.findViewById(R.id.ivArrow_list);
+            svIngredients = itemView.findViewById((R.id.svIngredients));
             // break down recipes for each day in order to send to each recipeAdapter
             // for the specific day recyclerView
         }
@@ -91,7 +89,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
         public void bind(String dayOfWeek, int position, boolean isExpandable) {
             day.setText(dayOfWeek);
 
-            dailyRecipes = addedRecipes.get(position);
+            dailyRecipesList = addedRecipes.get(position);
             List<Recipe> recipesInDB = new ArrayList<>();
             ingredientAmount = new ArrayList<>();
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
@@ -105,10 +103,10 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                         rlExpandaleLayout.setVisibility(View.VISIBLE);
                         ivArrow.setImageResource(R.drawable.arrow_up);
                     }
-                    dailyRecipes = addedRecipes.get(position);
+                    dailyRecipesList = addedRecipes.get(position);
                     List<Recipe> recipesInDB = new ArrayList<>();
-                    if (dailyRecipes.size() > 0) {
-                        for (RecipeController recipe : dailyRecipes) {
+                    if (dailyRecipesList.size() > 0) {
+                        for (RecipeController recipe : dailyRecipesList) {
                             Recipe newRecipe = new Recipe();
                             newRecipe.setUrl(recipe.getUrl());
                             newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
@@ -123,6 +121,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                                 if(ingredientAmount.contains(ingredient)){
                                     continue;
                                 }
+                                trie.insertIngredient(ingredient);
                                 ingredientAmount.add(ingredient);
                             }
                         }
@@ -130,7 +129,20 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                         rvRecipes.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
                         rvRecipes.setLayoutManager(linearLayoutManager);
-                        //ingredientAmount.clear();
+                        svIngredients.setSubmitButtonEnabled(true);
+                        svIngredients.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                            @Override
+                            public boolean onQueryTextSubmit(String query) {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onQueryTextChange(String newText) {
+                                List<String> autocomplete = trie.autocomplete(newText);
+                                adapter.reshapeList(autocomplete);
+                                return false;
+                            }
+                        });
                     }
                 }
             });
