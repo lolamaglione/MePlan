@@ -100,6 +100,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
                         Intent intent = new Intent(context, RecipeDetailActivity.class);
                         intent.putExtra(Recipe.class.getSimpleName(), Parcels.wrap(recipe));
                         intent.putExtra("query", ParseUser.getCurrentUser().getString("last_query"));
+                        intent.putExtra("title", recipe.title);
                         context.startActivity(intent);
                     }
                 }

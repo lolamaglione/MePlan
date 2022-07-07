@@ -54,7 +54,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         nestedScroll.setFillViewport(true);
         Glide.with(this).load(recipe.getImageURL()).into(ivRecipeDetail);
         String query = getIntent().getStringExtra("query");
-        viewPager.setAdapter(new SampleFragmentPageAdapter(getSupportFragmentManager(), RecipeDetailActivity.this, recipe, query));
+        viewPager.setAdapter(new SampleFragmentPageAdapter(getSupportFragmentManager(), RecipeDetailActivity.this, recipe, query, recipe.title));
         tabLayout.setupWithViewPager(viewPager);
 
     }

@@ -23,12 +23,14 @@ public class SampleFragmentPageAdapter extends FragmentPagerAdapter {
     private Context context;
     private Recipe recipe;
     private String query;
+    private String title;
 
-    public SampleFragmentPageAdapter(@NonNull FragmentManager fm, Context context, Recipe recipe, String query) {
+    public SampleFragmentPageAdapter(@NonNull FragmentManager fm, Context context, Recipe recipe, String query, String title) {
         super(fm);
         this.context = context;
         this.recipe = recipe;
         this.query = query;
+        this.title = title;
     }
 
     @NonNull
@@ -38,7 +40,7 @@ public class SampleFragmentPageAdapter extends FragmentPagerAdapter {
             System.out.println(recipe.getGeneralIngredients());
             return RecipeDetailFragment.newInstance(Parcels.wrap(recipe));
         } else if (position == 1){
-            return SuggestedRecipesFragment.newInstance((ArrayList<String>) recipe.getGeneralIngredients(), query);
+            return SuggestedRecipesFragment.newInstance((ArrayList<String>) recipe.getGeneralIngredients(), query, title);
         }
         return null;
     }

@@ -47,9 +47,11 @@ public class SuggestedRecipesFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String CURR_ING = "current_ingredients";
     private static final String QUERY = "query";
+    private static final String TITLE = "title";
     private static final String TAG = "suggest recipe";
     private List<String> mList_ing;
     private String mQuery;
+    private String mTitle;
     private EdamamClient client;
     private SortedMap<Integer, List<Recipe>> percentageIngredients;
     private List<Recipe> finalList;
@@ -59,11 +61,8 @@ public class SuggestedRecipesFragment extends Fragment {
     private ParseRecipe parse;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String nextPage = "";
-    private boolean dataBaseWasCalled = true;
+    private boolean dataBaseWasCalled = false;
     private RecipeDao recipeDao;
-
-   // private static InMemoryCacheWithDelayQueue cache = new InMemoryCacheWithDelayQueue();
-
 
     public SuggestedRecipesFragment() {
         // Required empty public constructor
@@ -76,11 +75,12 @@ public class SuggestedRecipesFragment extends Fragment {
      * @param param1 Parameter 1.
      * @return A new instance of fragment SuggestedRecipesFragment.
      */
-    public static SuggestedRecipesFragment newInstance(ArrayList<String> param1, String param2) {
+    public static SuggestedRecipesFragment newInstance(ArrayList<String> param1, String param2, String param3) {
         SuggestedRecipesFragment fragment = new SuggestedRecipesFragment();
         Bundle args = new Bundle();
         args.putStringArrayList(CURR_ING, param1);
         args.putString(QUERY, param2);
+        args.putString(TITLE, param3);
         fragment.setArguments(args);
         return fragment;
     }
@@ -91,6 +91,7 @@ public class SuggestedRecipesFragment extends Fragment {
         if (getArguments() != null) {
             mList_ing = getArguments().getStringArrayList(CURR_ING);
             mQuery = getArguments().getString(QUERY);
+            mTitle = getArguments().getString(TITLE);
         }
     }
 
@@ -120,31 +121,15 @@ public class SuggestedRecipesFragment extends Fragment {
         recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
 
         //query for existing recipes in the DB:
-        populateRecipe(linearLayoutManager);
+        queryRecipeFromDB(linearLayoutManager);
 
     }
 
-    private void queryRecipeFromDB() {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "fetching data from database");
-                List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
-                if (recipesFromDB != null){
-                    dataBaseWasCalled = true;
-                } else{
-                    dataBaseWasCalled = false;
-                }
-                adapter.clear();
-                adapter.addAll(recipesFromDB);
-            }
-        });
-    }
-
-    private void populateRecipe(LinearLayoutManager linearLayoutManager) {
-        queryRecipeFromDB();
-
-        if(!dataBaseWasCalled){
+    private void queryRecipeFromDB(LinearLayoutManager linearLayoutManager) {
+        Log.i(TAG, "fetching data from database");
+        List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery + mTitle);
+        if (recipesFromDB.size() == 0 || recipesFromDB == null){
+            queryRecipesFromAPI(mQuery, 0, nextPage);
             Log.i(TAG, "from API");
             scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
                 @Override
@@ -156,7 +141,9 @@ public class SuggestedRecipesFragment extends Fragment {
             };
             // Adds the scroll listener to RecyclerView
             rvRecipeSuggested.addOnScrollListener(scrollListener);
-            queryRecipesFromAPI(mQuery, 0, nextPage);
+        } else {
+            adapter.clear();
+            adapter.addAll(recipesFromDB);
         }
     }
 
@@ -179,13 +166,6 @@ public class SuggestedRecipesFragment extends Fragment {
                     next_page_array.add(nextPage1);
                     final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
                     queriedRecipes.addAll(recipesFromNetwork);
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.i(TAG, "saving data into the database");
-                            recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
-                        }
-                    });
                     client.getRecipeFeed(new JsonHttpResponseHandler() {
                         @Override
                         public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -196,13 +176,6 @@ public class SuggestedRecipesFragment extends Fragment {
                                 next_page_array.add(nextPage1);
                                 final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
                                 queriedRecipes.addAll(recipesFromNetwork);
-                                AsyncTask.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Log.i(TAG, "saving data into the database");
-                                        recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
-                                    }
-                                });
                                 client.getRecipeFeed(new JsonHttpResponseHandler() {
                                     @Override
                                     public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -213,13 +186,6 @@ public class SuggestedRecipesFragment extends Fragment {
                                             next_page_array.add(next_page1);
                                             final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
                                             queriedRecipes.addAll(recipesFromNetwork);
-                                            AsyncTask.execute(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Log.i(TAG, "saving data into the database");
-                                                    recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
-                                                }
-                                            });
                                             //TODO: change this to a trie algorithm
                                             fillPercentageMap(queriedRecipes);
                                             if(percentageIngredients.keySet().size() != 0){
@@ -256,28 +222,28 @@ public class SuggestedRecipesFragment extends Fragment {
             }
         }, query, page, next_page_array.get(0));
 
-
-//
-//
-//
-
     }
 
     private void addToFinalRecipeList(String query) {
-        long hour = 60*60*1000;
-        int position = 0;
         for (int key : percentageIngredients.keySet()){
             List<Recipe> recipeList = percentageIngredients.get(key);
             for (Recipe recipe : recipeList) {
                 if (!addedRecipesTitle.contains(recipe.getTitle())){
                     addedRecipesTitle.add(recipe.getTitle());
+                    recipe.setQuery(mQuery + mTitle);
                     finalList.add(recipe);
                    // cache.add(query, recipe, hour);
                     adapter.notifyDataSetChanged();
                 }
             }
         }
-
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "saving data into the database");
+                recipeDao.insertModel(finalList.toArray(new Recipe[0]));
+            }
+        });
         int size = finalList.size();
         //cache.add(query, finalList, hour);
     }
