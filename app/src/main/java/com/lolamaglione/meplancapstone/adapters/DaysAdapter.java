@@ -26,6 +26,8 @@ import com.lolamaglione.meplancapstone.SwipeToDeleteCallback;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Recipe;
+import com.lolamaglione.meplancapstone.models.Schedule;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -121,6 +123,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                             newRecipe.setImageUrl(recipe.getImageURL());
                             newRecipe.setTitle(recipe.getTitle());
                             newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
+                            newRecipe.setObjectID(recipe.getObjectId());
                             recipesInDB.add(newRecipe);
                         }
                     }
@@ -162,38 +165,49 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                     final int position = viewHolder.getAbsoluteAdapterPosition();
                     final Recipe item = adapter.getRecipe().get(position);
+                    final ScheduleController scheduleUndo = new ScheduleController();
                     ParseQuery<RecipeController> queryRecipe = ParseQuery.getQuery(RecipeController.class);
-                    queryRecipe.whereEqualTo(RecipeController.KEY_TITLE, item.title);
+                    queryRecipe.whereEqualTo(RecipeController.KEY_OBJECT_ID, item.getObjectID());
                     queryRecipe.findInBackground(new FindCallback<RecipeController>() {
                         @Override
                         public void done(List<RecipeController> objects, ParseException e) {
                             for (RecipeController object : objects){
                                 ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
-                                query.whereEqualTo(ScheduleController.KEY_RECIPE, object.getObjectId());
+                                query.whereEqualTo(ScheduleController.KEY_RECIPE, object);
                                 query.findInBackground(new FindCallback<ScheduleController>() {
                                     @Override
                                     public void done(List<ScheduleController> objects, ParseException e) {
                                         for (ScheduleController object : objects){
-                                            object.deleteInBackground();
+                                            scheduleUndo.setDayOfWeek(object.getDayOfWeek());
+                                            scheduleUndo.setRecipe(object.getRecipe());
+                                            scheduleUndo.setUser(object.getUser());
+                                            object.deleteInBackground(new DeleteCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    adapter.removeItem(position);
+
+                                                    Snackbar snackbar = Snackbar.make(itemView, "Item was removed from the list.", Snackbar.LENGTH_LONG);
+                                                    snackbar.setAction("UNDO", new View.OnClickListener(){
+
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            adapter.restoreItem(item, position);
+                                                            scheduleUndo.saveInBackground();
+                                                            rvRecipes.scrollToPosition(position);
+                                                        }
+                                                    });
+                                                    snackbar.setActionTextColor(Color.YELLOW);
+                                                    snackbar.show();
+                                                }
+                                            });
+
                                         }
                                     }
                                 });
                             }
                         }
                     });
-                    adapter.removeItem(position);
 
-                    Snackbar snackbar = Snackbar.make(itemView, "Item was removed from the list.", Snackbar.LENGTH_LONG);
-                    snackbar.setAction("UNDO", new View.OnClickListener(){
-
-                        @Override
-                        public void onClick(View v) {
-                            adapter.restoreItem(item, position);
-                            rvRecipes.scrollToPosition(position);
-                        }
-                    });
-                    snackbar.setActionTextColor(Color.YELLOW);
-                    snackbar.show();
                     super.onSwiped(viewHolder, direction);
                 }
             };
