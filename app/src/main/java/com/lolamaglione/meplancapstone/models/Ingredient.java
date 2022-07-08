@@ -1,8 +1,19 @@
 package com.lolamaglione.meplancapstone.models;
 
+import com.parse.ParseClassName;
+
+import org.parceler.Parcel;
+
+@Parcel
 public class Ingredient {
     private String title;
     private int amount;
+    private String measure;
+    private int day;
+
+    public Ingredient(){
+
+    }
 
     public String getTitle() {
         return title;
@@ -28,7 +39,14 @@ public class Ingredient {
         this.day = day;
     }
 
-    private int day;
+    public void setMeasure(String measure){
+        this.measure = measure;
+    }
+
+    public String getMeasure(){
+        return measure;
+    }
+
 
 
 }

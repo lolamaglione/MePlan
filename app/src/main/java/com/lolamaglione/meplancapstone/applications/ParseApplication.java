@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.room.Room;
 
 import com.lolamaglione.meplancapstone.MyDatabase;
+import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.parse.Parse;
@@ -23,6 +24,7 @@ public class ParseApplication extends Application {
 
         ParseObject.registerSubclass(RecipeController.class);
         ParseObject.registerSubclass(ScheduleController.class);
+        ParseObject.registerSubclass(IngredientController.class);
         // set applicationId, and server server based on the values in the back4app settings.
         // any network interceptors must be added with the Configuration Builder given this syntax
         Parse.initialize(new Parse.Configuration.Builder(this)

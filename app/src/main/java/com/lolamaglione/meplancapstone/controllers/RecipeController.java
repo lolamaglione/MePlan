@@ -1,10 +1,12 @@
 package com.lolamaglione.meplancapstone.controllers;
 
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.parse.Parse;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.List;

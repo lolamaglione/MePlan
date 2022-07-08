@@ -10,11 +10,13 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.lolamaglione.meplancapstone.fragments.RecipeDetailFragment;
 import com.lolamaglione.meplancapstone.fragments.SuggestedRecipesFragment;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SampleFragmentPageAdapter extends FragmentPagerAdapter {
 
@@ -40,7 +42,12 @@ public class SampleFragmentPageAdapter extends FragmentPagerAdapter {
             System.out.println(recipe.getGeneralIngredients());
             return RecipeDetailFragment.newInstance(Parcels.wrap(recipe));
         } else if (position == 1){
-            return SuggestedRecipesFragment.newInstance((ArrayList<String>) recipe.getGeneralIngredients(), query, title);
+            List<Ingredient> ingredients = recipe.getGeneralIngredients();
+            List<String> generalIngredients = new ArrayList<>();
+            for (Ingredient ingredient: ingredients){
+                generalIngredients.add(ingredient.getTitle());
+            }
+            return SuggestedRecipesFragment.newInstance((ArrayList<String>) generalIngredients, query, title);
         }
         return null;
     }

@@ -23,8 +23,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.lolamaglione.meplancapstone.DoubleClickListener;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.SwipeToDeleteCallback;
+import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.models.Schedule;
 import com.parse.DeleteCallback;
@@ -119,7 +121,13 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                         for (RecipeController recipe : dailyRecipes) {
                             Recipe newRecipe = new Recipe();
                             newRecipe.setUrl(recipe.getUrl());
-                            newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
+                            List<Ingredient> generalIngredients = null;
+                            try {
+                                generalIngredients = createIngredientObjects(recipe);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            newRecipe.setGeneralIngredients(generalIngredients);
                             newRecipe.setImageUrl(recipe.getImageURL());
                             newRecipe.setTitle(recipe.getTitle());
                             newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
@@ -134,6 +142,8 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                     rvRecipes.setLayoutManager(linearLayoutManager);
                     enableSwipeToDeleteAndUndo();
                 }
+
+
             });
 
             btnClear.setOnClickListener(new View.OnClickListener() {
@@ -157,6 +167,21 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                     ivArrow.setImageResource(R.drawable.arrow_down);
                 }
             });
+        }
+
+        private List<Ingredient> createIngredientObjects(RecipeController recipe) throws ParseException {
+            List<Ingredient> listOfGeneralIng = new ArrayList<>();
+            for (String ingredientID : recipe.getGeneralIngredients()){
+                ParseQuery<IngredientController> query = ParseQuery.getQuery(IngredientController.class);
+                query.whereEqualTo(IngredientController.KEY_OBJECT_ID, ingredientID);
+                IngredientController ingredient = query.find().get(0);
+                Ingredient newIngredient = new Ingredient();
+                newIngredient.setMeasure(ingredient.getMeasure());
+                newIngredient.setAmount(ingredient.getAmount());
+                newIngredient.setTitle(ingredient.getName());
+                listOfGeneralIng.add(newIngredient);
+            }
+            return  listOfGeneralIng;
         }
 
         private void enableSwipeToDeleteAndUndo() {

@@ -21,6 +21,7 @@ import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
 import com.lolamaglione.meplancapstone.applications.ParseApplication;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.models.RecipeDao;
 
@@ -253,7 +254,10 @@ public class SuggestedRecipesFragment extends Fragment {
     private void fillPercentageMap(List<Recipe> queriedRecipes) {
 
         for(Recipe recipe : queriedRecipes){
-            List<String> ingredients = recipe.getGeneralIngredients();
+            List<String> ingredients = new ArrayList<>();
+            for (Ingredient ingredient : recipe.getGeneralIngredients()){
+                ingredients.add(ingredient.getTitle());
+            }
             int match = compareIngredients(ingredients);
             percentageIngredients.putIfAbsent(match, new ArrayList<>());
             recipe.setPercentageMatch(match);

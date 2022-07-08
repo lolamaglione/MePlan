@@ -16,9 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
+import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.fragments.AddToCalendarFragment;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,10 +110,13 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                     dailyRecipesList = addedRecipes.get(position);
                     List<Recipe> recipesInDB = new ArrayList<>();
                     if (dailyRecipesList.size() > 0) {
-                        makeRecipesInDB(recipesInDB);
+                        try {
+                            makeRecipesInDB(recipesInDB);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                         ingredientAmount = new ArrayList<>();
                         addToIngredientList(recipesInDB, trie, position);
-                        adapter = new SpecificListAdapter(context, ingredientAmount);
                         adapter = new SpecificListAdapter(context, ingredientAmount);
                         rvRecipes.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
@@ -147,26 +154,44 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
         private void addToIngredientList(List<Recipe> recipesInDB, RecipeSuggestions.Trie trie, int position) {
             for (Recipe recipe : recipesInDB){
-                for (String ingredient : recipe.getGeneralIngredients()){
-                    if(ingredientAmount.contains(ingredient)){
+                for (int i = 0; i < recipe.getGeneralIngredients().size(); i ++){
+                    Ingredient ingredient = recipe.getGeneralIngredients().get(i);
+                    String ingredientTitle = ingredient.getTitle();
+                    if(ingredientAmount.contains(ingredientTitle)){
                         continue;
                     }
-                    ingredientAmount.add(ingredient);
+                    ingredientAmount.add(ingredientTitle);
                     //trie.insertIngredient("" + position + ingredient);
                 }
             }
         }
 
-        private void makeRecipesInDB(List<Recipe> recipesInDB) {
+        private void makeRecipesInDB(List<Recipe> recipesInDB) throws ParseException {
             for (RecipeController recipe : dailyRecipesList) {
                 Recipe newRecipe = new Recipe();
                 newRecipe.setUrl(recipe.getUrl());
-                newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
+                List<Ingredient> ingredientForRecipe = new ArrayList<>();
+                newRecipe.setGeneralIngredients(makeIngredientsInDB(recipe));
                 newRecipe.setImageUrl(recipe.getImageURL());
                 newRecipe.setTitle(recipe.getTitle());
                 newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
                 recipesInDB.add(newRecipe);
             }
+        }
+
+        private List<Ingredient> makeIngredientsInDB(RecipeController recipe) throws ParseException {
+            List<Ingredient> listOfGeneralIng = new ArrayList<>();
+            for (String ingredientID : recipe.getGeneralIngredients()){
+                ParseQuery<IngredientController> query = ParseQuery.getQuery(IngredientController.class);
+                query.whereEqualTo(IngredientController.KEY_OBJECT_ID, ingredientID);
+                IngredientController ingredient = query.find().get(0);
+                Ingredient newIngredient = new Ingredient();
+                newIngredient.setMeasure(ingredient.getMeasure());
+                newIngredient.setAmount(ingredient.getAmount());
+                newIngredient.setTitle(ingredient.getName());
+                listOfGeneralIng.add(newIngredient);
+            }
+            return  listOfGeneralIng;
         }
     }
 }

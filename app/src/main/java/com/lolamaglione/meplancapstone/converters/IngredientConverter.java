@@ -10,18 +10,18 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListConverter {
+public class IngredientConverter {
+
     private static Gson gson = new Gson();
     @TypeConverter
-    public static List<String> fromJSONtoList(String jsonList){
-       Type type = new TypeToken<ArrayList<String>>() {}.getType();
-       List<String> listOfStrings = gson.fromJson(jsonList, type);
-       return listOfStrings;
+    public static List<Ingredient> fromJSONtoIngredient(String jsonList){
+        Type type = new TypeToken<ArrayList<Ingredient>>() {}.getType();
+        List<Ingredient> listOfStrings = gson.fromJson(jsonList, type);
+        return listOfStrings;
     }
 
     @TypeConverter
-    public static String fromListToJSON(List<String> stringList){
+    public static String fromIngredientToJSON(List<Ingredient> stringList){
         return gson.toJson(stringList);
     }
-
 }

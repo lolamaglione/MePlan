@@ -29,6 +29,7 @@ import com.lolamaglione.meplancapstone.ParseRecipe;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.RecipeAdapter;
 import com.lolamaglione.meplancapstone.applications.ParseApplication;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.models.RecipeDao;
 import com.parse.ParseUser;
@@ -299,10 +300,11 @@ public class FeedFragment extends Fragment {
                         }
                     });
                     for (Recipe recipe : recipesFromNetwork){
-                        List<String> recipeIngredients = recipe.getGeneralIngredients();
-                        for (String ingredient : recipeIngredients){
-                            if(!ingredientListKey.contains(ingredient)){
-                                ingredientListKey.add(ingredient);
+                        List<Ingredient> recipeIngredients = recipe.getGeneralIngredients();
+                        for (Ingredient ingredient : recipeIngredients){
+                            String ingredientTitle = ingredient.getTitle();
+                            if(!ingredientListKey.contains(ingredientTitle)){
+                                ingredientListKey.add(ingredientTitle);
                             }
                         }
                     }

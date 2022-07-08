@@ -1,5 +1,6 @@
 package com.lolamaglione.meplancapstone;
 
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 
 import org.json.JSONArray;
@@ -37,10 +38,27 @@ public class ParseRecipe {
         return ingredientList;
     }
 
-    private static List<String> getGeneralIngredientList(JSONArray ingredients) throws JSONException {
-        List<String> ingredientList = new ArrayList<>();
+//    private static List<String> getGeneralIngredientList(JSONArray ingredients, int day) throws JSONException {
+//        List<String> ingredientList = new ArrayList<>();
+//        for (int i = 0; i < ingredients.length(); i++){
+//            String ingredient = ingredients.getJSONObject(i).getString("food");
+//            int amount = ingredients.getJSONObject(i).getInt("quantity");
+//            String measure = ingredients.getJSONObject(i).getString("measure");
+//            ingredientList.add(ingredient);
+//        }
+//        return  ingredientList;
+//    }
+
+    private static List<Ingredient> getGeneralIngredientList(JSONArray ingredients) throws JSONException {
+        List<Ingredient> ingredientList = new ArrayList<>();
         for (int i = 0; i < ingredients.length(); i++){
-            String ingredient = ingredients.getJSONObject(i).getString("food");
+            Ingredient ingredient = new Ingredient();
+            String ingredientName = ingredients.getJSONObject(i).getString("food");
+            ingredient.setTitle(ingredientName);
+            int amount = ingredients.getJSONObject(i).getInt("quantity");
+            ingredient.setAmount(amount);
+            String measure = ingredients.getJSONObject(i).getString("measure");
+            ingredient.setMeasure(measure);
             ingredientList.add(ingredient);
         }
         return  ingredientList;

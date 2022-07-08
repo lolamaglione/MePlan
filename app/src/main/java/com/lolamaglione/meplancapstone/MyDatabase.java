@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
+import com.lolamaglione.meplancapstone.converters.IngredientConverter;
 import com.lolamaglione.meplancapstone.converters.ListConverter;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.models.RecipeDao;
@@ -12,8 +13,8 @@ import com.lolamaglione.meplancapstone.models.Schedule;
 
 import java.util.List;
 
-@Database(entities={Recipe.class}, version=5)
-@TypeConverters({ListConverter.class})
+@Database(entities={Recipe.class}, version=6)
+@TypeConverters({ListConverter.class, IngredientConverter.class})
 public abstract class MyDatabase extends RoomDatabase {
     public abstract RecipeDao recipeDao();
 

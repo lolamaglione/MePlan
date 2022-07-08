@@ -20,7 +20,9 @@ import android.widget.SpinnerAdapter;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
+import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.parse.FindCallback;
@@ -123,23 +125,26 @@ public class AddToCalendarFragment extends DialogFragment {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RecipeController recipeController = null;
+                List<String> ingredientTitles = new ArrayList<>();
+                Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
+                int dayInt = dayToInt.get(day);
+                List<String> ingredientIDs = null;
                 try {
-                    recipeController = createDBRecipe();
-                    List<String> generalIngredients = recipeController.getGeneralIngredients();
-                    int day_int = dayToInt.get(day);
-                    List<String> updateIngredients = new ArrayList<>();
-                    for (String ingredient : generalIngredients){
-                        updateIngredients.add("" + day_int + ingredient);
-                    }
-                    GroceryListFragment.updateTrie(updateIngredients);
+                    ingredientIDs = createIngredientList(recipe, dayInt, ingredientTitles);
                 } catch (ParseException e) {
                     e.printStackTrace();
+                }
+                RecipeController recipeController = null;
+                try {
+                    recipeController = createDBRecipe(recipe, ingredientIDs);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "this is the error");
                 }
                 ScheduleController scheduleController = new ScheduleController();
                 scheduleController.setUser(ParseUser.getCurrentUser());
                 scheduleController.setRecipe(recipeController);
-                scheduleController.setDayOfWeek(dayToInt.get(day));
+                scheduleController.setDayOfWeek(dayInt);
                 scheduleController.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
@@ -149,6 +154,13 @@ public class AddToCalendarFragment extends DialogFragment {
                         Log.i("addActivity", "success!");
                     }
                 });
+                List<String> updateIngredients = new ArrayList<>();
+
+                for (String ingredient : ingredientTitles){
+                    updateIngredients.add("" + dayInt + ingredient);
+                }
+                GroceryListFragment.updateTrie(updateIngredients);
+
                 dismiss();
             }
         });
@@ -163,10 +175,9 @@ public class AddToCalendarFragment extends DialogFragment {
 //                forEach(a-> dayToInt.put(a[0], Integer.valueOf(a[1])));
     }
 
-    public RecipeController createDBRecipe() throws ParseException {
+    public RecipeController createDBRecipe(Recipe recipe, List<String> ingredientIds) throws ParseException {
 
         // recipe we want to add
-        Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
         String title = recipe.getTitle();
         // querying all the recipes that are already in the DataBase
         ParseQuery<RecipeController> query = ParseQuery.getQuery(RecipeController.class);
@@ -179,14 +190,46 @@ public class AddToCalendarFragment extends DialogFragment {
             RecipeController recipeController = new RecipeController();
             recipeController.setSpecificIngredientsArray(recipe.getSpecificIngredients());
             recipeController.setUrl(recipe.getURL());
-            recipeController.setGeneralIngredientsArray(recipe.getGeneralIngredients());
             recipeController.setTitle(recipe.getTitle());
             recipeController.setImage(recipe.getImageURL());
-            recipeController.saveInBackground();
+            recipeController.setGeneralIngredientsArray(ingredientIds);
+            recipeController.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e != null){
+                        Log.e(TAG, "unsuccesful save of recipe!");
+                    }
+                }
+            });
             return recipeController;
         }
         RecipeController recipeController = recipesWithSameTitle.get(0);
 
         return recipeController;
+    }
+
+    private List<String> createIngredientList(Recipe recipe, int dayInt, List<String> ingredientTitles) throws ParseException {
+        List<String> ingredientIds = new ArrayList<>();
+        List<Ingredient> generalIngredients = recipe.getGeneralIngredients();
+        for (Ingredient ingredient : generalIngredients){
+            IngredientController newIngredient = new IngredientController();
+            newIngredient.setAmount(ingredient.getAmount());
+            newIngredient.setMeasure(ingredient.getMeasure());
+            newIngredient.setName(ingredient.getTitle());
+            newIngredient.setDay(dayInt);
+//            newIngredient.saveInBackground(new SaveCallback() {
+//                @Override
+//                public void done(ParseException e) {
+//                    if ( e != null){
+//                        Log.e(TAG, "error saving ingredients: " + e);
+//                    }
+//                    ingredientIds.add(newIngredient.getObjectId());
+//                }
+//            });
+            newIngredient.save();
+            ingredientIds.add(newIngredient.getObjectId());
+            ingredientTitles.add(ingredient.getTitle());
+        }
+        return ingredientIds;
     }
 }

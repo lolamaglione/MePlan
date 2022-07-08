@@ -35,7 +35,7 @@ public class Recipe {
     public String imageURL;
 
     @ColumnInfo
-    private List<String> generalIngredients;
+    private List<Ingredient> generalIngredients;
 
     @ColumnInfo
     private int percentageMatch;
@@ -53,7 +53,7 @@ public class Recipe {
     private String objectID;
 
     public Recipe(String title, String url, List<String> specificIngredients, String imageURL,
-                  List<String> generalIngredients, boolean hasBeenSaved, String query){
+                  List<Ingredient> generalIngredients, boolean hasBeenSaved, String query){
         this.title = title;
         this.url = url;
         this.specificIngredients = specificIngredients;
@@ -97,9 +97,9 @@ public class Recipe {
         this.imageURL = imageUrl;
     }
 
-    public List<String> getGeneralIngredients() { return  generalIngredients; }
+    public List<Ingredient> getGeneralIngredients() { return  generalIngredients; }
 
-    public void setGeneralIngredients(List<String> generalIngredients){
+    public void setGeneralIngredients(List<Ingredient> generalIngredients){
         this.generalIngredients = generalIngredients;
     }
 
