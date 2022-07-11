@@ -1,6 +1,7 @@
 package com.lolamaglione.meplancapstone.adapters;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.lolamaglione.meplancapstone.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapter.ListViewHolder>{
 
@@ -69,11 +71,19 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
             tvAmount = itemView.findViewById(R.id.tvAmount);
             checkbox = itemView.findViewById(R.id.checkBox);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tvIngredient.setPaintFlags(tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+            });
+
 
         }
 
         public void bind(String ingredient){
-            tvIngredient.setText(ingredient);
+            tvIngredient.setText(ingredient.toLowerCase(Locale.ROOT));
+            //checkbox.setChecked(true);
         }
     }
 }

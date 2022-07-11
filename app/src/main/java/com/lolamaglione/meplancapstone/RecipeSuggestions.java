@@ -64,6 +64,17 @@ public class RecipeSuggestions {
 //            return suggestions;
 //        }
 
+        public boolean isNull(){
+            TrieNode node = root;
+            boolean isNull = true;
+            for (int i = 0; i < node.children.length; i++){
+                if(node.children[i] != null){
+                    isNull = false;
+                }
+            }
+            return isNull;
+        }
+
         public List<String> autocomplete(String ingredients) {
             TrieNode node = root;
             List<String> suggestions = new ArrayList<String>();

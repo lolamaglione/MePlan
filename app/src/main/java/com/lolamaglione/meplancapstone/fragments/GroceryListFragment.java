@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -120,7 +121,7 @@ public class GroceryListFragment extends Fragment {
 
     public static void updateTrie(List<String> ingredientsToAdd){
         for (String ingredient : ingredientsToAdd){
-            trie.insertIngredient(ingredient);
+            trie.insertIngredient(ingredient.toLowerCase(Locale.ROOT));
         }
     }
 

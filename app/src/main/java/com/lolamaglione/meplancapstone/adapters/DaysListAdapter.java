@@ -108,6 +108,9 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                     if (dailyRecipesList.size() > 0) {
                         makeRecipesInDB(recipesInDB);
                         ingredientAmount = new ArrayList<>();
+                        if (trie.isNull()){
+                            rebuildTrie(trie, recipesInDB, position);
+                        }
                         addToIngredientList(recipesInDB, trie, position);
                         adapter = new SpecificListAdapter(context, ingredientAmount);
                         adapter = new SpecificListAdapter(context, ingredientAmount);
@@ -153,6 +156,14 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                     }
                     ingredientAmount.add(ingredient);
                     //trie.insertIngredient("" + position + ingredient);
+                }
+            }
+        }
+
+        private void rebuildTrie(RecipeSuggestions.Trie trie, List<Recipe> recipesInDB, int position){
+            for(Recipe recipe : recipesInDB){
+                for (String ingredient : recipe.getGeneralIngredients()){
+                    trie.insertIngredient("" + position + ingredient);
                 }
             }
         }
