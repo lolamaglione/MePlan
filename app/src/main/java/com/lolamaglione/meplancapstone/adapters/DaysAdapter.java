@@ -102,6 +102,23 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
         public void bind(String dayOfWeek, int position, boolean isExpandable) {
             day.setText(dayOfWeek);
             List<Recipe> recipesInDB = new ArrayList<>();
+            adapter = new RecipeAdapter(context, recipesInDB);
+            rvRecipes.setAdapter(adapter);
+            enableSwipeToDeleteAndUndo(recipesInDB);
+            dailyRecipes = addedRecipes.get(position);
+            //List<Recipe> recipesInDB = new ArrayList<>();
+            if (dailyRecipes.size() > 0) {
+                for (RecipeController recipe : dailyRecipes) {
+                    Recipe newRecipe = new Recipe();
+                    newRecipe.setUrl(recipe.getUrl());
+                    newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
+                    newRecipe.setImageUrl(recipe.getImageURL());
+                    newRecipe.setTitle(recipe.getTitle());
+                    newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
+                    newRecipe.setObjectID(recipe.getObjectId());
+                    recipesInDB.add(newRecipe);
+                }
+            }
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
             linear_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -113,26 +130,8 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                         rlExpandaleLayout.setVisibility(View.VISIBLE);
                         ivArrow.setImageResource(R.drawable.arrow_up);
                     }
-                    dailyRecipes = addedRecipes.get(position);
-                    List<Recipe> recipesInDB = new ArrayList<>();
-                    if (dailyRecipes.size() > 0) {
-                        for (RecipeController recipe : dailyRecipes) {
-                            Recipe newRecipe = new Recipe();
-                            newRecipe.setUrl(recipe.getUrl());
-                            newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
-                            newRecipe.setImageUrl(recipe.getImageURL());
-                            newRecipe.setTitle(recipe.getTitle());
-                            newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
-                            newRecipe.setObjectID(recipe.getObjectId());
-                            recipesInDB.add(newRecipe);
-                        }
-                    }
-                    adapter = new RecipeAdapter(context, recipesInDB);
-                    rvRecipes.setAdapter(adapter);
-
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
                     rvRecipes.setLayoutManager(linearLayoutManager);
-                    enableSwipeToDeleteAndUndo();
                 }
             });
 
@@ -159,7 +158,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
             });
         }
 
-        private void enableSwipeToDeleteAndUndo() {
+        private void enableSwipeToDeleteAndUndo(List<Recipe> recipes) {
             SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(context) {
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {

@@ -185,11 +185,13 @@ public class FeedFragment extends Fragment {
 //            }
 //        });
 
-        Log.i(TAG, "fetching data from database");
+
         List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
         if (recipesFromDB.size() == 0 || recipesFromDB == null){
+            Log.i(TAG, "fetchign from the API");
             populateRecipeFromAPI(current_query, 0, next_page);
         } else {
+            Log.i(TAG, "fetching data from database");
             recipeAdapter.clear();
             recipeAdapter.addAll(recipesFromDB);
         }

@@ -225,20 +225,18 @@ public class SuggestedRecipesFragment extends Fragment {
     }
 
     private void addToFinalRecipeList(String query) {
-        addedRecipesTitle.add(mTitle);
         for (int key : percentageIngredients.keySet()){
             List<Recipe> recipeList = percentageIngredients.get(key);
             for (Recipe recipe : recipeList) {
-                if ((recipe.getTitle() != mTitle) && !addedRecipesTitle.contains(recipe.getTitle())){
+                if (!addedRecipesTitle.contains(recipe.getTitle())){
                     addedRecipesTitle.add(recipe.getTitle());
                     recipe.setQuery(mQuery + mTitle);
                     finalList.add(recipe);
                    // cache.add(query, recipe, hour);
-                    //adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
                 }
             }
         }
-        adapter.addAll(finalList);
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
