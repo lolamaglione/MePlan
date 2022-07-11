@@ -13,17 +13,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lolamaglione.meplancapstone.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapter.ListViewHolder>{
 
     private Context context;
+    private HashMap<String, Integer> amountIngredientTitle;
     private List<String> ingredients;
 
-    public SpecificListAdapter(Context context, List<String> ingredients){
+    public SpecificListAdapter(Context context, HashMap<String, Integer> ingredients, List<String> ingredientList){
         this.context = context;
-        this.ingredients = ingredients;
+        this.amountIngredientTitle = ingredients;
+        this.ingredients = ingredientList;
+        //this.ingredients.addAll(ingredients.keySet());
     }
 
     @NonNull
@@ -35,6 +39,7 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
+        ingredients.addAll(amountIngredientTitle.keySet());
         String ingredient = ingredients.get(position);
         holder.bind(ingredient);
     }
@@ -42,7 +47,7 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
 
     @Override
     public int getItemCount() {
-        return ingredients.size();
+        return amountIngredientTitle.keySet().size();
     }
 
     public void clear() {
@@ -74,6 +79,7 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
 
         public void bind(String ingredient){
             tvIngredient.setText(ingredient);
+            tvAmount.setText("" + amountIngredientTitle.get(ingredient));
         }
     }
 }

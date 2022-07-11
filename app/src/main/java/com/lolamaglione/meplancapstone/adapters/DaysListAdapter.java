@@ -80,7 +80,8 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
         SpecificListAdapter adapter;
         List<RecipeController> dailyRecipesList;
-        ArrayList<String> ingredientAmount;
+        HashMap<String, Integer> ingredientAmount;
+        List<String> listIngredients;
         SearchView svIngredients;
 
         public ViewHolder(@NonNull View itemView) {
@@ -103,13 +104,13 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             // recipes queried from the DataBase
             List<Recipe> recipesInDB = new ArrayList<>();
             // Ingredients from the dataBase
-            ingredientAmount = new ArrayList<>();
+            ingredientAmount = new HashMap<>();
+            listIngredients = new ArrayList<>();
             dailyRecipesList = addedRecipes.get(position);
             if (dailyRecipesList.size() > 0){
                 makeRecipesInDB(recipesInDB);
-                ingredientAmount = new ArrayList<>();
                 addToIngredientList(recipesInDB, trie, position);
-                adapter = new SpecificListAdapter(context, ingredientAmount);
+                adapter = new SpecificListAdapter(context, ingredientAmount, listIngredients);
                 rvRecipes.setAdapter(adapter);
             }
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
@@ -160,10 +161,13 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                         @Override
                         public void done(List<IngredientController> objects, ParseException e) {
                             for (IngredientController ingredientController : objects){
-                                if(ingredientAmount.contains(ingredientController.getName())){
-                                    continue;
-                                }
-                                ingredientAmount.add(ingredientController.getName());
+                                ingredientAmount.putIfAbsent(ingredientController.getName(), 0);
+                                listIngredients.add(ingredientController.getName());
+                                ingredientAmount.put(ingredientController.getName(), ingredientAmount.get(ingredientController.getName()) + ingredientController.getAmount());
+//                                if(ingredientAmount.get(ingredientController.getName()) == null){
+//                                    continue;
+//                                }
+//                                ingredientAmount.add(ingredientController.getName());
                                 adapter.notifyDataSetChanged();
                             }
                         }
