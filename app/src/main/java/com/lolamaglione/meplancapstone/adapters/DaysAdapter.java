@@ -25,6 +25,7 @@ import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.SwipeToDeleteCallback;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
+import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.models.Schedule;
 import com.parse.DeleteCallback;
@@ -171,6 +172,8 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                         @Override
                         public void done(List<RecipeController> objects, ParseException e) {
                             for (RecipeController object : objects){
+                                List<String> generalIngredients = object.getGeneralIngredients();
+                                GroceryListFragment.removeTrie(generalIngredients, position);
                                 ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
                                 query.whereEqualTo(ScheduleController.KEY_RECIPE, object);
                                 query.findInBackground(new FindCallback<ScheduleController>() {

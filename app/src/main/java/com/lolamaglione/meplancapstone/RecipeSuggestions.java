@@ -1,10 +1,7 @@
 package com.lolamaglione.meplancapstone;
 
-import java.io.CharConversionException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RecipeSuggestions {
 
@@ -13,40 +10,19 @@ public class RecipeSuggestions {
     public static class TrieNode {
         // change this into a hashmap
         TrieNode[] children = new TrieNode[MAX_NUM];
-        //Map<Character, TrieNode> children;
         char c;
         // if this is the last node it will have the title of the recipe
-        List<String> recipes;
+        List<String> ingredients;
 
         TrieNode(char ch) {
             this.c = ch;
-            recipes = new ArrayList<>();
+            ingredients = new ArrayList<>();
             //children = new HashMap<>();
         }
     }
 
     public static class Trie {
         TrieNode root = new TrieNode(' ');
-
-        //Inserts a phone number into the trie, Iteration
-        //Time O(s), Space O(s), s is word length
-//        void insert(HashMap<String, List<String>> recipeIngredient) {
-//
-//            for (String key : recipeIngredient.keySet()){
-//                TrieNode node = root;
-//                List<String> ingredients = recipeIngredient.get(key);
-//                for (int i = 0; i < ingredients.size(); i++) {
-//                    String ingredient = ingredients.get(i);
-//                    TrieNode child = node.children.get(ingredient);
-//                    if (child == null)
-//                        child = new TrieNode(ingredient);
-//                    node.children.put(ingredient, child);
-//                    node = node.children.get(ingredient);
-//                }
-//                node.recipes.add(key);
-//            }
-//
-//        }
         // insert for Ingredient List
         public void insertIngredient(String ingredient) {
             TrieNode node = root;
@@ -59,7 +35,17 @@ public class RecipeSuggestions {
                 }
                 node = node.children[ch];
             }
-            node.recipes.add(ingredient.substring(1));
+            node.ingredients.add(ingredient.substring(1));
+        }
+
+        public void removeIngredient(String ingredient){
+            TrieNode node = root;
+            for (int i = 0; i < ingredient.length(); i++){
+                char ch = ingredient.charAt(i);
+                TrieNode child = node.children[ch];
+                node = node.children[ch];
+            }
+            node.ingredients.remove(ingredient.substring(1));
         }
 
         //find the node with prefix's last char, then call helper to find all words using recursion
@@ -97,8 +83,8 @@ public class RecipeSuggestions {
         void helper(TrieNode node, List<String> res) {
             if (node == null) //base condition
                 return;
-            if (node.recipes.size() != 0)
-                res.addAll(node.recipes);
+            if (node.ingredients.size() != 0)
+                res.addAll(node.ingredients);
             for (TrieNode child : node.children)
                 helper(child, res);
         }

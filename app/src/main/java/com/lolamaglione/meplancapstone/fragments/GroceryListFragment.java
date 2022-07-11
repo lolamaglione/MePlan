@@ -124,6 +124,12 @@ public class GroceryListFragment extends Fragment {
         }
     }
 
+    public static void removeTrie(List<String> ingredientsToRemove, int position){
+        for(String ingredient : ingredientsToRemove){
+            trie.removeIngredient("" + position + ingredient);
+        }
+    }
+
     public void queryUserRecipes(){
         // specify what type of data we want to query - UserRecipe.class
         ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
