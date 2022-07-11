@@ -106,7 +106,6 @@ public class SuggestedRecipesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         client = new EdamamClient();
-        percentageIngredients = new TreeMap<>(Collections.reverseOrder());
         finalList = new ArrayList<>();
         addedRecipesTitle = new ArrayList<>();
         rvRecipeSuggested = view.findViewById(R.id.rvSuggestedRecipes);
@@ -127,7 +126,7 @@ public class SuggestedRecipesFragment extends Fragment {
 
     private void queryRecipeFromDB(LinearLayoutManager linearLayoutManager) {
         Log.i(TAG, "fetching data from database");
-        List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery + mTitle);
+        List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
         if (recipesFromDB.size() == 0 || recipesFromDB == null){
             queryRecipesFromAPI(mQuery, 0, nextPage);
             Log.i(TAG, "from API");
@@ -142,8 +141,12 @@ public class SuggestedRecipesFragment extends Fragment {
             // Adds the scroll listener to RecyclerView
             rvRecipeSuggested.addOnScrollListener(scrollListener);
         } else {
-            adapter.clear();
-            adapter.addAll(recipesFromDB);
+            fillPercentageMap(recipesFromDB);
+            if(percentageIngredients.keySet().size() != 0){
+                adapter.clear();
+                addToFinalRecipeList();
+                adapter.addAll(finalList);
+            }
         }
     }
 
@@ -186,10 +189,17 @@ public class SuggestedRecipesFragment extends Fragment {
                                             next_page_array.add(next_page1);
                                             final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
                                             queriedRecipes.addAll(recipesFromNetwork);
+                                            AsyncTask.execute(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Log.i(TAG, "saving data into the database");
+                                                    recipeDao.insertModel(queriedRecipes.toArray(new Recipe[0]));
+                                                }
+                                            });
                                             //TODO: change this to a trie algorithm
                                             fillPercentageMap(queriedRecipes);
                                             if(percentageIngredients.keySet().size() != 0){
-                                                addToFinalRecipeList(query);
+                                                addToFinalRecipeList();
                                             }
                                         } catch (JSONException e) {
                                             e.printStackTrace();
@@ -224,32 +234,27 @@ public class SuggestedRecipesFragment extends Fragment {
 
     }
 
-    private void addToFinalRecipeList(String query) {
+    private void addToFinalRecipeList() {
+        addedRecipesTitle.add(mTitle);
         for (int key : percentageIngredients.keySet()){
             List<Recipe> recipeList = percentageIngredients.get(key);
             for (Recipe recipe : recipeList) {
                 if (!addedRecipesTitle.contains(recipe.getTitle())){
                     addedRecipesTitle.add(recipe.getTitle());
-                    recipe.setQuery(mQuery + mTitle);
                     finalList.add(recipe);
                    // cache.add(query, recipe, hour);
                     adapter.notifyDataSetChanged();
                 }
             }
         }
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "saving data into the database");
-                recipeDao.insertModel(finalList.toArray(new Recipe[0]));
-            }
-        });
+
         int size = finalList.size();
+        adapter.addAll(finalList);
         //cache.add(query, finalList, hour);
     }
 
     private void fillPercentageMap(List<Recipe> queriedRecipes) {
-
+        percentageIngredients = new TreeMap<>(Collections.reverseOrder());
         for(Recipe recipe : queriedRecipes){
             List<String> ingredients = recipe.getGeneralIngredients();
             int match = compareIngredients(ingredients);

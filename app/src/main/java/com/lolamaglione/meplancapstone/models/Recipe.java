@@ -3,6 +3,7 @@ package com.lolamaglione.meplancapstone.models;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import org.json.JSONArray;
@@ -37,7 +38,7 @@ public class Recipe {
     @ColumnInfo
     private List<String> generalIngredients;
 
-    @ColumnInfo
+    @Ignore
     private int percentageMatch;
 
     @ColumnInfo
