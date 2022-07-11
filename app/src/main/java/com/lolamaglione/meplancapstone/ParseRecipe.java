@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ParseRecipe {
@@ -23,6 +24,7 @@ public class ParseRecipe {
         recipe.setUrl(jsonRecipe.getString("url"));
         recipe.setImageUrl(jsonRecipe.getString("image"));
         recipe.setGeneralIngredients(getGeneralIngredientList(jsonRecipe.getJSONArray("ingredients")));
+        recipe.setRecipeIngredientMap(getGeneralIngredientMap(jsonRecipe.getJSONArray("ingredients")));
         recipe.setCookTime(jsonRecipe.getInt("totalTime"));
         recipe.setQuery(query);
         return recipe;
@@ -44,6 +46,20 @@ public class ParseRecipe {
             ingredientList.add(ingredient);
         }
         return  ingredientList;
+    }
+
+    private static HashMap<String, HashMap<String, String>> getGeneralIngredientMap(JSONArray ingredients) throws JSONException {
+        HashMap<String, HashMap<String, String>> ingredientMap = new HashMap<>();
+        for (int i = 0; i < ingredients.length(); i++){
+            String ingredient = ingredients.getJSONObject(i).getString("food");
+            int amount = ingredients.getJSONObject(i).getInt("quantity");
+            String measure = ingredients.getJSONObject(i).getString("measure");
+            HashMap<String, String> map = new HashMap<>();
+            map.putIfAbsent("amount", String.valueOf(amount));
+            map.putIfAbsent("measure", measure);
+            ingredientMap.putIfAbsent(ingredient, map);
+        }
+        return ingredientMap;
     }
 
     public static List<Recipe> fromJsonArray(JSONArray jsonArray, String query) throws JSONException{

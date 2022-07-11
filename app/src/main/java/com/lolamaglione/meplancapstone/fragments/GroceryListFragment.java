@@ -21,6 +21,7 @@ import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -118,9 +119,9 @@ public class GroceryListFragment extends Fragment {
         }
     }
 
-    public static void updateTrie(List<String> ingredientsToAdd){
+    public static void updateTrie(List<String> ingredientsToAdd, HashMap<String, HashMap<String, String>> map){
         for (String ingredient : ingredientsToAdd){
-            trie.insertIngredient(ingredient);
+            trie.insertIngredient(ingredient, Integer.valueOf(map.get(ingredient).get("amount")), map.get(ingredient).get("measure"));
         }
     }
 

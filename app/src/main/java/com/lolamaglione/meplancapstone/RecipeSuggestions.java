@@ -1,5 +1,7 @@
 package com.lolamaglione.meplancapstone;
 
+import com.lolamaglione.meplancapstone.models.Ingredient;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class RecipeSuggestions {
         char c;
         // if this is the last node it will have the title of the recipe
         List<String> ingredients;
+        Ingredient ingredient;
 
         TrieNode(char ch) {
             this.c = ch;
@@ -24,7 +27,7 @@ public class RecipeSuggestions {
     public static class Trie {
         TrieNode root = new TrieNode(' ');
         // insert for Ingredient List
-        public void insertIngredient(String ingredient) {
+        public void insertIngredient(String ingredient, int amount, String measure) {
             TrieNode node = root;
             for (int i = 0; i < ingredient.length(); i++){
                 char ch = ingredient.charAt(i);
@@ -36,6 +39,11 @@ public class RecipeSuggestions {
                 node = node.children[ch];
             }
             node.ingredients.add(ingredient.substring(1));
+            if (node.ingredient == null){
+                node.ingredient = new Ingredient(ingredient, amount, measure);
+            } else {
+                node.ingredient.setAmount(node.ingredient.getAmount() + amount);
+            }
         }
 
         public void removeIngredient(String ingredient){

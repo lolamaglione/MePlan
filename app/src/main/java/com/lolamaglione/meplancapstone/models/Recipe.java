@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -138,4 +139,14 @@ public class Recipe {
     public void setObjectID(String objectID) {
         this.objectID = objectID;
     }
+
+    @Ignore
+    private HashMap<String, HashMap<String, String>> recipeIngredientMap;
+
+    public void setRecipeIngredientMap(HashMap<String, HashMap<String, String>> map){recipeIngredientMap = map;}
+
+    public HashMap<String, HashMap<String, String>> getRecipeIngredientMap(){
+        return recipeIngredientMap;
+    }
+
 }

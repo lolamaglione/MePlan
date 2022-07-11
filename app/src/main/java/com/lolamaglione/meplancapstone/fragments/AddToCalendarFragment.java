@@ -125,14 +125,16 @@ public class AddToCalendarFragment extends DialogFragment {
             public void onClick(View v) {
                 RecipeController recipeController = null;
                 try {
-                    recipeController = createDBRecipe();
+                    Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
+                    recipeController = createDBRecipe(recipe);
                     List<String> generalIngredients = recipeController.getGeneralIngredients();
                     int day_int = dayToInt.get(day);
                     List<String> updateIngredients = new ArrayList<>();
+                    HashMap<String, HashMap<String, String>> mapOfIngredients = recipe.getRecipeIngredientMap();
                     for (String ingredient : generalIngredients){
                         updateIngredients.add("" + day_int + ingredient);
                     }
-                    GroceryListFragment.updateTrie(updateIngredients);
+                    GroceryListFragment.updateTrie(updateIngredients, mapOfIngredients);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -163,10 +165,10 @@ public class AddToCalendarFragment extends DialogFragment {
 //                forEach(a-> dayToInt.put(a[0], Integer.valueOf(a[1])));
     }
 
-    public RecipeController createDBRecipe() throws ParseException {
+    public RecipeController createDBRecipe(Recipe recipe) throws ParseException {
 
         // recipe we want to add
-        Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
+
         String title = recipe.getTitle();
         // querying all the recipes that are already in the DataBase
         ParseQuery<RecipeController> query = ParseQuery.getQuery(RecipeController.class);
