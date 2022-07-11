@@ -8,8 +8,11 @@ public class Ingredient {
 
     String ingredientTitle;
     int amount;
-    String recipeID;
-    int day;
+    String measure;
+
+    public Ingredient(){
+        
+    }
 
     public String getIngredientTitle() {
         return ingredientTitle;
@@ -27,20 +30,12 @@ public class Ingredient {
         this.amount = amount;
     }
 
-    public String getRecipeID() {
-        return recipeID;
+    public String getMeasure() {
+        return measure;
     }
 
-    public void setRecipeID(String recipeID) {
-        this.recipeID = recipeID;
-    }
-
-    public int getDay() {
-        return day;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
+    public void setRecipeID(String measure) {
+        this.measure = measure;
     }
 
 }

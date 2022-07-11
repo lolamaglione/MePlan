@@ -16,9 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
+import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
+import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.fragments.AddToCalendarFragment;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,20 +104,20 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             List<Recipe> recipesInDB = new ArrayList<>();
             // Ingredients from the dataBase
             ingredientAmount = new ArrayList<>();
+            dailyRecipesList = addedRecipes.get(position);
+            if (dailyRecipesList.size() > 0){
+                makeRecipesInDB(recipesInDB);
+                ingredientAmount = new ArrayList<>();
+                addToIngredientList(recipesInDB, trie, position);
+                adapter = new SpecificListAdapter(context, ingredientAmount);
+                rvRecipes.setAdapter(adapter);
+            }
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
             linear_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     expandLayoutAndImage();
-                    dailyRecipesList = addedRecipes.get(position);
-                    List<Recipe> recipesInDB = new ArrayList<>();
                     if (dailyRecipesList.size() > 0) {
-                        makeRecipesInDB(recipesInDB);
-                        ingredientAmount = new ArrayList<>();
-                        addToIngredientList(recipesInDB, trie, position);
-                        adapter = new SpecificListAdapter(context, ingredientAmount);
-                        adapter = new SpecificListAdapter(context, ingredientAmount);
-                        rvRecipes.setAdapter(adapter);
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
                         rvRecipes.setLayoutManager(linearLayoutManager);
                         svIngredients.setSubmitButtonEnabled(true);
@@ -147,11 +153,21 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
         private void addToIngredientList(List<Recipe> recipesInDB, RecipeSuggestions.Trie trie, int position) {
             for (Recipe recipe : recipesInDB){
-                for (String ingredient : recipe.getGeneralIngredients()){
-                    if(ingredientAmount.contains(ingredient)){
-                        continue;
-                    }
-                    ingredientAmount.add(ingredient);
+                for (String ingredient : recipe.getIngredientIDs()){
+                    ParseQuery<IngredientController> query = ParseQuery.getQuery(IngredientController.class);
+                    query.whereEqualTo(IngredientController.KEY_OBJECT_ID, ingredient);
+                    query.findInBackground(new FindCallback<IngredientController>() {
+                        @Override
+                        public void done(List<IngredientController> objects, ParseException e) {
+                            for (IngredientController ingredientController : objects){
+                                if(ingredientAmount.contains(ingredientController.getName())){
+                                    continue;
+                                }
+                                ingredientAmount.add(ingredientController.getName());
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    });
                     //trie.insertIngredient("" + position + ingredient);
                 }
             }
@@ -164,6 +180,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                 newRecipe.setGeneralIngredients(recipe.getGeneralIngredients());
                 newRecipe.setImageUrl(recipe.getImageURL());
                 newRecipe.setTitle(recipe.getTitle());
+                newRecipe.setIngredientIDs(recipe.getIngredientIDs());
                 newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
                 recipesInDB.add(newRecipe);
             }

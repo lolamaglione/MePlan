@@ -107,12 +107,23 @@ public class Recipe {
 
     @Ignore
     private HashMap<String, HashMap<String, String>> generalIngredientMap;
+    @Ignore
+    private List<String> ingredientIDs;
+
     public void setGeneralIngredientMap(HashMap<String, HashMap<String, String>> generalIngredients){
         this.generalIngredientMap = generalIngredients;
     }
 
     public HashMap<String, HashMap<String, String>> getGeneralIngredientMap(){
         return generalIngredientMap;
+    }
+
+    public void setIngredientIDs(List<String> ingredientIds){
+        this.ingredientIDs = ingredientIds;
+    }
+
+    public List<String> getIngredientIDs(){
+        return ingredientIDs;
     }
 
     public int getPercentageMatch(){

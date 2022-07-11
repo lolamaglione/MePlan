@@ -20,6 +20,7 @@ import android.widget.SpinnerAdapter;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
+import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
@@ -176,10 +177,28 @@ public class AddToCalendarFragment extends DialogFragment {
         List<RecipeController> recipesWithSameTitle = query.find();
         Log.i(TAG, "this is the recipe with the same titles: " + recipesWithSameTitle);
         if (recipesWithSameTitle.size() == 0){
+            List<String> ingredientIds = new ArrayList<>();
             RecipeController recipeController = new RecipeController();
             recipeController.setSpecificIngredientsArray(recipe.getSpecificIngredients());
             recipeController.setUrl(recipe.getURL());
             recipeController.setGeneralIngredientsArray(recipe.getGeneralIngredients());
+            HashMap<String, HashMap<String, String>> generalIngredientsMap = recipe.getGeneralIngredientMap();
+            for (String key : generalIngredientsMap.keySet()){
+                IngredientController ingredient = new IngredientController();
+                ingredient.setName(key);
+                for (String newKey : generalIngredientsMap.get(key).keySet()){
+                    HashMap<String, String> amountMeasureMap = generalIngredientsMap.get(key);
+                    if (newKey.equals("amount")){
+                        ingredient.setAmount(amountMeasureMap.get(newKey));
+                    }
+                    if (newKey.equals("measure")){
+                        ingredient.setMeasure(amountMeasureMap.get(newKey));
+                    }
+                }
+                ingredient.save();
+                ingredientIds.add(ingredient.getObjectId());
+            }
+            recipeController.setIngredientIDs(ingredientIds);
             recipeController.setTitle(recipe.getTitle());
             recipeController.setImage(recipe.getImageURL());
             recipeController.saveInBackground();

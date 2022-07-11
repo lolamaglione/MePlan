@@ -17,6 +17,7 @@ public class RecipeController extends ParseObject{
     public static final String KEY_URL = "url";
     public static final String KEY_TITLE = "title";
     public static final String KEY_GENERAL_INGREDIENTS = "generalIngredients";
+    public static final String KEY_GENERAL_INGREDIENTS_ID = "generalIngredientsIds";
 
     public List<String> getSpecificIngredients(){
         return (List<String>) get(KEY_SPECIFC_INGREDIENTS);
@@ -54,6 +55,14 @@ public class RecipeController extends ParseObject{
 
     public String getTitle () {
         return get(KEY_TITLE).toString();
+    }
+
+    public void setIngredientIDs(List<String> ingredientIds){
+        put(KEY_GENERAL_INGREDIENTS_ID, ingredientIds);
+    }
+
+    public List<String> getIngredientIDs(){
+        return (List<String>) get(KEY_GENERAL_INGREDIENTS_ID);
     }
 
 }
