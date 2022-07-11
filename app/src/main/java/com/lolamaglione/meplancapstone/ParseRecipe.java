@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ParseRecipe {
@@ -24,6 +25,7 @@ public class ParseRecipe {
         recipe.setImageUrl(jsonRecipe.getString("image"));
         recipe.setGeneralIngredients(getGeneralIngredientList(jsonRecipe.getJSONArray("ingredients")));
         recipe.setCookTime(jsonRecipe.getInt("totalTime"));
+        recipe.setGeneralIngredientMap(getGeneralIngredientMap(jsonRecipe.getJSONArray("ingredients")));
         recipe.setQuery(query);
         return recipe;
     }
@@ -42,6 +44,20 @@ public class ParseRecipe {
         for (int i = 0; i < ingredients.length(); i++){
             String ingredient = ingredients.getJSONObject(i).getString("food");
             ingredientList.add(ingredient);
+        }
+        return  ingredientList;
+    }
+
+    private static HashMap<String, HashMap<String,String>> getGeneralIngredientMap(JSONArray ingredients) throws JSONException {
+        HashMap<String, HashMap<String, String>> ingredientList = new HashMap<>();
+        for (int i = 0; i < ingredients.length(); i++){
+            String ingredient = ingredients.getJSONObject(i).getString("food");
+            int amount = ingredients.getJSONObject(i).getInt("quantity");
+            String measure = ingredients.getJSONObject(i).getString("measure");
+            HashMap<String, String> amountAndMeasure = new HashMap<>();
+            amountAndMeasure.put("amount", String.valueOf(amount));
+            amountAndMeasure.put("measure", measure);
+            ingredientList.put(ingredient, amountAndMeasure);
         }
         return  ingredientList;
     }

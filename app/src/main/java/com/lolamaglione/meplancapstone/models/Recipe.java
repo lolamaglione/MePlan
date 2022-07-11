@@ -3,6 +3,7 @@ package com.lolamaglione.meplancapstone.models;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import org.json.JSONArray;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -101,6 +103,16 @@ public class Recipe {
 
     public void setGeneralIngredients(List<String> generalIngredients){
         this.generalIngredients = generalIngredients;
+    }
+
+    @Ignore
+    private HashMap<String, HashMap<String, String>> generalIngredientMap;
+    public void setGeneralIngredientMap(HashMap<String, HashMap<String, String>> generalIngredients){
+        this.generalIngredientMap = generalIngredients;
+    }
+
+    public HashMap<String, HashMap<String, String>> getGeneralIngredientMap(){
+        return generalIngredientMap;
     }
 
     public int getPercentageMatch(){
