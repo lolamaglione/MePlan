@@ -122,6 +122,7 @@ public class Recipe {
         this.query = query;
     }
 
+
     public int getCookTime() {
         return cookTime;
     }

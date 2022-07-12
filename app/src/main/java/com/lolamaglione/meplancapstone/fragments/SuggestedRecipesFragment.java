@@ -266,10 +266,12 @@ public class SuggestedRecipesFragment extends Fragment {
 
     private int compareIngredients(List<String> ingredients) {
         double match = 0;
+        int weight = mList_ing.size();
         for (String ingredient : mList_ing){
             if (ingredients.contains(ingredient)){
-                match++;
+                match = match + weight;
             }
+            weight--;
         }
         return (int) (match/mList_ing.size()*100);
     }
