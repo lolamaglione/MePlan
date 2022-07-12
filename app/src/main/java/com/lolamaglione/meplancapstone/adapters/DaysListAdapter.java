@@ -23,6 +23,7 @@ import com.lolamaglione.meplancapstone.models.Recipe;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHolder>{
 
@@ -99,22 +100,20 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             // Ingredients from the dataBase
             ingredientAmount = new ArrayList<>();
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
-            linear_layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    expandLayoutAndImage();
-                    dailyRecipesList = addedRecipes.get(position);
-                    List<Recipe> recipesInDB = new ArrayList<>();
-                    if (dailyRecipesList.size() > 0) {
-                        makeRecipesInDB(recipesInDB);
-                        ingredientAmount = new ArrayList<>();
-                        if (trie.isNull()){
-                            rebuildTrie(trie, recipesInDB, position);
-                        }
-                        addToIngredientList(recipesInDB, trie, position);
-                        adapter = new SpecificListAdapter(context, ingredientAmount);
-                        adapter = new SpecificListAdapter(context, ingredientAmount);
-                        rvRecipes.setAdapter(adapter);
+            dailyRecipesList = addedRecipes.get(position);
+            if(dailyRecipesList.size() > 0){
+                makeRecipesInDB(recipesInDB);
+                ingredientAmount = new ArrayList<>();
+                if (trie.isNull()){
+                    rebuildTrie(trie, recipesInDB, position);
+                }
+                addToIngredientList(recipesInDB, trie, position);
+                adapter = new SpecificListAdapter(context, ingredientAmount);
+                rvRecipes.setAdapter(adapter);
+                linear_layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        expandLayoutAndImage();
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
                         rvRecipes.setLayoutManager(linearLayoutManager);
                         svIngredients.setSubmitButtonEnabled(true);
@@ -131,9 +130,11 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                                 return false;
                             }
                         });
+
                     }
-                }
-            });
+                });
+            }
+
 
         }
 
@@ -163,7 +164,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
         private void rebuildTrie(RecipeSuggestions.Trie trie, List<Recipe> recipesInDB, int position){
             for(Recipe recipe : recipesInDB){
                 for (String ingredient : recipe.getGeneralIngredients()){
-                    trie.insertIngredient("" + position + ingredient);
+                    trie.insertIngredient("" + position + ingredient.toLowerCase(Locale.ROOT));
                 }
             }
         }

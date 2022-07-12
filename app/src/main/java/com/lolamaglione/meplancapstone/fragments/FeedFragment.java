@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.lolamaglione.meplancapstone.EdamamClient;
@@ -49,7 +51,7 @@ import okhttp3.Headers;
  * This fragment shows the recipe feed in the home button frgament
  * connects to recipe detail fragment and suggesting recipes with similar ingredients
  */
-public class FeedFragment extends Fragment {
+public class FeedFragment extends Fragment{
 
     private RecyclerView rvRecipes;
     private List<Recipe> allRecipes;
@@ -57,12 +59,14 @@ public class FeedFragment extends Fragment {
     public static final String TAG = "Feed Fragment";
     private EdamamClient client;
     private String default_query;
+    private String cuisine;
     private ParseRecipe parse;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String next_page = "";
     private String current_query = default_query;
     private boolean dataBaseWasCalled = false;
     LinearLayoutManager linearLayoutManager;
+    private Spinner spinnerCusines;
 
     // implementing database
     private RecipeDao recipeDao;
@@ -130,8 +134,22 @@ public class FeedFragment extends Fragment {
         rvRecipes.setAdapter(recipeAdapter);
         linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipes.setLayoutManager(linearLayoutManager);
+        spinnerCusines = view.findViewById(R.id.spinnerCusines);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.cuisines_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCusines.setAdapter(adapter);
+        spinnerCusines.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                cuisine = (String) parent.getItemAtPosition(position);
+            }
 
-
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                cuisine = null;
+            }
+        });
         // implementing database
         recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
         //query for existing recipes in the DB:
@@ -148,7 +166,12 @@ public class FeedFragment extends Fragment {
         if(!dataBaseWasCalled){
             Log.i(TAG, "fetching data from api");
             System.out.println("this is happening");
-            populateRecipeFromAPI(current_query, 0, "");
+            if (cuisine != " "){
+                populateRecipeFromAPI(current_query, 0, "", cuisine);
+            }else {
+                populateRecipeFromAPI(current_query, 0, "");
+            }
+
 
             scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
                 @Override
@@ -164,28 +187,6 @@ public class FeedFragment extends Fragment {
     }
 
     private void populateRecipesFromDataBase() {
-//        AsyncTask.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                Log.i(TAG, "fetching data from database");
-//                List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
-//                if (recipesFromDB.size() == 0 || recipesFromDB == null){
-//                    dataBaseWasCalled = false;
-//                } else{
-//                    dataBaseWasCalled = true;
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//
-//                            recipeAdapter.clear();
-//                            recipeAdapter.addAll(recipesFromDB);
-//                        }
-//                    });
-//                }
-//            }
-//        });
-
-
         List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
         if (recipesFromDB.size() == 0 || recipesFromDB == null){
             Log.i(TAG, "fetchign from the API");
@@ -321,11 +322,58 @@ public class FeedFragment extends Fragment {
         }, query, page, nextPage);
     }
 
+    private void populateRecipeFromAPI(String query, int page, String nextPage, String cuisine) {
+        client.getRecipeFeed(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                JSONArray jsonArray = null;
+                try {
+                    getNextPage(json);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    jsonArray = json.jsonObject.getJSONArray("hits");
+                    Log.i(TAG, json.jsonObject.getJSONArray("hits").toString());
+                    if (page == 0){
+                        recipeAdapter.clear();
+                    }
+                    final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
+                    allRecipes.addAll(recipesFromNetwork);
+                    recipeAdapter.notifyDataSetChanged();
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.i(TAG, "saving data into the database");
+                            recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
+                            dataBaseWasCalled = true;
+                        }
+                    });
+                    for (Recipe recipe : recipesFromNetwork){
+                        List<String> recipeIngredients = recipe.getGeneralIngredients();
+                        for (String ingredient : recipeIngredients){
+                            if(!ingredientListKey.contains(ingredient)){
+                                ingredientListKey.add(ingredient);
+                            }
+                        }
+                    }
+                    INGREDIENTS = ingredientListKey.toArray(new String[0]);
+                    recipeAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.e(TAG, "error: " + throwable);
+            }
+        }, query, page, nextPage, cuisine);
+    }
+
     private void getNextPage(JsonHttpResponseHandler.JSON json) throws JSONException {
         String next = json.jsonObject.getJSONObject("_links").getJSONObject("next").getString("href");
         next_page = next;
         System.out.println("Happening: " + next_page);
     }
-
 
 }

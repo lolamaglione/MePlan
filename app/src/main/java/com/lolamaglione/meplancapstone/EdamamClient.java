@@ -44,6 +44,25 @@ public class EdamamClient {
         client.get(apiUrl, params, handler);
     }
 
+    public void getRecipeFeed(JsonHttpResponseHandler handler, String q, int page, String nextPage, String cuisine){
+        if(client == null){
+            client = new AsyncHttpClient();
+        }
+        String apiUrl = "https://api.edamam.com/api/recipes/v2";
+        if (page != 0){
+            apiUrl = nextPage;
+        }
+        RequestParams params = new RequestParams();
+        params.put("app_id", REST_APP_ID);
+        params.put("app_key", REST_APP_KEY);
+        params.put("type", "public");
+        params.put("q", q);
+        //params.put("q", "tomato, chicken, garlic");
+        params.put("cuisineType", cuisine);
+        Log.i(TAG, "url: " + apiUrl + " q: " + q);
+        client.get(apiUrl, params, handler);
+    }
+
     public AsyncHttpClient getClient(){
         return client;
     }
