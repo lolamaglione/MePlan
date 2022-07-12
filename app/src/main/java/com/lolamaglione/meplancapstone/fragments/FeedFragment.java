@@ -166,11 +166,8 @@ public class FeedFragment extends Fragment{
         if(!dataBaseWasCalled){
             Log.i(TAG, "fetching data from api");
             System.out.println("this is happening");
-            if (cuisine != " "){
-                populateRecipeFromAPI(current_query, 0, "", cuisine);
-            }else {
-                populateRecipeFromAPI(current_query, 0, "");
-            }
+            populateRecipeFromAPI(current_query, 0, "", cuisine);
+
 
 
             scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -190,7 +187,7 @@ public class FeedFragment extends Fragment{
         List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
         if (recipesFromDB.size() == 0 || recipesFromDB == null){
             Log.i(TAG, "fetchign from the API");
-            populateRecipeFromAPI(current_query, 0, next_page);
+            populateRecipeFromAPI(current_query, 0, next_page, cuisine);
         } else {
             Log.i(TAG, "fetching data from database");
             recipeAdapter.clear();
