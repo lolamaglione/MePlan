@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -101,16 +102,21 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
             if(ingredient.isChecked()){
                 tvIngredient.setPaintFlags(tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }
-            checkbox.setOnClickListener(new View.OnClickListener() {
+            tvIngredient.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(tvIngredient.getPaintFlags() != (tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG)){
+                        tvIngredient.setPaintFlags(tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    } else if (tvIngredient.getPaintFlags() == (tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG)) {
+                        tvIngredient.setPaintFlags(0);
+                    }
                     ParseQuery<IngredientController> query = ParseQuery.getQuery(IngredientController.class);
                     query.whereEqualTo(IngredientController.KEY_OBJECT_ID, ingredient.getIngredientID());
                     query.findInBackground(new FindCallback<IngredientController>() {
                         @Override
                         public void done(List<IngredientController> objects, ParseException e) {
                             for (IngredientController object : objects){
-                                object.setIsChecked(checkbox.isChecked());
+                                object.setIsChecked(!object.getIsChecked());
                                 object.saveInBackground(new SaveCallback() {
                                     @Override
                                     public void done(ParseException e) {
