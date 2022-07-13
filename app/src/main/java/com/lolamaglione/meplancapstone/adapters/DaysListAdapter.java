@@ -19,6 +19,7 @@ import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.fragments.AddToCalendarFragment;
+import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;
 import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.parse.FindCallback;
@@ -110,10 +111,8 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             if(dailyRecipesList.size() > 0){
                 makeRecipesInDB(recipesInDB);
                 ingredientAmount = new ArrayList<>();
-                addToIngredientList(recipesInDB, trie, position);
-                if (trie.isNull()){
-                    rebuildTrie(trie, ingredientAmount, position);
-                }
+                boolean trieState = trie.isNull();
+                addToIngredientList(recipesInDB, trie, position, trieState);
                 adapter = new SpecificListAdapter(context, ingredientAmount);
                 rvRecipes.setAdapter(adapter);
                 linear_layout.setOnClickListener(new View.OnClickListener() {
@@ -155,7 +154,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             }
         }
 
-        private void addToIngredientList(List<Recipe> recipesInDB, RecipeSuggestions.Trie trie, int position) {
+        private void addToIngredientList(List<Recipe> recipesInDB, RecipeSuggestions.Trie trie, int position, boolean trieState) {
             for (Recipe recipe : recipesInDB){
                 ParseQuery<IngredientController> query = ParseQuery.getQuery(IngredientController.class);
                 query.whereEqualTo(IngredientController.KEY_RECIPE_ID, recipe.getObjectID());
@@ -172,6 +171,9 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                             newIngredient.setChecked(object.getIsChecked());
                             newIngredient.setIngredientID(object.getObjectId());
                             ingredientAmount.add(newIngredient);
+                            if (trieState){
+                                GroceryListFragment.updateTrieOne(newIngredient, position);
+                            }
                         }
                     }
                 });

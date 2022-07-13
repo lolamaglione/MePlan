@@ -32,7 +32,6 @@ public class RecipeSuggestions {
             TrieNode node = root;
             for (int i = 0; i < ingredient.length(); i++){
                 char ch = ingredient.charAt(i);
-                //String key = Character.toString(ch);
                 TrieNode child = node.children[ch];
                 if (child == null){
                     node.children[ch] = new TrieNode(ch);

@@ -77,14 +77,11 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
     class ListViewHolder extends RecyclerView.ViewHolder{
 
         private TextView tvIngredient;
-        private TextView tvAmount;
-        private CheckBox checkbox;
+
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);
 
             tvIngredient = itemView.findViewById(R.id.tvIngredient);
-            tvAmount = itemView.findViewById(R.id.tvAmount);
-            checkbox = itemView.findViewById(R.id.checkBox);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

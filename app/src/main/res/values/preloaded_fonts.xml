@@ -2,5 +2,6 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/arvo</item>
+        <item>@font/gelasio_medium</item>
     </array>
 </resources>
