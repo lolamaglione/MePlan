@@ -41,15 +41,17 @@ public class RecipeSuggestions {
             node.ingredients.add(ingredientObject);
         }
 
-        public void removeIngredient(Ingredient ingredientObject, int position){
-            String ingredient = "" + position + ingredientObject.getIngredientName().toLowerCase(Locale.ROOT);
+        public void removeIngredient(String ingredient){
             TrieNode node = root;
+            if (node.children == null){
+                return;
+            }
             for (int i = 0; i < ingredient.length(); i++){
                 char ch = ingredient.charAt(i);
                 TrieNode child = node.children[ch];
                 node = node.children[ch];
             }
-            node.ingredients.remove(ingredientObject);
+            node.ingredients.removeAll(node.ingredients);
         }
 
         //find the node with prefix's last char, then call helper to find all words using recursion

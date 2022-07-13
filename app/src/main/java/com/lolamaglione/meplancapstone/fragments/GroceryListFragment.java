@@ -130,9 +130,11 @@ public class GroceryListFragment extends Fragment {
         trie.insertIngredient(ingredient, position);
     }
 
-    public static void removeTrie(List<Ingredient> ingredientsToRemove, int position){
-        for(Ingredient ingredient : ingredientsToRemove){
-            trie.removeIngredient(ingredient, position);
+    public static void removeTrie(List<String> ingredientsToRemove){
+        if (!trie.isNull()){
+            for(String ingredient : ingredientsToRemove){
+                trie.removeIngredient(ingredient);
+            }
         }
     }
 

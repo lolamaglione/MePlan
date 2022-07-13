@@ -35,22 +35,10 @@ public class SignUpActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-//        etUsername = findViewById(R.id.etUsernameSign);
-//        etPassword = findViewById(R.id.etPasswordSign);
-//        etEmail = findViewById(R.id.etEmailSign);
-//        btnSignUp = findViewById(R.id.btnSignUpSign);
-
         etUsername = binding.etUsernameSign;
         etPassword = binding.etPasswordSign;
         etEmail = binding.etEmailSign;
         btnSignUp = binding.btnSignUpSign;
-
-//        btnSignUp.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                System.out.println("CLICKED");
-//            }
-//        });
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
