@@ -13,7 +13,7 @@ import java.util.List;
 @Dao
 public interface RecipeDao {
 
-    @Query("SELECT Recipe.* FROM Recipe WHERE Recipe.`query` = :this_query LIMIT 100")
+    @Query("SELECT Recipe.* FROM Recipe WHERE Recipe.generalIngredients LIKE :this_query LIMIT 100")
     List<Recipe> recentItems(String this_query);
 
     @Query("SELECT Recipe.* FROM Recipe WHERE Recipe.`query` = :this_query LIMIT 100")

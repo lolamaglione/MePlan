@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="inrgedients_array">
+        <item> </item>
+        <item>American</item>
+        <item>Asian</item>
+        <item>British</item>
+        <item>Caribbean</item>
+        <item>Central Europe</item>
+        <item>Chinese</item>
+        <item>Eastern Europe</item>
+        <item>French</item>
+        <item>Indian</item>
+        <item>Japanese</item>
+        <item>Kosher</item>
+        <item>Mediterranean</item>
+        <item>Mexican</item>
+        <item>Middle Eastern</item>
+        <item>Nordic</item>
+        <item>South American</item>
+        <item>South East Asia</item>
+    </string-array>
+</resources>
