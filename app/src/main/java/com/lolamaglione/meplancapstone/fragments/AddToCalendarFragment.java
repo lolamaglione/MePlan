@@ -20,6 +20,7 @@ import android.widget.SpinnerAdapter;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
+import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
@@ -125,9 +126,9 @@ public class AddToCalendarFragment extends DialogFragment {
             public void onClick(View v) {
                 RecipeController recipeController = null;
                 try {
-                    recipeController = createDBRecipe();
-                    List<String> generalIngredients = recipeController.getGeneralIngredients();
                     int day_int = dayToInt.get(day);
+                    recipeController = createDBRecipe(day_int);
+                    List<String> generalIngredients = recipeController.getGeneralIngredients();
                     List<String> updateIngredients = new ArrayList<>();
                     for (String ingredient : generalIngredients){
                         updateIngredients.add("" + day_int + ingredient);
@@ -163,7 +164,7 @@ public class AddToCalendarFragment extends DialogFragment {
 //                forEach(a-> dayToInt.put(a[0], Integer.valueOf(a[1])));
     }
 
-    public RecipeController createDBRecipe() throws ParseException {
+    public RecipeController createDBRecipe(int day) throws ParseException {
 
         // recipe we want to add
         Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
@@ -179,14 +180,44 @@ public class AddToCalendarFragment extends DialogFragment {
             RecipeController recipeController = new RecipeController();
             recipeController.setSpecificIngredientsArray(recipe.getSpecificIngredients());
             recipeController.setUrl(recipe.getURL());
-            recipeController.setGeneralIngredientsArray(recipe.getGeneralIngredients());
+            List<String> generalIngredientArray = recipe.getGeneralIngredients();
+            recipeController.setGeneralIngredientsArray(generalIngredientArray);
             recipeController.setTitle(recipe.getTitle());
             recipeController.setImage(recipe.getImageURL());
-            recipeController.saveInBackground();
+            recipeController.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if ( e != null){
+                        Log.e(TAG,"error saving recipe");
+                    }
+                    createIngredientInDB(generalIngredientArray, recipeController.getObjectId(), day);
+                }
+            });
             return recipeController;
         }
         RecipeController recipeController = recipesWithSameTitle.get(0);
 
         return recipeController;
+    }
+
+    private void createIngredientInDB(List<String> generalIngredientArray, String recipeID, int day) {
+        for (String ingredient : generalIngredientArray){
+            IngredientController newIngredient = new IngredientController();
+            newIngredient.setName(ingredient);
+            newIngredient.setRecipeID(recipeID);
+            newIngredient.setUser(ParseUser.getCurrentUser());
+            newIngredient.setDay(day);
+            newIngredient.setIsChecked(false);
+            newIngredient.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e != null){
+                        Log.e(TAG, "error saving ingredient " + e);
+                    } else {
+                        Log.i(TAG, "savedIngredients");
+                    }
+                }
+            });
+        }
     }
 }

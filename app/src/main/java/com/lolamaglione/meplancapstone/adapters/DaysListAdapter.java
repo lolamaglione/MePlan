@@ -16,9 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
+import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.fragments.AddToCalendarFragment;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +81,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
         SpecificListAdapter adapter;
         List<RecipeController> dailyRecipesList;
-        ArrayList<String> ingredientAmount;
+        List<Ingredient> ingredientAmount;
         SearchView svIngredients;
 
         public ViewHolder(@NonNull View itemView) {
@@ -151,13 +157,24 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
         private void addToIngredientList(List<Recipe> recipesInDB, RecipeSuggestions.Trie trie, int position) {
             for (Recipe recipe : recipesInDB){
-                for (String ingredient : recipe.getGeneralIngredients()){
-                    if(ingredientAmount.contains(ingredient)){
-                        continue;
+                ParseQuery<IngredientController> query = ParseQuery.getQuery(IngredientController.class);
+                query.whereEqualTo(IngredientController.KEY_RECIPE_ID, recipe.getObjectID());
+                query.whereEqualTo(IngredientController.KEY_USER, ParseUser.getCurrentUser());
+                query.findInBackground(new FindCallback<IngredientController>() {
+                    @Override
+                    public void done(List<IngredientController> objects, ParseException e) {
+                        for (IngredientController object : objects){
+                            Ingredient newIngredient = new Ingredient();
+                            newIngredient.setIngredientName(object.getName());
+                            newIngredient.setDay(object.getDay());
+                            newIngredient.setRecipeId(object.getRecipeID());
+                            newIngredient.setUserId(object.getUser().getObjectId());
+                            newIngredient.setChecked(object.getIsChecked());
+                            newIngredient.setIngredientID(object.getObjectId());
+                            ingredientAmount.add(newIngredient);
+                        }
                     }
-                    ingredientAmount.add(ingredient);
-                    //trie.insertIngredient("" + position + ingredient);
-                }
+                });
             }
         }
 
@@ -177,6 +194,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                 newRecipe.setImageUrl(recipe.getImageURL());
                 newRecipe.setTitle(recipe.getTitle());
                 newRecipe.setSpecificIngredients(recipe.getSpecificIngredients());
+                newRecipe.setObjectID(recipe.getObjectId());
                 recipesInDB.add(newRecipe);
             }
         }

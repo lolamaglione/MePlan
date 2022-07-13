@@ -2,6 +2,7 @@ package com.lolamaglione.meplancapstone.adapters;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.controllers.IngredientController;
+import com.lolamaglione.meplancapstone.models.Ingredient;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,9 +28,10 @@ import java.util.Locale;
 public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapter.ListViewHolder>{
 
     private Context context;
-    private List<String> ingredients;
+    private List<Ingredient> ingredients;
+    public static final String TAG = "Specfic List adapter";
 
-    public SpecificListAdapter(Context context, List<String> ingredients){
+    public SpecificListAdapter(Context context, List<Ingredient> ingredients){
         this.context = context;
         this.ingredients = ingredients;
     }
@@ -37,7 +45,7 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
-        String ingredient = ingredients.get(position);
+        Ingredient ingredient = ingredients.get(position);
         holder.bind(ingredient);
     }
 
@@ -53,8 +61,14 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
     }
 
     public void reshapeList(List<String> newIngredients) {
+        List<Ingredient> newIngredientList = new ArrayList<>();
+        for (Ingredient ingredient : ingredients){
+            if (newIngredients.contains(ingredient.getIngredientName())){
+                newIngredientList.add(ingredient);
+            }
+        }
         ingredients.clear();
-        ingredients.addAll(newIngredients);
+        ingredients.addAll(newIngredientList);
         notifyDataSetChanged();
     }
 
@@ -74,16 +88,44 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    tvIngredient.setPaintFlags(tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
+
                 }
             });
 
 
         }
 
-        public void bind(String ingredient){
-            tvIngredient.setText(ingredient.toLowerCase(Locale.ROOT));
-            //checkbox.setChecked(true);
+        public void bind(Ingredient ingredient){
+            tvIngredient.setText(ingredient.getIngredientName().toLowerCase(Locale.ROOT));
+            if(ingredient.isChecked()){
+                tvIngredient.setPaintFlags(tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+            checkbox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ParseQuery<IngredientController> query = ParseQuery.getQuery(IngredientController.class);
+                    query.whereEqualTo(IngredientController.KEY_OBJECT_ID, ingredient.getIngredientID());
+                    query.findInBackground(new FindCallback<IngredientController>() {
+                        @Override
+                        public void done(List<IngredientController> objects, ParseException e) {
+                            for (IngredientController object : objects){
+                                object.setIsChecked(checkbox.isChecked());
+                                object.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        if ( e != null){
+                                            Log.e(TAG, "error saving checked");
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+
+
         }
     }
 }
