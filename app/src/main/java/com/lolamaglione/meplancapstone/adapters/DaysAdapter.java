@@ -173,7 +173,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                         public void done(List<RecipeController> objects, ParseException e) {
                             for (RecipeController object : objects){
                                 List<String> generalIngredients = object.getGeneralIngredients();
-                                GroceryListFragment.removeTrie(generalIngredients, position);
+                                //GroceryListFragment.removeTrie(generalIngredients, position);
                                 ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
                                 query.whereEqualTo(ScheduleController.KEY_RECIPE, object);
                                 query.findInBackground(new FindCallback<ScheduleController>() {

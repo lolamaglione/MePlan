@@ -60,15 +60,15 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
         notifyDataSetChanged();
     }
 
-    public void reshapeList(List<String> newIngredients) {
-        List<Ingredient> newIngredientList = new ArrayList<>();
-        for (Ingredient ingredient : ingredients){
-            if (newIngredients.contains(ingredient.getIngredientName())){
-                newIngredientList.add(ingredient);
-            }
-        }
+    public void reshapeList(List<Ingredient> newIngredients) {
         ingredients.clear();
-        ingredients.addAll(newIngredientList);
+        ingredients.addAll(newIngredients);
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<Ingredient> ingredientList) {
+        ingredients.clear();
+        ingredients.addAll(ingredientList);
         notifyDataSetChanged();
     }
 

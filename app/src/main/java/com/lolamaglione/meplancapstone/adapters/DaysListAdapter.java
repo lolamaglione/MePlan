@@ -110,10 +110,10 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             if(dailyRecipesList.size() > 0){
                 makeRecipesInDB(recipesInDB);
                 ingredientAmount = new ArrayList<>();
-                if (trie.isNull()){
-                    rebuildTrie(trie, recipesInDB, position);
-                }
                 addToIngredientList(recipesInDB, trie, position);
+                if (trie.isNull()){
+                    rebuildTrie(trie, ingredientAmount, position);
+                }
                 adapter = new SpecificListAdapter(context, ingredientAmount);
                 rvRecipes.setAdapter(adapter);
                 linear_layout.setOnClickListener(new View.OnClickListener() {
@@ -131,7 +131,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
 
                             @Override
                             public boolean onQueryTextChange(String newText) {
-                                List<String> autocomplete = trie.autocomplete("" + position + newText);
+                                List<Ingredient> autocomplete = trie.autocomplete("" + position + newText);
                                 adapter.reshapeList(autocomplete);
                                 return false;
                             }
@@ -178,11 +178,9 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             }
         }
 
-        private void rebuildTrie(RecipeSuggestions.Trie trie, List<Recipe> recipesInDB, int position){
-            for(Recipe recipe : recipesInDB){
-                for (String ingredient : recipe.getGeneralIngredients()){
-                    trie.insertIngredient("" + position + ingredient.toLowerCase(Locale.ROOT));
-                }
+        private void rebuildTrie(RecipeSuggestions.Trie trie, List<Ingredient> ingredientAmount, int position){
+            for(Ingredient ingredient : ingredientAmount){
+                trie.insertIngredient(ingredient, position);
             }
         }
 

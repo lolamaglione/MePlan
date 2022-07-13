@@ -22,6 +22,7 @@ import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
 import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.parse.FindCallback;
@@ -127,13 +128,10 @@ public class AddToCalendarFragment extends DialogFragment {
                 RecipeController recipeController = null;
                 try {
                     int day_int = dayToInt.get(day);
-                    recipeController = createDBRecipe(day_int);
+                    List<Ingredient> updateIngredients = new ArrayList<>();
+                    recipeController = createDBRecipe(day_int, updateIngredients);
                     List<String> generalIngredients = recipeController.getGeneralIngredients();
-                    List<String> updateIngredients = new ArrayList<>();
-                    for (String ingredient : generalIngredients){
-                        updateIngredients.add("" + day_int + ingredient);
-                    }
-                    GroceryListFragment.updateTrie(updateIngredients);
+                    //GroceryListFragment.updateTrie(updateIngredients, day_int);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -164,7 +162,7 @@ public class AddToCalendarFragment extends DialogFragment {
 //                forEach(a-> dayToInt.put(a[0], Integer.valueOf(a[1])));
     }
 
-    public RecipeController createDBRecipe(int day) throws ParseException {
+    public RecipeController createDBRecipe(int day, List<Ingredient> updateIngredients) throws ParseException {
 
         // recipe we want to add
         Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
@@ -190,7 +188,7 @@ public class AddToCalendarFragment extends DialogFragment {
                     if ( e != null){
                         Log.e(TAG,"error saving recipe");
                     }
-                    createIngredientInDB(generalIngredientArray, recipeController.getObjectId(), day);
+                    createIngredientInDB(generalIngredientArray, recipeController.getObjectId(), day, updateIngredients);
                 }
             });
             return recipeController;
@@ -200,7 +198,7 @@ public class AddToCalendarFragment extends DialogFragment {
         return recipeController;
     }
 
-    private void createIngredientInDB(List<String> generalIngredientArray, String recipeID, int day) {
+    private void createIngredientInDB(List<String> generalIngredientArray, String recipeID, int day, List<Ingredient> updateIngredients) {
         for (String ingredient : generalIngredientArray){
             IngredientController newIngredient = new IngredientController();
             newIngredient.setName(ingredient);
@@ -215,9 +213,20 @@ public class AddToCalendarFragment extends DialogFragment {
                         Log.e(TAG, "error saving ingredient " + e);
                     } else {
                         Log.i(TAG, "savedIngredients");
+                        Ingredient ingredientObject = new Ingredient();
+                        ingredientObject.setIngredientID(newIngredient.getObjectId());
+                        ingredientObject.setIngredientName(newIngredient.getName());
+                        ingredientObject.setChecked(newIngredient.getIsChecked());
+                        ingredientObject.setUserId(newIngredient.getUser().getObjectId());
+                        ingredientObject.setRecipeId(newIngredient.getRecipeID());
+                        ingredientObject.setDay(newIngredient.getDay());
+                        updateIngredients.add(ingredientObject);
+                        GroceryListFragment.updateTrieOne(ingredientObject, day);
                     }
                 }
             });
+
+
         }
     }
 }
