@@ -288,7 +288,7 @@ public class FeedFragment extends Fragment{
                     if (page == 0){
                         recipeAdapter.clear();
                     }
-                    String set_query = query;
+                    String set_query = query + cuisine;
                     final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, set_query);
                     allRecipes.addAll(recipesFromNetwork);
                     recipeAdapter.notifyDataSetChanged();
