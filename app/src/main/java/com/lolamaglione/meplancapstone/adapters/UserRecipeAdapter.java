@@ -22,6 +22,9 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
+/**
+ * DEMO
+ */
 public class UserRecipeAdapter extends RecyclerView.Adapter<UserRecipeAdapter.ViewHolder>{
 
     private Context context;

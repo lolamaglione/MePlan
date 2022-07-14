@@ -26,6 +26,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * this is used to display the specific list of ingredients. Once you click on a specific ingredient
+ * you can cross of the ingredient (implements recycler view and is nested inside another recycler view).
+ */
 public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapter.ListViewHolder>{
 
     private Context context;

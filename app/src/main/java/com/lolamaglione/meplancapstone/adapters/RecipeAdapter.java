@@ -22,6 +22,11 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
+/**
+ * This is the recipe adapter where we can see each specific recipe item, we use this in the feed,
+ * the suggested recipe, and the meal plan fragment. If you click on a specific recipe item you are
+ * taken to the recipe detail activity.
+ */
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder> {
 
     private Context context;

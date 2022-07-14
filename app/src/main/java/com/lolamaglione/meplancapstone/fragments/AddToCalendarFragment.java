@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.Toast;
 
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
@@ -43,7 +44,7 @@ import java.util.List;
  * Use the {@link AddToCalendarFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
- * This Fragment incorportated modular activity in order to be able to add a recipe to the meal plan
+ * This Fragment incorporates modular activity in order to be able to add a recipe to the meal plan
  */
 public class AddToCalendarFragment extends DialogFragment {
 
@@ -148,6 +149,7 @@ public class AddToCalendarFragment extends DialogFragment {
                         Log.i("addActivity", "success!");
                     }
                 });
+                Toast.makeText(getContext(), "Saved Recipe!", Toast.LENGTH_SHORT).show();
                 dismiss();
             }
         });

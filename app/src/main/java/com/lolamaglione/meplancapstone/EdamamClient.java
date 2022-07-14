@@ -10,7 +10,7 @@ import com.codepath.asynchttpclient.RequestParams;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 /**
- * this class enables us to comunicate with the API
+ * this class enables us to communicate EDMAME with the API
  */
 public class EdamamClient {
 

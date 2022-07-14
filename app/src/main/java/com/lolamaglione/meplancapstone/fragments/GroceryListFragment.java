@@ -37,6 +37,8 @@ import java.util.Locale;
  * A simple {@link Fragment} subclass.
  * Use the {@link GroceryListFragment#newInstance} factory method to
  * create an instance of this fragment.
+ *
+ * This fragment shows the list of ingredients needed for each day, implements the daylistAdpater
  */
 public class GroceryListFragment extends Fragment {
 

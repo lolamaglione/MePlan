@@ -39,6 +39,8 @@ import okhttp3.Headers;
  * A simple {@link Fragment} subclass.
  * Use the {@link SuggestedRecipesFragment#newInstance} factory method to
  * create an instance of this fragment.
+ *
+ *
  * This fragment suggest recipes based on the ingredients of the recipe you have already chosen
  */
 public class SuggestedRecipesFragment extends Fragment {

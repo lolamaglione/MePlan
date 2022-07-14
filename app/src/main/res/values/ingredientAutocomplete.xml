@@ -2,22 +2,80 @@
 <resources>
     <string-array name="inrgedients_array">
         <item> </item>
-        <item>American</item>
-        <item>Asian</item>
-        <item>British</item>
-        <item>Caribbean</item>
-        <item>Central Europe</item>
-        <item>Chinese</item>
-        <item>Eastern Europe</item>
-        <item>French</item>
-        <item>Indian</item>
-        <item>Japanese</item>
-        <item>Kosher</item>
-        <item>Mediterranean</item>
-        <item>Mexican</item>
-        <item>Middle Eastern</item>
-        <item>Nordic</item>
-        <item>South American</item>
-        <item>South East Asia</item>
+        <item>chicken</item>
+        <item>beef</item>
+        <item>shrimp</item>
+        <item>canola oil</item>
+        <item>extra-virgin olive oil</item>
+        <item>toasted sesame oil</item>
+        <item>balsamic vinegar</item>
+        <item>distilled white vinegar</item>
+        <item>red wine vinegar</item>
+        <item>rice vinegar</item>
+        <item>ketchup</item>
+        <item>mayonnaise</item>
+        <item>dijon mustard</item>
+        <item>soy sauce</item>
+        <item>chili paste</item>
+        <item>hot sauce</item>
+        <item>worcestershire</item>
+        <item>kosher salt</item>
+        <item>salt</item>
+        <item>black peppers</item>
+        <item>bay leaves</item>
+        <item>cayenne pepper</item>
+        <item>crushed red pepper</item>
+        <item>cumin</item>
+        <item>ground coriander</item>
+        <item>oregano</item>
+        <item>paprika</item>
+        <item>rosemary</item>
+        <item>thyme leaves</item>
+        <item>cinnamon</item>
+        <item>cloves</item>
+        <item>allspice</item>
+        <item>ginger</item>
+        <item>nutmeg</item>
+        <item>chili powder</item>
+        <item>curry powder</item>
+        <item>italian seasoning</item>
+        <item>vanilla extract</item>
+        <item>black beans</item>
+        <item>cannellini</item>
+        <item>chickpeas</item>
+        <item>kidney beans</item>
+        <item>capers</item>
+        <item>olives</item>
+        <item>peanut butter</item>
+        <item>jelly</item>
+        <item>chicken stock</item>
+        <item>chicken broth</item>
+        <item>canned tomatoes</item>
+        <item>tomatoes</item>
+        <item>tomato paste</item>
+        <item>salsa</item>
+        <item>tuna</item>
+        <item>salmon</item>
+        <item>panko breadcrumbs</item>
+        <item>breadcrumbs</item>
+        <item>dried lentils</item>
+        <item>pasta</item>
+        <item>whole wheat pasta</item>
+        <item>white rice</item>
+        <item>rice</item>
+        <item>whole wheat rice</item>
+        <item>jasmine rice</item>
+        <item>barley</item>
+        <item>millet</item>
+        <item>quinoa</item>
+        <item>honey</item>
+        <item>sugar</item>
+        <item>roasted beef</item>
+        <item>raisins</item>
+        <item>apples</item>
+        <item>avocado</item>
+
+
+
     </string-array>
 </resources>

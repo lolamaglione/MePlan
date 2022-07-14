@@ -36,6 +36,8 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  * Use the {@link MealPlanFragment#newInstance} factory method to
  * create an instance of this fragment.
+ *
+ * This fragment shows the recipes that the user has added for each day, implements the DayAdapter
  */
 public class MealPlanFragment extends Fragment {
 

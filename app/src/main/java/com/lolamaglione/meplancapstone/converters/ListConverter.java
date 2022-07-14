@@ -9,6 +9,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * this is the list converter used to save the list of strings into the sqlite room database
+ */
 public class ListConverter {
     private static Gson gson = new Gson();
     @TypeConverter

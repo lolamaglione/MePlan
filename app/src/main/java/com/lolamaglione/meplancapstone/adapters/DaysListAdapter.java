@@ -32,6 +32,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This adapter is what shows the grocery list for each specific day (it allows users to cross over the specific list item)
+ * contacting with the specific list item adapter.
+ */
 public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHolder>{
 
     private Context context;

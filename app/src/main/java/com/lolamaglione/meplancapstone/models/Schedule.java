@@ -8,6 +8,9 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * this is the schedule model, it mirrors the scheudleController and creates schedule java objects
+ */
 @Entity
 public class Schedule {
 

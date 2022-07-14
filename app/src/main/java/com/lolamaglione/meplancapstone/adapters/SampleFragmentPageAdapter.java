@@ -16,6 +16,10 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
+/**
+ * This is used in the recipe detail activity for the tab where one is the recipe and the other
+ * is the suggested recipes tab
+ */
 public class SampleFragmentPageAdapter extends FragmentPagerAdapter {
 
     final int PAGE_COUNT = 2;

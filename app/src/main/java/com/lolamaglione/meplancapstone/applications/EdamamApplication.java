@@ -9,6 +9,9 @@ import com.facebook.stetho.Stetho;
 import com.lolamaglione.meplancapstone.EdamamClient;
 import com.lolamaglione.meplancapstone.MyDatabase;
 
+/**
+ * DEMO
+ */
 public class EdamamApplication extends Application {
     private static MyDatabase myDatabase;
 

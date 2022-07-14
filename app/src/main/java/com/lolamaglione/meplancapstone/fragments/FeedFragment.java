@@ -131,15 +131,16 @@ public class FeedFragment extends Fragment{
         cuisine = " ";
         recipeAdapter = new RecipeAdapter(getContext(), allRecipes);
         ParseUser.getCurrentUser().put("last_query", current_query);
-        client = new EdamamClient();
+        client = new EdamamClient()
+        ;
         rvRecipes.setAdapter(recipeAdapter);
         linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipes.setLayoutManager(linearLayoutManager);
         spinnerCusines = view.findViewById(R.id.spinnerCusines);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+        ArrayAdapter<CharSequence> cuisineAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.cuisines_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCusines.setAdapter(adapter);
+        cuisineAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCusines.setAdapter(cuisineAdapter);
         spinnerCusines.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -218,7 +219,7 @@ public class FeedFragment extends Fragment{
         searchItem.setActionView(searchView);
         searchView.setSubmitButtonEnabled(true);
         SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete) searchView.findViewById(androidx.appcompat.R.id.search_src_text);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.autofill_item, INGREDIENTS);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.inrgedients_array, R.layout.autofill_item);
         searchAutoComplete.setAdapter(adapter);
 
         searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -239,9 +240,6 @@ public class FeedFragment extends Fragment{
                 // perform query here
                 current_query = query;
                 populateRecipesFromDataBase();
-                INGREDIENTS = ingredientListKey.toArray(new String[0]);
-                adapter.addAll(INGREDIENTS);
-                System.out.println("new ingredients: " + INGREDIENTS);
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
                 //TODO: fidn a way to clear the search bar once the user has submitted
@@ -260,15 +258,6 @@ public class FeedFragment extends Fragment{
     }
 
     private HashMap<String, Integer> ingredientList = new HashMap<>();
-
-    //TODO: make this into a text file and make sure I can add to it.
-    private String[] INGREDIENTS = new String[] {
-            "chicken", "beef", "shrimp", "canola oil" , "extra-virgin olive oil" , "toasted sesame oil", "balsamic vinegar", "distilled white vinegar", "red wine vinegar", "rice vinegar",
-            "ketchup", "mayonnaise", "dijon mustard", "soy sauce", "chili paste", "hot sauce", "worcestershire", "kosher salt", "salt", "black peppers", "bay leaves",
-            "cayenne pepper", "crushed red pepper", "cumin", "ground coriander", "oregano", "paprika", "rosemary", "thyme leaves", "cinnamon", "cloves", "allspice", "ginger",
-            "nutmeg", "chili powder", "curry powder", "italian seasoning", "vanilla extract", "black beans", "cannellini", "chickpeas", "kidney beans", "capers", "olives", "peanut butter",
-            "jelly", "chicken stock", "chicken broth", "canned tomatoes", "tomatoes", "tomato paste", "salsa", "tuna", "salmon", "panko breadcrumbs", "breadcrumbs", "dried lentils",
-            "pasta", "whole wheat pasta", "white rice", "rice", "whole wheat rice", "jasmine rice", "barley", "millet", "quinoa", "honey", "sugar", "roasted beef", "raisins", "apples"};
 
     private ArrayList<String> ingredientListKey = new ArrayList<>();
 
@@ -308,7 +297,6 @@ public class FeedFragment extends Fragment{
                             }
                         }
                     }
-                    INGREDIENTS = ingredientListKey.toArray(new String[0]);
                     recipeAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -356,7 +344,6 @@ public class FeedFragment extends Fragment{
                             }
                         }
                     }
-                    INGREDIENTS = ingredientListKey.toArray(new String[0]);
                     recipeAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();

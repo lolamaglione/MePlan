@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.lolamaglione.meplancapstone.DoubleClickListener;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.SwipeToDeleteCallback;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
@@ -39,7 +38,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-// This is the adapter for the recipe menu list in the meal plan
+/**
+ * This is the adapter that allows us to see the meal plan recipe for each day in the meal plan fragment
+ * connects to the recipe adapter so we can see each recipe specifically
+ */
 public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
 
     private Context context;

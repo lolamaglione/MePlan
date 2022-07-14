@@ -9,6 +9,9 @@ import com.parse.ParseUser;
 
 import java.util.List;
 
+/**
+ * This is the recipe controller used to communicate with the Parse Database and the recipe class in parse
+ */
 @ParseClassName("Recipe")
 // extend recipe class
 public class RecipeController extends ParseObject{

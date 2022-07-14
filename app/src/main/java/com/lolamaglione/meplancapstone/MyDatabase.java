@@ -12,6 +12,9 @@ import com.lolamaglione.meplancapstone.models.Schedule;
 
 import java.util.List;
 
+/**
+ * This class creates the room sqlite database
+ */
 @Database(entities={Recipe.class}, version=9)
 @TypeConverters({ListConverter.class})
 public abstract class MyDatabase extends RoomDatabase {

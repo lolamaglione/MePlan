@@ -9,6 +9,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is a parse class to parse the data from the API and make it recipe objects
+ */
 public class ParseRecipe {
 
     public ParseRecipe(){

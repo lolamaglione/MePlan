@@ -10,6 +10,9 @@ import com.lolamaglione.meplancapstone.models.Recipe;
 
 import java.util.List;
 
+/**
+ * this is the data access object to save and access data to and from the room database
+ */
 @Dao
 public interface RecipeDao {
 

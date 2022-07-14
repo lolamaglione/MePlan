@@ -4,6 +4,9 @@ import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+/**
+ * This is the ingredientController used to communicate with parseDatabase and the ingredient class in parse
+ */
 @ParseClassName("Ingredient")
 public class IngredientController extends ParseObject {
 

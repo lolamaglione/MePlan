@@ -14,6 +14,9 @@ import com.lolamaglione.meplancapstone.models.Recipe;
 
 import java.util.List;
 
+/**
+ * This is very similar to the recipe fragment (DEMO)
+ */
 public class SuggestRecipeAdapter extends RecyclerView.Adapter<SuggestRecipeAdapter.ViewHolder> {
     private Context context;
     private List<Recipe> suggestRecipes;

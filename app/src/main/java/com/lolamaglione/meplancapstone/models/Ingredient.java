@@ -2,6 +2,9 @@ package com.lolamaglione.meplancapstone.models;
 
 import org.parceler.Parcel;
 
+/***
+ * this is the ingredient model, is mirrors the ingrdient controller and creates ingredient java objects
+ */
 @Parcel
 public class Ingredient {
 

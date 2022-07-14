@@ -7,6 +7,9 @@ import com.parse.ParseUser;
 
 import java.util.List;
 
+/**
+ * This is the schedule controller used to communicate with the schedule class in the Parse database
+ */
 @ParseClassName("Schedule")
 public class ScheduleController extends ParseObject {
 

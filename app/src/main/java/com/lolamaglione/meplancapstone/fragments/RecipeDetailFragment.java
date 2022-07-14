@@ -33,6 +33,9 @@ import org.parceler.Parcels;
  * Use the {@link RecipeDetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  * This fragments shows this details of the recipe (ingredients, total prep time, picture, and label)
+ *
+ * This fragment shows the detail of the recipe, the url, image and specific ingredient, it also
+ * shows a webvview.
  */
 public class RecipeDetailFragment extends Fragment {
 

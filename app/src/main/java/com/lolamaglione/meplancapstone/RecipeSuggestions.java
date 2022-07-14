@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This is the trie class that creates an autocomplete algorithm using the trie data structure for
+ * the ingredient list
+ */
 public class RecipeSuggestions {
 
     static final int MAX_NUM = 128;
