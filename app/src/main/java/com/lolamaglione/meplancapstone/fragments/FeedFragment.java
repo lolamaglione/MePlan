@@ -128,6 +128,7 @@ public class FeedFragment extends Fragment{
         rvRecipes = view.findViewById(R.id.rvRecipes);
         //searchBar = (Toolbar) view.findViewById(R.id.tbSearch);
         allRecipes = new ArrayList<>();
+        cuisine = " ";
         recipeAdapter = new RecipeAdapter(getContext(), allRecipes);
         ParseUser.getCurrentUser().put("last_query", current_query);
         client = new EdamamClient();
@@ -184,7 +185,7 @@ public class FeedFragment extends Fragment{
     }
 
     private void populateRecipesFromDataBase() {
-        List<Recipe> recipesFromDB = recipeDao.recentItems(current_query);
+        List<Recipe> recipesFromDB = recipeDao.recentItemsNoQuery(current_query);
         if (recipesFromDB.size() == 0 || recipesFromDB == null){
             Log.i(TAG, "fetchign from the API");
             populateRecipeFromAPI(current_query, 0, next_page, cuisine);
@@ -315,7 +316,7 @@ public class FeedFragment extends Fragment{
             }
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.e(TAG, "error: " + throwable);
+                Log.e(TAG, "error here: " + throwable);
             }
         }, query, page, nextPage);
     }

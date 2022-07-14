@@ -5,6 +5,7 @@
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.21555217831813578" />
         <entry key="../../Library/Android/sdk/platforms/android-32/data/res/layout/simple_dropdown_item_1line.xml" value="0.307518115942029" />
+        <entry key="app/src/main/res/drawable/ic_logo_background.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/shape.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.1765625" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21369934082031256" />

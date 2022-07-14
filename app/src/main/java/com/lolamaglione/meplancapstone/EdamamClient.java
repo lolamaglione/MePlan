@@ -58,7 +58,9 @@ public class EdamamClient {
         params.put("type", "public");
         params.put("q", q);
         //params.put("q", "tomato, chicken, garlic");
-        params.put("cuisineType", cuisine);
+        if (!cuisine.equals(" ")){
+            params.put("cuisineType", cuisine);
+        }
         Log.i(TAG, "url: " + apiUrl + " q: " + q);
         client.get(apiUrl, params, handler);
     }
