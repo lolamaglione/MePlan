@@ -41,7 +41,6 @@ public class SampleFragmentPageAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0){
-            System.out.println(recipe.getGeneralIngredients());
             return RecipeDetailFragment.newInstance(Parcels.wrap(recipe));
         } else if (position == 1){
             return SuggestedRecipesFragment.newInstance((ArrayList<String>) recipe.getGeneralIngredients(), query, title);

@@ -35,8 +35,6 @@ import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link GroceryListFragment#newInstance} factory method to
- * create an instance of this fragment.
  *
  * This fragment shows the list of ingredients needed for each day, implements the daylistAdpater
  */
@@ -45,48 +43,19 @@ public class GroceryListFragment extends Fragment {
     private RecyclerView rvDaysList;
     private HashMap<Integer, List<RecipeController>> allAddedRecipes;
     private DaysListAdapter listAdapter;
-    HashMap<Integer, String> intToDay = new HashMap<>();
+    private HashMap<Integer, String> intToDay = new HashMap<Integer, String>(){{put(0, "Monday"); put(1, "Tuesday"); put(2, "Wednesday"); put(3, "Thursday");
+    put(4, "Friday"); put(5, "Saturday"); put(6, "Sunday");}
+    };
     public static final String TAG = "grocery list fragment";
     private static RecipeSuggestions.Trie trie = new RecipeSuggestions.Trie();
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public GroceryListFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GroceryListFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static GroceryListFragment newInstance(String param1, String param2) {
-        GroceryListFragment fragment = new GroceryListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -101,9 +70,7 @@ public class GroceryListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         rvDaysList = view.findViewById(R.id.rvDaysList);
-        //TODO:clean up this
-        // setting up the hashmap with the day of the week and the coordinating recipes
-        List<String> daysOfWeek = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+        List<String> daysOfWeek = Arrays.asList(getResources().getStringArray(R.array.days_array));
         allAddedRecipes = new HashMap<>();
         fillHashMap(daysOfWeek);
 
@@ -115,19 +82,10 @@ public class GroceryListFragment extends Fragment {
     }
 
     private void fillHashMap(List<String> daysOfWeek) {
-
         for(int i = 0; i < daysOfWeek.size(); i++){
-            intToDay.putIfAbsent(i, daysOfWeek.get(i));
             allAddedRecipes.putIfAbsent(i, new ArrayList<>());
         }
     }
-
-    public static void updateTrie(List<Ingredient> ingredientsToAdd, int position){
-        for (Ingredient ingredient : ingredientsToAdd){
-            trie.insertIngredient(ingredient, position);
-        }
-    }
-
     public static void updateTrieOne(Ingredient ingredient, int position){
         trie.insertIngredient(ingredient, position);
     }
@@ -141,13 +99,11 @@ public class GroceryListFragment extends Fragment {
     }
 
     public void queryUserRecipes(){
-        // specify what type of data we want to query - UserRecipe.class
-        ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
 
+        ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
         // include data referred by user key
         query.include(ScheduleController.KEY_USER);
         query.include(ScheduleController.KEY_RECIPE);
-        query.setLimit(20);
         query.whereEqualTo(ScheduleController.KEY_USER, ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<ScheduleController>() {
             @Override
@@ -158,7 +114,6 @@ public class GroceryListFragment extends Fragment {
                 }
 
                 for (ScheduleController recipe: recipes){
-                    System.out.println(recipe.getRecipe());
                     allAddedRecipes.putIfAbsent(recipe.getDayOfWeek(), new ArrayList<>());
                     allAddedRecipes.get(recipe.getDayOfWeek()).add((RecipeController) recipe.getRecipe());
                     listAdapter.notifyDataSetChanged();

@@ -80,7 +80,6 @@ public class RecipeSuggestions {
         }
 
         //recursion function called by autocomplete
-        //Time O(n), Space O(n), n is number of nodes in branches
         void helper(TrieNode node, List<Ingredient> res) {
             if (node == null) //base condition
                 return;

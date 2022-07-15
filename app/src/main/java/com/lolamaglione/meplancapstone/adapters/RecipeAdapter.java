@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.lolamaglione.meplancapstone.Constants;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.activities.RecipeDetailActivity;
 import com.lolamaglione.meplancapstone.fragments.FeedFragment;
@@ -46,10 +47,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
         Recipe recipe = recipes.get(position);
         holder.bind(recipe);
-
     }
 
     @Override
@@ -95,14 +94,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //AppCompatActivity activity = (AppCompatActivity) v.getContext();
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION){
                         Recipe recipe = recipes.get(position);
                         Intent intent = new Intent(context, RecipeDetailActivity.class);
                         intent.putExtra(Recipe.class.getSimpleName(), Parcels.wrap(recipe));
-                        intent.putExtra("query", ParseUser.getCurrentUser().getString("last_query"));
-                        intent.putExtra("title", recipe.title);
+                        intent.putExtra(Constants.KEY_QUERY, ParseUser.getCurrentUser().getString(Constants.KEY_LAST_QUERY));
+                        intent.putExtra(Constants.KEY_TITLE, recipe.title);
                         context.startActivity(intent);
                     }
                 }
@@ -111,7 +109,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
 
         public void bind(Recipe recipe){
             tvTitle.setText(recipe.getTitle());
-            tvCookTime.setText("" + recipe.getCookTime());
+            tvCookTime.setText(String.valueOf(recipe.getCookTime()));
             Glide.with(context).load(recipe.getImageURL()).centerCrop().into(ivFeedRecipe);
         }
     }

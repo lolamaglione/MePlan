@@ -22,9 +22,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.lolamaglione.meplancapstone.Constants;
 import com.lolamaglione.meplancapstone.EdamamClient;
 import com.lolamaglione.meplancapstone.EndlessRecyclerViewScrollListener;
 import com.lolamaglione.meplancapstone.ParseRecipe;
@@ -39,7 +39,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -66,49 +65,18 @@ public class FeedFragment extends Fragment{
     private String current_query = default_query;
     private boolean dataBaseWasCalled = false;
     LinearLayoutManager linearLayoutManager;
-    private Spinner spinnerCusines;
+    private Spinner spinnerCuisines;
 
     // implementing database
     private RecipeDao recipeDao;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public FeedFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FeedFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FeedFragment newInstance(String param1, String param2) {
-        FeedFragment fragment = new FeedFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         setHasOptionsMenu(true);
     }
 
@@ -123,24 +91,24 @@ public class FeedFragment extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         parse = new ParseRecipe();
-        default_query = ParseUser.getCurrentUser().getString("last_query");
+        default_query = ParseUser.getCurrentUser().getString(Constants.KEY_LAST_QUERY);
         current_query = default_query;
         rvRecipes = view.findViewById(R.id.rvRecipes);
         //searchBar = (Toolbar) view.findViewById(R.id.tbSearch);
         allRecipes = new ArrayList<>();
         cuisine = " ";
         recipeAdapter = new RecipeAdapter(getContext(), allRecipes);
-        ParseUser.getCurrentUser().put("last_query", current_query);
+        ParseUser.getCurrentUser().put(Constants.KEY_LAST_QUERY, current_query);
         client = new EdamamClient();
         rvRecipes.setAdapter(recipeAdapter);
         linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipes.setLayoutManager(linearLayoutManager);
-        spinnerCusines = view.findViewById(R.id.spinnerCusines);
+        spinnerCuisines = view.findViewById(R.id.spinnerCusines);
         ArrayAdapter<CharSequence> cuisineAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.cuisines_array, android.R.layout.simple_spinner_item);
         cuisineAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCusines.setAdapter(cuisineAdapter);
-        spinnerCusines.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerCuisines.setAdapter(cuisineAdapter);
+        spinnerCuisines.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 cuisine = (String) parent.getItemAtPosition(position);
@@ -241,15 +209,11 @@ public class FeedFragment extends Fragment{
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                ParseUser.getCurrentUser().put("last_query", query);
+                ParseUser.getCurrentUser().put(Constants.KEY_LAST_QUERY, query);
                 ParseUser.getCurrentUser().saveInBackground();
-
                 // perform query here
                 current_query = query;
                 populateRecipesFromDataBase();
-                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
-                // see https://code.google.com/p/android/issues/detail?id=24599
-                //TODO: fidn a way to clear the search bar once the user has submitted
                 searchView.clearFocus();
                 searchView.clearAnimation();
                 return true;
@@ -275,8 +239,8 @@ public class FeedFragment extends Fragment{
                     e.printStackTrace();
                 }
                 try {
-                    jsonArray = json.jsonObject.getJSONArray("hits");
-                    Log.i(TAG, json.jsonObject.getJSONArray("hits").toString());
+                    jsonArray = json.jsonObject.getJSONArray(Constants.KEY_HITS);
+                    Log.i(TAG, json.jsonObject.getJSONArray(Constants.KEY_HITS).toString());
                     if (page == 0){
                         recipeAdapter.clear();
                     }
@@ -315,12 +279,12 @@ public class FeedFragment extends Fragment{
                             JSONArray jsonArray = null;
                             try {
                                 getNextPage(json);
-                                jsonArray = json.jsonObject.getJSONArray("hits");
-                                Log.i(TAG, json.jsonObject.getJSONArray("hits").toString());
+                                jsonArray = json.jsonObject.getJSONArray(Constants.KEY_HITS);
+                                Log.i(TAG, json.jsonObject.getJSONArray(Constants.KEY_HITS).toString());
                                 if (page == 0){
                                     recipeAdapter.clear();
                                 }
-                                final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
+                                final List<Recipe> recipesFromNetwork = ParseRecipe.fromJsonArray(jsonArray, query);
                                 allRecipes.addAll(recipesFromNetwork);
                                 recipeAdapter.notifyDataSetChanged();
                                 AsyncTask.execute(new Runnable() {
@@ -356,9 +320,8 @@ public class FeedFragment extends Fragment{
     }
 
     private String getNextPage(JsonHttpResponseHandler.JSON json) throws JSONException {
-        String next = json.jsonObject.getJSONObject("_links").getJSONObject("next").getString("href");
+        String next = json.jsonObject.getJSONObject(Constants.KEY_LINKS).getJSONObject(Constants.KEY_NEXT_PAGE).getString(Constants.KEY_HREF);
         next_page = next;
-        System.out.println("Happening: " + next_page);
         return next;
     }
 

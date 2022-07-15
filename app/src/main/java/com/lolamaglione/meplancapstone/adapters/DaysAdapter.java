@@ -2,9 +2,7 @@ package com.lolamaglione.meplancapstone.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -12,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -26,10 +23,8 @@ import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;
 import com.lolamaglione.meplancapstone.models.Recipe;
-import com.lolamaglione.meplancapstone.models.Schedule;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -90,6 +85,8 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
         RecipeAdapter adapter;
         List<RecipeController> dailyRecipes;
 
+        // break down recipes for each day in order to send to each recipeAdapter
+        // for the specific day recyclerView
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             day = itemView.findViewById(R.id.tvDay);
@@ -98,8 +95,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
             rlExpandaleLayout = itemView.findViewById(R.id.rlExpandaleLayout);
             ivArrow = itemView.findViewById(R.id.ivArrow);
             btnClear = itemView.findViewById(R.id.btnClear);
-            // break down recipes for each day in order to send to each recipeAdapter
-            // for the specific day recyclerView
+
         }
 
         public void bind(String dayOfWeek, int position, boolean isExpandable) {
@@ -111,10 +107,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
             dailyRecipes = addedRecipes.get(position);
             if (dailyRecipes.size() > 0){
                 ivArrow.setImageResource(R.drawable.arrow_down);
-            }else{
-                ivArrow.setImageResource(R.drawable.ic_not_added);
-            }
-            if (dailyRecipes.size() > 0) {
                 createRecipesInDB(recipesInDB);
                 rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
                 linear_layout.setOnClickListener(new View.OnClickListener() {
@@ -129,10 +121,16 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                         }
                     }
                 });
+            }else{
+                ivArrow.setImageResource(R.drawable.ic_not_added);
             }
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
             rvRecipes.setLayoutManager(linearLayoutManager);
 
+            deleteAllRecipesFromDay(position, recipesInDB);
+        }
+
+        private void deleteAllRecipesFromDay(int position, List<Recipe> recipesInDB) {
             btnClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -179,6 +177,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                     ParseQuery<RecipeController> queryRecipe = ParseQuery.getQuery(RecipeController.class);
                     queryRecipe.whereEqualTo(RecipeController.KEY_OBJECT_ID, item.getObjectID());
                     queryRecipe.findInBackground(new FindCallback<RecipeController>() {
+                        //TODO: add a progress bar
                         @Override
                         public void done(List<RecipeController> objects, ParseException e) {
                             for (RecipeController object : objects){
@@ -186,36 +185,19 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                                 GroceryListFragment.removeTrie(generalIngredients, position);
                                 ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
                                 query.whereEqualTo(ScheduleController.KEY_RECIPE, object);
-                                query.findInBackground(new FindCallback<ScheduleController>() {
-                                    @Override
-                                    public void done(List<ScheduleController> objects, ParseException e) {
-                                        for (ScheduleController object : objects){
-                                            scheduleUndo.setDayOfWeek(object.getDayOfWeek());
-                                            scheduleUndo.setRecipe(object.getRecipe());
-                                            scheduleUndo.setUser(object.getUser());
-                                            object.deleteInBackground(new DeleteCallback() {
-                                                @Override
-                                                public void done(ParseException e) {
-                                                    adapter.removeItem(position);
-
-                                                    Snackbar snackbar = Snackbar.make(itemView, "Item was removed from the list.", Snackbar.LENGTH_LONG);
-                                                    snackbar.setAction("UNDO", new View.OnClickListener(){
-
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            adapter.restoreItem(item, position);
-                                                            scheduleUndo.saveInBackground();
-                                                            rvRecipes.scrollToPosition(position);
-                                                        }
-                                                    });
-                                                    snackbar.setActionTextColor(Color.YELLOW);
-                                                    snackbar.show();
-                                                }
-                                            });
-
-                                        }
+                                try {
+                                    List<ScheduleController> foundScheduleController = query.find();
+                                    for (ScheduleController schedule : foundScheduleController){
+                                        scheduleUndo.setDayOfWeek(schedule.getDayOfWeek());
+                                        scheduleUndo.setRecipe(schedule.getRecipe());
+                                        scheduleUndo.setUser(schedule.getUser());
+                                        schedule.delete();
+                                        adapter.removeItem(position);
+                                        undoRemovingRecipe(item, position, scheduleUndo);
                                     }
-                                });
+                                } catch (ParseException ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         }
                     });
@@ -226,6 +208,21 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
 
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallback);
             itemTouchHelper.attachToRecyclerView(rvRecipes);
+        }
+
+        private void undoRemovingRecipe(Recipe item, int position, ScheduleController scheduleUndo) {
+            Snackbar snackbar = Snackbar.make(itemView, "Item was removed from the list.", Snackbar.LENGTH_LONG);
+            snackbar.setAction("UNDO", new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    adapter.restoreItem(item, position);
+                    scheduleUndo.saveInBackground();
+                    rvRecipes.scrollToPosition(position);
+                }
+            });
+            snackbar.setActionTextColor(Color.YELLOW);
+            snackbar.show();
         }
     }
 }

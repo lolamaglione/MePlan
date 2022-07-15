@@ -47,12 +47,8 @@ public class RecipeDetailFragment extends Fragment {
     CollapsingToolbarLayout collapsingToolbar;
     WebView wvUrl;
 
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String RECIPE_OBJ = "recipe_obj";
 
-    // TODO: Rename and change types of parameters
     private Recipe mRecipe_obj;
 
     public RecipeDetailFragment() {
@@ -65,7 +61,6 @@ public class RecipeDetailFragment extends Fragment {
      *
      * @return A new instance of fragment RecipeDetailFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static RecipeDetailFragment newInstance(Parcelable recipe) {
         RecipeDetailFragment fragment = new RecipeDetailFragment();
         Bundle args = new Bundle();

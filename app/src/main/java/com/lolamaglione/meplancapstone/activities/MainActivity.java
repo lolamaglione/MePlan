@@ -63,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_list:
                         fragment = new GroceryListFragment();
                         break;
-                    case R.id.action_plan:
-                        fragment = new MealPlanFragment();
-                        break;
                     default:
                         fragment = new MealPlanFragment();
                         break;
@@ -97,17 +94,5 @@ public class MainActivity extends AppCompatActivity {
 
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
-    }
-
-    private List<ScheduleController> queryRecipes() throws ParseException {
-        ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
-
-        // include data referred by user key
-        query.include(ScheduleController.KEY_USER);
-        query.include(ScheduleController.KEY_RECIPE);
-        query.setLimit(20);
-        query.whereEqualTo(ScheduleController.KEY_USER, ParseUser.getCurrentUser());
-
-        return query.find();
     }
 }

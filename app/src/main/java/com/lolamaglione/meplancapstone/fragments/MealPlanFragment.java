@@ -47,44 +47,17 @@ public class MealPlanFragment extends Fragment {
     private RecyclerView rvDays;
     private HashMap<Integer, List<RecipeController>> allAddedRecipes;
     private DaysAdapter dayAdapter;
-    HashMap<Integer, String> intToDay = new HashMap<>();
+    HashMap<Integer, String> intToDay = new HashMap<Integer, String>(){{put(0, "Monday"); put(1, "Tuesday"); put(2, "Wednesday"); put(3, "Thursday");
+        put(4, "Friday");put(5, "Saturday"); put(6, "Sunday");}};;
     public static final String TAG = "Meal Plan Fragment";
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private ArrayList<ScheduleController> mParam1;
-    private String mParam2;
 
     public MealPlanFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @return A new instance of fragment MealPlanFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MealPlanFragment newInstance(ArrayList<ScheduleController> param1) {
-        MealPlanFragment fragment = new MealPlanFragment();
-        Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_PARAM1, Parcels.unwrap((Parcelable) param1));
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getParcelableArrayList(ARG_PARAM1);
-        }
     }
 
     @Override
@@ -100,7 +73,7 @@ public class MealPlanFragment extends Fragment {
         rvDays = view.findViewById(R.id.rvDays);
         List<String> daysOfWeek = Arrays.asList(getResources().getStringArray(R.array.days_array));
         allAddedRecipes = new HashMap<>();
-        // make a HashMap with int to day
+        // Add a arraylist and a day to the added recipe hashmap
         fillHashMap(daysOfWeek);
         // create a new adapter to see the recipes for each specific day
         dayAdapter = new DaysAdapter(getContext(), intToDay, allAddedRecipes);
@@ -111,9 +84,7 @@ public class MealPlanFragment extends Fragment {
     }
 
     private void fillHashMap(List<String> daysOfWeek) {
-
         for(int i = 0; i < daysOfWeek.size(); i++){
-            intToDay.putIfAbsent(i, daysOfWeek.get(i));
             allAddedRecipes.putIfAbsent(i, new ArrayList<>());
         }
     }
@@ -125,7 +96,6 @@ public class MealPlanFragment extends Fragment {
         // include data referred by user key
         query.include(ScheduleController.KEY_USER);
         query.include(ScheduleController.KEY_RECIPE);
-        query.setLimit(20);
         query.whereEqualTo(ScheduleController.KEY_USER, ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<ScheduleController>() {
             @Override
@@ -136,7 +106,6 @@ public class MealPlanFragment extends Fragment {
                 }
 
                 for (ScheduleController recipe: recipes){
-                    System.out.println(recipe.getRecipe());
                     allAddedRecipes.putIfAbsent(recipe.getDayOfWeek(), new ArrayList<>());
                     allAddedRecipes.get(recipe.getDayOfWeek()).add((RecipeController) recipe.getRecipe());
                     dayAdapter.notifyItemChanged(recipe.getDayOfWeek());
