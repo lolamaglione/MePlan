@@ -9,5 +9,6 @@ public class Constants {
     public static String KEY_NEXT_PAGE = "next";
     public static String KEY_HREF = "href";
     public static String KEY_HITS = "hits";
+    public static String KEY_EMAIL = "email";
 
 }

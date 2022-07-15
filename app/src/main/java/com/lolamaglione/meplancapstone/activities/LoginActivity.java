@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    // use the logInInBasckground method to login with username and password
+    // use the LogInBackground method to login with username and password
     private void loginUser(String username, String password) {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override

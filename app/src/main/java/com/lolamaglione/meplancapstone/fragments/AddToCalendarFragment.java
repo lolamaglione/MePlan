@@ -100,7 +100,6 @@ public class AddToCalendarFragment extends DialogFragment {
                     List<Ingredient> updateIngredients = new ArrayList<>();
                     recipeController = createDBRecipe(day_int, updateIngredients);
                     List<String> generalIngredients = recipeController.getGeneralIngredients();
-                    //GroceryListFragment.updateTrie(updateIngredients, day_int);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

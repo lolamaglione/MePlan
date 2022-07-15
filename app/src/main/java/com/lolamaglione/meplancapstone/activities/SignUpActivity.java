@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.lolamaglione.meplancapstone.Constants;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.databinding.ActivitySignUpBinding;
 import com.parse.ParseException;
@@ -43,7 +44,6 @@ public class SignUpActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("clicked");
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
                 String email = etEmail.getText().toString();
@@ -63,18 +63,16 @@ public class SignUpActivity extends AppCompatActivity {
         ParseUser newUser = new ParseUser();
         newUser.setUsername(username);
         newUser.setPassword(password);
-        newUser.put("email", email);
+        newUser.put(Constants.KEY_EMAIL, email);
         newUser.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
-                if (e != null){
+                if (e != null) {
                     Log.e(TAG, "issue with Signup " + e);
-                    Toast.makeText(SignUpActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     return;
-                }else{
-                    Toast.makeText(SignUpActivity.this, "Succesful Singup!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+        Toast.makeText(SignUpActivity.this, "Successful SignUp!", Toast.LENGTH_SHORT).show();
     }
 }

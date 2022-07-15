@@ -201,7 +201,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                             }
                         }
                     });
-
                     super.onSwiped(viewHolder, direction);
                 }
             };

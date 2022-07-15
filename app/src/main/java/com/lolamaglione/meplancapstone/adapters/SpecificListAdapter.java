@@ -84,18 +84,7 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
 
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);
-
             tvIngredient = itemView.findViewById(R.id.tvIngredient);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-
-                }
-            });
-
-
         }
 
         public void bind(Ingredient ingredient){
@@ -106,33 +95,36 @@ public class SpecificListAdapter extends RecyclerView.Adapter<SpecificListAdapte
             tvIngredient.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(tvIngredient.getPaintFlags() != (tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG)){
-                        tvIngredient.setPaintFlags(tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    } else if (tvIngredient.getPaintFlags() == (tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG)) {
+                    int textStrikeThrough = (tvIngredient.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    if(tvIngredient.getPaintFlags() != textStrikeThrough){
+                        tvIngredient.setPaintFlags(textStrikeThrough);
+                    } else if (tvIngredient.getPaintFlags() == textStrikeThrough) {
                         tvIngredient.setPaintFlags(0);
                     }
-                    ParseQuery<IngredientController> query = ParseQuery.getQuery(IngredientController.class);
-                    query.whereEqualTo(IngredientController.KEY_OBJECT_ID, ingredient.getIngredientID());
-                    query.findInBackground(new FindCallback<IngredientController>() {
+                    setTextCheckStatus(ingredient);
+                }
+            });
+        }
+    }
+
+    private void setTextCheckStatus(Ingredient ingredient) {
+        ParseQuery<IngredientController> query = ParseQuery.getQuery(IngredientController.class);
+        query.whereEqualTo(IngredientController.KEY_OBJECT_ID, ingredient.getIngredientID());
+        query.findInBackground(new FindCallback<IngredientController>() {
+            @Override
+            public void done(List<IngredientController> objects, ParseException e) {
+                for (IngredientController object : objects){
+                    object.setIsChecked(!object.getIsChecked());
+                    object.saveInBackground(new SaveCallback() {
                         @Override
-                        public void done(List<IngredientController> objects, ParseException e) {
-                            for (IngredientController object : objects){
-                                object.setIsChecked(!object.getIsChecked());
-                                object.saveInBackground(new SaveCallback() {
-                                    @Override
-                                    public void done(ParseException e) {
-                                        if ( e != null){
-                                            Log.e(TAG, "error saving checked");
-                                        }
-                                    }
-                                });
+                        public void done(ParseException e) {
+                            if ( e != null){
+                                Log.e(TAG, "error saving checked");
                             }
                         }
                     });
                 }
-            });
-
-
-        }
+            }
+        });
     }
 }

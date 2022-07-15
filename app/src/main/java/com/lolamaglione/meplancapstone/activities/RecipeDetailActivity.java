@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.tabs.TabLayout;
+import com.lolamaglione.meplancapstone.Constants;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.SampleFragmentPageAdapter;
 import com.lolamaglione.meplancapstone.databinding.ActivityRecipeDetailBinding;
@@ -52,7 +53,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         recipe = Parcels.unwrap(getIntent().getParcelableExtra(Recipe.class.getSimpleName()));
         nestedScroll.setFillViewport(true);
         Glide.with(this).load(recipe.getImageURL()).into(ivRecipeDetail);
-        String query = getIntent().getStringExtra("query");
+        String query = getIntent().getStringExtra(Constants.KEY_QUERY);
         viewPager.setAdapter(new SampleFragmentPageAdapter(getSupportFragmentManager(), RecipeDetailActivity.this, recipe, query, recipe.title));
         tabLayout.setupWithViewPager(viewPager);
 
