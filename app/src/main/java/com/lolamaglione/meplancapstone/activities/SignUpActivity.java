@@ -54,7 +54,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void goToMainActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         this.startActivity(intent);
         finish();
     }
@@ -71,10 +71,10 @@ public class SignUpActivity extends AppCompatActivity {
                     Log.e(TAG, "issue with Signup " + e);
                     Toast.makeText(SignUpActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     return;
+                }else{
+                    Toast.makeText(SignUpActivity.this, "Succesful Singup!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
-
-
 }

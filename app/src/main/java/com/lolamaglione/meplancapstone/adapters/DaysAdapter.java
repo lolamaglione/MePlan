@@ -109,9 +109,12 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
             rvRecipes.setAdapter(adapter);
             enableSwipeToDeleteAndUndo(recipesInDB);
             dailyRecipes = addedRecipes.get(position);
-            ivArrow.setImageResource(R.drawable.ic_not_added);
-            if (dailyRecipes.size() > 0) {
+            if (dailyRecipes.size() > 0){
                 ivArrow.setImageResource(R.drawable.arrow_down);
+            }else{
+                ivArrow.setImageResource(R.drawable.ic_not_added);
+            }
+            if (dailyRecipes.size() > 0) {
                 createRecipesInDB(recipesInDB);
                 rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
                 linear_layout.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +132,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
             }
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
             rvRecipes.setLayoutManager(linearLayoutManager);
-
 
             btnClear.setOnClickListener(new View.OnClickListener() {
                 @Override

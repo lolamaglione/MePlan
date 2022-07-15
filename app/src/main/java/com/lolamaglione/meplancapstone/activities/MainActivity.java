@@ -15,13 +15,17 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.databinding.ActivityMainBinding;
 import com.lolamaglione.meplancapstone.fragments.FeedFragment;
 import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;
 import com.lolamaglione.meplancapstone.fragments.MealPlanFragment;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * MainActivity handles the Main Fragments to make the app functionable, like the feedFragment
@@ -42,10 +46,9 @@ public class MainActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
         bottomNavigationView = binding.bottomNavigation;
-
+        bottomNavigationView.setSelectedItemId(R.id.action_plan);
         Fragment fragment = new MealPlanFragment();
         fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
-
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -59,11 +62,10 @@ public class MainActivity extends AppCompatActivity {
                         fragment = new GroceryListFragment();
                         break;
                     case R.id.action_plan:
-                        Toast.makeText(MainActivity.this, "mealPlan!", Toast.LENGTH_SHORT).show();
                         fragment = new MealPlanFragment();
                         break;
                     default:
-                        fragment = new FeedFragment();
+                        fragment = new MealPlanFragment();
                         break;
                 }
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
@@ -80,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         if (item.getItemId() == R.id.action_logout){
             logoutUser();
         }
@@ -94,5 +95,17 @@ public class MainActivity extends AppCompatActivity {
 
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
+    }
+
+    private List<ScheduleController> queryRecipes() throws ParseException {
+        ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
+
+        // include data referred by user key
+        query.include(ScheduleController.KEY_USER);
+        query.include(ScheduleController.KEY_RECIPE);
+        query.setLimit(20);
+        query.whereEqualTo(ScheduleController.KEY_USER, ParseUser.getCurrentUser());
+
+        return query.find();
     }
 }

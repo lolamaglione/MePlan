@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +27,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +56,7 @@ public class MealPlanFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private ArrayList<ScheduleController> mParam1;
     private String mParam2;
 
     public MealPlanFragment() {
@@ -65,15 +68,13 @@ public class MealPlanFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment MealPlanFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MealPlanFragment newInstance(String param1, String param2) {
+    public static MealPlanFragment newInstance(ArrayList<ScheduleController> param1) {
         MealPlanFragment fragment = new MealPlanFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelableArrayList(ARG_PARAM1, Parcels.unwrap((Parcelable) param1));
         fragment.setArguments(args);
         return fragment;
     }
@@ -82,8 +83,7 @@ public class MealPlanFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mParam1 = getArguments().getParcelableArrayList(ARG_PARAM1);
         }
     }
 
@@ -98,32 +98,16 @@ public class MealPlanFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvDays = view.findViewById(R.id.rvDays);
-        //TODO: change this
-        List<String> daysOfWeek = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+        List<String> daysOfWeek = Arrays.asList(getResources().getStringArray(R.array.days_array));
         allAddedRecipes = new HashMap<>();
+        // make a HashMap with int to day
         fillHashMap(daysOfWeek);
+        // create a new adapter to see the recipes for each specific day
         dayAdapter = new DaysAdapter(getContext(), intToDay, allAddedRecipes);
         rvDays.setAdapter(dayAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvDays.setLayoutManager(linearLayoutManager);
         queryUserRecipes();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_clear, menu);
-        MenuItem clear = menu.findItem(R.id.action_clear);
-
-        clear.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
-                query.whereEqualTo(ParseUser.getCurrentUser().getObjectId(), ScheduleController.KEY_USER);
-
-                return false;
-            }
-        });
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void fillHashMap(List<String> daysOfWeek) {
@@ -155,9 +139,10 @@ public class MealPlanFragment extends Fragment {
                     System.out.println(recipe.getRecipe());
                     allAddedRecipes.putIfAbsent(recipe.getDayOfWeek(), new ArrayList<>());
                     allAddedRecipes.get(recipe.getDayOfWeek()).add((RecipeController) recipe.getRecipe());
-                    dayAdapter.notifyDataSetChanged();
+                    dayAdapter.notifyItemChanged(recipe.getDayOfWeek());
                 }
             }
         });
+
     }
 }

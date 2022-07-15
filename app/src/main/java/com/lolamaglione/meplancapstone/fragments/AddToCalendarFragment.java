@@ -108,14 +108,12 @@ public class AddToCalendarFragment extends DialogFragment {
         fillHashMap(dayToInt);
         dropDown = view.findViewById(R.id.dropDown);
         btnConfirm = view.findViewById(R.id.btnConfirm);
-        String[] daysOfTheWeek = new String[] {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
         SpinnerAdapter adapter = ArrayAdapter.createFromResource(getContext(), R.array.days_array, android.R.layout.simple_spinner_item);
         dropDown.setAdapter(adapter);
                 dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 day = (String) parent.getItemAtPosition(position);
-
             }
 
             @Override
@@ -123,12 +121,13 @@ public class AddToCalendarFragment extends DialogFragment {
                 day = "";
             }
         });
+
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RecipeController recipeController = null;
+                int day_int = dayToInt.get(day);
                 try {
-                    int day_int = dayToInt.get(day);
                     List<Ingredient> updateIngredients = new ArrayList<>();
                     recipeController = createDBRecipe(day_int, updateIngredients);
                     List<String> generalIngredients = recipeController.getGeneralIngredients();
@@ -139,7 +138,7 @@ public class AddToCalendarFragment extends DialogFragment {
                 ScheduleController scheduleController = new ScheduleController();
                 scheduleController.setUser(ParseUser.getCurrentUser());
                 scheduleController.setRecipe(recipeController);
-                scheduleController.setDayOfWeek(dayToInt.get(day));
+                scheduleController.setDayOfWeek(day_int);
                 scheduleController.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
@@ -147,25 +146,22 @@ public class AddToCalendarFragment extends DialogFragment {
                             Log.e("addActivity", "error: " + e);
                         }
                         Log.i("addActivity", "success!");
+                        Toast.makeText(getContext(), "Saved Recipe!", Toast.LENGTH_SHORT).show();
                     }
                 });
-                Toast.makeText(getContext(), "Saved Recipe!", Toast.LENGTH_SHORT).show();
                 dismiss();
             }
         });
     }
 
     private void fillHashMap(HashMap<String, Integer> dayToInt){
-        List<String> daysOfWeek = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+        List<String> daysOfWeek = Arrays.asList(getResources().getStringArray(R.array.days_array));
         for (int i = 0; i < daysOfWeek.size(); i++){
             dayToInt.putIfAbsent(daysOfWeek.get(i), i);
         }
-//        Files.lines(Paths.get("dayToInt.txt.properties")).map(s->s.split("=")).
-//                forEach(a-> dayToInt.put(a[0], Integer.valueOf(a[1])));
     }
 
     public RecipeController createDBRecipe(int day, List<Ingredient> updateIngredients) throws ParseException {
-
         // recipe we want to add
         Recipe recipe = Parcels.unwrap(getArguments().getParcelable(Recipe.class.getSimpleName()));
         String title = recipe.getTitle();
@@ -195,8 +191,9 @@ public class AddToCalendarFragment extends DialogFragment {
             });
             return recipeController;
         }
+        // is they are the recipe with the same title, I don't want to save it to the parse database
+        // twice but I do want to add it to the schedule
         RecipeController recipeController = recipesWithSameTitle.get(0);
-
         return recipeController;
     }
 

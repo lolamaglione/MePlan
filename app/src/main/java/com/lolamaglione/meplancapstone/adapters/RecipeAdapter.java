@@ -54,7 +54,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-
         return recipes.size();
     }
 
@@ -81,8 +80,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         recipes.add(position, item);
         notifyItemInserted(position);
     }
-
-
 
     class ViewHolder extends RecyclerView.ViewHolder {
 

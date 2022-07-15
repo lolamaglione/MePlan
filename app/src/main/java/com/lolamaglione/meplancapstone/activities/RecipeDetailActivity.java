@@ -43,7 +43,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-
         viewPager = binding.viewPager;
         tabLayout = binding.slidingTabs;
         nestedScroll = binding.nestedScroll;
