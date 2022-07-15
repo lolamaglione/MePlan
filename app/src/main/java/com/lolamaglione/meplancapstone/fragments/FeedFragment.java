@@ -175,8 +175,19 @@ public class FeedFragment extends Fragment{
             rvRecipes.addOnScrollListener(scrollListener);
         } else {
             Log.i(TAG, "fetching data from database");
+            next_page = "";
             recipeAdapter.clear();
             recipeAdapter.addAll(recipesFromDB);
+            scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    // Triggered only when new data needs to be appended to the list
+                    // Add whatever code is needed to append new items to the bottom of the list
+                    loadNextDataFromApiByDB(page);
+                }
+            };
+            // Adds the scroll listener to RecyclerView
+            rvRecipes.addOnScrollListener(scrollListener);
         }
 
     }
@@ -189,9 +200,22 @@ public class FeedFragment extends Fragment{
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
         if(next_page == ""){
             page = 0;
-            populateRecipeFromAPI(current_query, page, next_page, cuisine);
-            Log.i(TAG, "fetching MORE data from the api with " + current_query);
         }
+        populateRecipeFromAPI(current_query, page, next_page, cuisine);
+        Log.i(TAG, "fetching MORE data from the api with " + current_query);
+    }
+
+    private void loadNextDataFromApiByDB(int page) {
+        // Send an API request to retrieve appropriate paginated data
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
+        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+        if(next_page == ""){
+            page = 0;
+        }
+        getNextPageDB(current_query, page, next_page, cuisine);
+        Log.i(TAG, "fetching MORE data from the api with with DB " + current_query);
     }
 
     @Override
@@ -240,46 +264,6 @@ public class FeedFragment extends Fragment{
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void populateRecipeFromAPI(String query, int page, String nextPage) {
-        client.getRecipeFeed(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                JSONArray jsonArray = null;
-                try {
-                    getNextPage(json);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    jsonArray = json.jsonObject.getJSONArray("hits");
-                    Log.i(TAG, json.jsonObject.getJSONArray("hits").toString());
-                    if (page == 0){
-                        recipeAdapter.clear();
-                    }
-                    String set_query = query + cuisine;
-                    final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, set_query);
-                    allRecipes.addAll(recipesFromNetwork);
-                    recipeAdapter.notifyDataSetChanged();
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.i(TAG, "saving data into the database");
-                            recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
-                            dataBaseWasCalled = true;
-                        }
-                    });
-                    recipeAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.e(TAG, "error here: " + throwable);
-            }
-        }, query, page, nextPage);
-    }
-
     private void populateRecipeFromAPI(String query, int page, String nextPage, String cuisine) {
         client.getRecipeFeed(new JsonHttpResponseHandler() {
             @Override
@@ -319,10 +303,63 @@ public class FeedFragment extends Fragment{
         }, query, page, nextPage, cuisine);
     }
 
-    private void getNextPage(JsonHttpResponseHandler.JSON json) throws JSONException {
+    private void getNextPageDB(String query, int page, String nextPage, String cuisine){
+        client.getRecipeFeed(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                try {
+                    String next = getNextPage(json);
+                    client.getRecipeFeed(new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Headers headers, JSON json) {
+                            JSONArray jsonArray = null;
+                            try {
+                                getNextPage(json);
+                                jsonArray = json.jsonObject.getJSONArray("hits");
+                                Log.i(TAG, json.jsonObject.getJSONArray("hits").toString());
+                                if (page == 0){
+                                    recipeAdapter.clear();
+                                }
+                                final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
+                                allRecipes.addAll(recipesFromNetwork);
+                                recipeAdapter.notifyDataSetChanged();
+                                AsyncTask.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Log.i(TAG, "saving data into the database");
+                                        recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
+                                        dataBaseWasCalled = true;
+                                    }
+                                });
+                                recipeAdapter.notifyDataSetChanged();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                            Log.e(TAG, "error: " + throwable);
+                        }
+                    }, query, page, next, cuisine);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
+            }
+        }, query, page, nextPage, cuisine);
+    }
+
+    private String getNextPage(JsonHttpResponseHandler.JSON json) throws JSONException {
         String next = json.jsonObject.getJSONObject("_links").getJSONObject("next").getString("href");
         next_page = next;
         System.out.println("Happening: " + next_page);
+        return next;
     }
 
 }

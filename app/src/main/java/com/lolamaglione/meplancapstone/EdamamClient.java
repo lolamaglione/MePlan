@@ -38,8 +38,6 @@ public class EdamamClient {
         params.put("app_key", REST_APP_KEY);
         params.put("type", "public");
         params.put("q", q);
-        //params.put("q", "tomato, chicken, garlic");
-        //params.put("cuisineType", null);
         Log.i(TAG, "url: " + apiUrl + " q: " + q);
         client.get(apiUrl, params, handler);
     }
