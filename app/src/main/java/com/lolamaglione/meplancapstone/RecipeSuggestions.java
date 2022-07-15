@@ -47,7 +47,7 @@ public class RecipeSuggestions {
 
         public void removeIngredient(String ingredient){
             TrieNode node = root;
-            for (int i = 0; i < ingredient.length(); i++){
+            for (int i = 0; i < ingredient.length()-1; i++){
                 char ch = ingredient.charAt(i);
                 //TrieNode child = node.children[ch];
                 node = node.children[ch];

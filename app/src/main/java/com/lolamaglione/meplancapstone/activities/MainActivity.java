@@ -15,11 +15,13 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.RecipeSuggestions;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.databinding.ActivityMainBinding;
 import com.lolamaglione.meplancapstone.fragments.FeedFragment;
 import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;
 import com.lolamaglione.meplancapstone.fragments.MealPlanFragment;
+import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
