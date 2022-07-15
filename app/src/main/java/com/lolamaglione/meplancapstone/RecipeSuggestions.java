@@ -55,22 +55,6 @@ public class RecipeSuggestions {
             node.ingredients.removeAll(node.ingredients);
         }
 
-        //find the node with prefix's last char, then call helper to find all words using recursion
-        //Time O(n), Space O(n), n is number of nodes included(prefix and branches)
-//        List<String> autocomplete(List<String> ingredients) {
-//            TrieNode node = root;
-//            List<String> suggestions = new ArrayList<String>();
-//
-//            for (int i = 0; i < ingredients.size(); i++) {
-//                String ingredient = ingredients.get(i);
-//                node = node.children.get(ingredient);
-//                if (node == null)
-//                    return new ArrayList<String>();
-//            }
-//            helper(node, suggestions);
-//            return suggestions;
-//        }
-
         public boolean isNull(){
             TrieNode node = root;
             boolean isNull = true;
