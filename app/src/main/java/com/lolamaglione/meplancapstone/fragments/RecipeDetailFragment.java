@@ -40,10 +40,8 @@ import org.parceler.Parcels;
 public class RecipeDetailFragment extends Fragment {
 
     TextView tvLabel;
-    ImageView ivRecipePicture;
     TextView tvDetailUrl;
     ListView lvIngredients;
-    TextView tvTotalTimeCook;
     ImageButton btnAddToSched;
     Toolbar toolBar;
     CollapsingToolbarLayout collapsingToolbar;

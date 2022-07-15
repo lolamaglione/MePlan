@@ -53,6 +53,7 @@ public class AddToCalendarFragment extends DialogFragment {
     Button btnConfirm;
     String day;
     public HashMap<String, Integer> dayToInt;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -146,9 +147,10 @@ public class AddToCalendarFragment extends DialogFragment {
                             Log.e("addActivity", "error: " + e);
                         }
                         Log.i("addActivity", "success!");
-                        Toast.makeText(getContext(), "Saved Recipe!", Toast.LENGTH_SHORT).show();
                     }
                 });
+                Toast.makeText(getContext(), "Saved Recipe!", Toast.LENGTH_SHORT).show();
+
                 dismiss();
             }
         });
@@ -212,6 +214,7 @@ public class AddToCalendarFragment extends DialogFragment {
                         Log.e(TAG, "error saving ingredient " + e);
                     } else {
                         Log.i(TAG, "savedIngredients");
+                        // new to create an ingredient object in order to update the trie
                         Ingredient ingredientObject = new Ingredient();
                         ingredientObject.setIngredientID(newIngredient.getObjectId());
                         ingredientObject.setIngredientName(newIngredient.getName());

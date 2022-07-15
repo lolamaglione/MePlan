@@ -131,8 +131,7 @@ public class FeedFragment extends Fragment{
         cuisine = " ";
         recipeAdapter = new RecipeAdapter(getContext(), allRecipes);
         ParseUser.getCurrentUser().put("last_query", current_query);
-        client = new EdamamClient()
-        ;
+        client = new EdamamClient();
         rvRecipes.setAdapter(recipeAdapter);
         linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipes.setLayoutManager(linearLayoutManager);
@@ -159,19 +158,11 @@ public class FeedFragment extends Fragment{
         populateRecipesFromDataBase();
     }
 
-    private void populateRecipe(LinearLayoutManager linearLayoutManager) {
-
-        if (dataBaseWasCalled){
-            populateRecipesFromDataBase();
-        }
-
-        if(!dataBaseWasCalled){
-            Log.i(TAG, "fetching data from api");
-            System.out.println("this is happening");
-            populateRecipeFromAPI(current_query, 0, "", cuisine);
-
-
-
+    private void populateRecipesFromDataBase() {
+        List<Recipe> recipesFromDB = recipeDao.recentItemsNoQuery(current_query);
+        if (recipesFromDB.size() == 0 || recipesFromDB == null){
+            Log.i(TAG, "fetchign from the API");
+            populateRecipeFromAPI(current_query, 0, next_page, cuisine);
             scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
                 @Override
                 public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -182,14 +173,6 @@ public class FeedFragment extends Fragment{
             };
             // Adds the scroll listener to RecyclerView
             rvRecipes.addOnScrollListener(scrollListener);
-        }
-    }
-
-    private void populateRecipesFromDataBase() {
-        List<Recipe> recipesFromDB = recipeDao.recentItemsNoQuery(current_query);
-        if (recipesFromDB.size() == 0 || recipesFromDB == null){
-            Log.i(TAG, "fetchign from the API");
-            populateRecipeFromAPI(current_query, 0, next_page, cuisine);
         } else {
             Log.i(TAG, "fetching data from database");
             recipeAdapter.clear();
@@ -206,9 +189,9 @@ public class FeedFragment extends Fragment{
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
         if(next_page == ""){
             page = 0;
+            populateRecipeFromAPI(current_query, page, next_page, cuisine);
+            Log.i(TAG, "fetching MORE data from the api with " + current_query);
         }
-        populateRecipeFromAPI(current_query, page, next_page);
-
     }
 
     @Override
@@ -257,10 +240,6 @@ public class FeedFragment extends Fragment{
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private HashMap<String, Integer> ingredientList = new HashMap<>();
-
-    private ArrayList<String> ingredientListKey = new ArrayList<>();
-
     private void populateRecipeFromAPI(String query, int page, String nextPage) {
         client.getRecipeFeed(new JsonHttpResponseHandler() {
             @Override
@@ -289,14 +268,6 @@ public class FeedFragment extends Fragment{
                             dataBaseWasCalled = true;
                         }
                     });
-                    for (Recipe recipe : recipesFromNetwork){
-                        List<String> recipeIngredients = recipe.getGeneralIngredients();
-                        for (String ingredient : recipeIngredients){
-                            if(!ingredientListKey.contains(ingredient)){
-                                ingredientListKey.add(ingredient);
-                            }
-                        }
-                    }
                     recipeAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -336,14 +307,6 @@ public class FeedFragment extends Fragment{
                             dataBaseWasCalled = true;
                         }
                     });
-                    for (Recipe recipe : recipesFromNetwork){
-                        List<String> recipeIngredients = recipe.getGeneralIngredients();
-                        for (String ingredient : recipeIngredients){
-                            if(!ingredientListKey.contains(ingredient)){
-                                ingredientListKey.add(ingredient);
-                            }
-                        }
-                    }
                     recipeAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
