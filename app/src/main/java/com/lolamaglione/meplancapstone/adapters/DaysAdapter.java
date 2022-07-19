@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.SwipeToDeleteCallback;
+import com.lolamaglione.meplancapstone.activities.MainActivity;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;

@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
+import com.lolamaglione.meplancapstone.activities.MainActivity;
 import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
 import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
@@ -40,10 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AddToCalendarFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
  * This Fragment incorporates modular activity in order to be able to add a recipe to the meal plan
  */
 public class AddToCalendarFragment extends DialogFragment {

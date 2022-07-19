@@ -2,6 +2,8 @@ package com.lolamaglione.meplancapstone;
 
 import com.lolamaglione.meplancapstone.models.Ingredient;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -12,7 +14,12 @@ import java.util.Locale;
  */
 public class RecipeSuggestions {
 
+    public RecipeSuggestions() {
+
+    }
+
     static final int MAX_NUM = 128;
+
 
     public static class TrieNode {
         // change this into a hashmap
@@ -45,6 +52,7 @@ public class RecipeSuggestions {
             node.ingredients.add(ingredientObject);
         }
 
+        //TODO: remove all nodes that are associated with that that don't have other ingredients
         public void removeIngredient(String ingredient){
             TrieNode node = root;
             for (int i = 0; i < ingredient.length()-1; i++){
@@ -52,6 +60,7 @@ public class RecipeSuggestions {
                 //TrieNode child = node.children[ch];
                 node = node.children[ch];
             }
+            //TODO: only delete if it doesn't have any children
             node.ingredients.removeAll(node.ingredients);
         }
 
@@ -88,8 +97,6 @@ public class RecipeSuggestions {
             for (TrieNode child : node.children)
                 helper(child, res);
         }
-
-
     }
 
 }

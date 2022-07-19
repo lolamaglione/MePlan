@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.action_plan);
         Fragment fragment = new MealPlanFragment();
         fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
-
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

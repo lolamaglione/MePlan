@@ -22,6 +22,7 @@ import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Ingredient;
+import com.lolamaglione.meplancapstone.models.Recipe;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -49,6 +50,7 @@ public class GroceryListFragment extends Fragment {
     public static final String TAG = "grocery list fragment";
     private static RecipeSuggestions.Trie trie = new RecipeSuggestions.Trie();
 
+
     public GroceryListFragment() {
         // Required empty public constructor
     }
@@ -68,12 +70,10 @@ public class GroceryListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         rvDaysList = view.findViewById(R.id.rvDaysList);
         List<String> daysOfWeek = Arrays.asList(getResources().getStringArray(R.array.days_array));
         allAddedRecipes = new HashMap<>();
         fillHashMap(daysOfWeek);
-
         // setting up adapter and layout manager
         listAdapter = new DaysListAdapter(getContext(), intToDay, allAddedRecipes, trie);
         rvDaysList.setAdapter(listAdapter);
@@ -86,6 +86,7 @@ public class GroceryListFragment extends Fragment {
             allAddedRecipes.putIfAbsent(i, new ArrayList<>());
         }
     }
+
     public static void updateTrieOne(Ingredient ingredient, int position){
         trie.insertIngredient(ingredient, position);
     }
@@ -97,6 +98,7 @@ public class GroceryListFragment extends Fragment {
             }
         }
     }
+
 
     public void queryUserRecipes(){
 
