@@ -8,12 +8,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,14 +17,10 @@ import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.DaysAdapter;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
-import com.lolamaglione.meplancapstone.models.Recipe;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,7 +66,7 @@ public class MealPlanFragment extends Fragment {
         List<String> daysOfWeek = Arrays.asList(getResources().getStringArray(R.array.days_array));
         allAddedRecipes = new HashMap<>();
         // Add a arraylist and a day to the added recipe hashmap
-        fillHashMap(daysOfWeek);
+        initializeAllAddedRecipesMap(daysOfWeek);
         // create a new adapter to see the recipes for each specific day
         dayAdapter = new DaysAdapter(getContext(), intToDay, allAddedRecipes);
         rvDays.setAdapter(dayAdapter);
@@ -83,7 +75,7 @@ public class MealPlanFragment extends Fragment {
         queryUserRecipes();
     }
 
-    private void fillHashMap(List<String> daysOfWeek) {
+    private void initializeAllAddedRecipesMap(List<String> daysOfWeek) {
         for(int i = 0; i < daysOfWeek.size(); i++){
             allAddedRecipes.putIfAbsent(i, new ArrayList<>());
         }

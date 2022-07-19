@@ -10,9 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -31,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,7 +68,7 @@ public class GroceryListFragment extends Fragment {
         rvDaysList = view.findViewById(R.id.rvDaysList);
         List<String> daysOfWeek = Arrays.asList(getResources().getStringArray(R.array.days_array));
         allAddedRecipes = new HashMap<>();
-        fillHashMap(daysOfWeek);
+        initializeAllAddedRecipesMap(daysOfWeek);
 
         // setting up adapter and layout manager
         listAdapter = new DaysListAdapter(getContext(), intToDay, allAddedRecipes, trie);
@@ -81,7 +77,7 @@ public class GroceryListFragment extends Fragment {
         queryUserRecipes();
     }
 
-    private void fillHashMap(List<String> daysOfWeek) {
+    private void initializeAllAddedRecipesMap(List<String> daysOfWeek) {
         for(int i = 0; i < daysOfWeek.size(); i++){
             allAddedRecipes.putIfAbsent(i, new ArrayList<>());
         }

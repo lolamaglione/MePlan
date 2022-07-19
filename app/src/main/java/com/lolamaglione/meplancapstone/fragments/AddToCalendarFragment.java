@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,14 +18,11 @@ import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.lolamaglione.meplancapstone.R;
-import com.lolamaglione.meplancapstone.RecipeSuggestions;
-import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
 import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -35,15 +31,10 @@ import com.parse.SaveCallback;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AddToCalendarFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
  * This Fragment incorporates modular activity in order to be able to add a recipe to the meal plan
  */
 public class AddToCalendarFragment extends DialogFragment {
@@ -52,7 +43,8 @@ public class AddToCalendarFragment extends DialogFragment {
     Spinner dropDown;
     Button btnConfirm;
     String day;
-    public HashMap<String, Integer> dayToInt;
+    public HashMap<String, Integer> dayToInt = new HashMap<String, Integer>(){{put("Monday", 0); put("Tuesday", 1); put("Wednesday", 2); put("Thursday", 3);
+        put("Friday", 4); put("Saturday", 5); put("Sunday", 6);}};
 
     public AddToCalendarFragment() {
         // Required empty public constructor
@@ -73,8 +65,6 @@ public class AddToCalendarFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        dayToInt = new HashMap<>();
-        fillHashMap(dayToInt);
         dropDown = view.findViewById(R.id.dropDown);
         btnConfirm = view.findViewById(R.id.btnConfirm);
         SpinnerAdapter adapter = ArrayAdapter.createFromResource(getContext(), R.array.days_array, android.R.layout.simple_spinner_item);
@@ -121,13 +111,6 @@ public class AddToCalendarFragment extends DialogFragment {
                 dismiss();
             }
         });
-    }
-
-    private void fillHashMap(HashMap<String, Integer> dayToInt){
-        List<String> daysOfWeek = Arrays.asList(getResources().getStringArray(R.array.days_array));
-        for (int i = 0; i < daysOfWeek.size(); i++){
-            dayToInt.putIfAbsent(daysOfWeek.get(i), i);
-        }
     }
 
     public RecipeController createDBRecipe(int day, List<Ingredient> updateIngredients) throws ParseException {

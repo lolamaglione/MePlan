@@ -15,6 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.lolamaglione.meplancapstone.Constants;
 import com.lolamaglione.meplancapstone.EdamamClient;
 import com.lolamaglione.meplancapstone.EndlessRecyclerViewScrollListener;
@@ -28,11 +31,14 @@ import com.lolamaglione.meplancapstone.models.RecipeDao;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Headers;
 
@@ -62,8 +68,8 @@ public class SuggestedRecipesFragment extends Fragment {
     private ParseRecipe parse;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String nextPage = "";
-    private boolean dataBaseWasCalled = false;
     private RecipeDao recipeDao;
+    //private CacheBuilder<String, ArrayList<Recipe>> cache = CacheBuilder.newBuilder().expireAfterAccess(50, TimeUnit.MINUTES);
 
     public SuggestedRecipesFragment() {
         // Required empty public constructor
@@ -113,7 +119,6 @@ public class SuggestedRecipesFragment extends Fragment {
         parse = new ParseRecipe();
         adapter = new RecipeAdapter(getContext(), finalList);
         rvRecipeSuggested.setAdapter(adapter);
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvRecipeSuggested.setLayoutManager(linearLayoutManager);
 
