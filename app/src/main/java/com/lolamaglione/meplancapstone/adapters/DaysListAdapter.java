@@ -112,7 +112,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             dailyRecipesList = addedRecipes.get(position);
             if(dailyRecipesList.size() > 0){
                 makeRecipesInDB(recipesInDB);
-                boolean trieState = trie.isNull();
+                boolean trieState = trie.isNull(trie.root);
                 addToIngredientList(recipesInDB, position, trieState);
                 adapter = new SpecificListAdapter(context, ingredients);
                 rvRecipes.setAdapter(adapter);

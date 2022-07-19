@@ -92,9 +92,9 @@ public class GroceryListFragment extends Fragment {
     }
 
     public static void removeTrie(List<String> ingredientsToRemove, int position){
-        if (!trie.isNull()){
+        if (!trie.isNull(trie.root)){
             for(String ingredient : ingredientsToRemove){
-                trie.removeIngredient("" + position + ingredient);
+                trie.removeIngredient(trie.root, "" + position + ingredient, 0);
             }
         }
     }

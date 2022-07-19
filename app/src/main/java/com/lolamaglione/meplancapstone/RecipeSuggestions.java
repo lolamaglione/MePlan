@@ -36,7 +36,7 @@ public class RecipeSuggestions {
     }
 
     public static class Trie {
-        TrieNode root = new TrieNode(' ');
+        public TrieNode root = new TrieNode(' ');
         // insert for Ingredient List
         public void insertIngredient(Ingredient ingredientObject, int position) {
             String ingredient = "" + position + ingredientObject.getIngredientName().toLowerCase(Locale.ROOT);
@@ -53,19 +53,35 @@ public class RecipeSuggestions {
         }
 
         //TODO: remove all nodes that are associated with that that don't have other ingredients
-        public void removeIngredient(String ingredient){
-            TrieNode node = root;
-            for (int i = 0; i < ingredient.length()-1; i++){
-                char ch = ingredient.charAt(i);
-                //TrieNode child = node.children[ch];
-                node = node.children[ch];
+        public TrieNode removeIngredient(TrieNode nodeAt, String ingredient, int characterAt){
+            // if trie is empty
+            if (nodeAt == null){
+                return null;
             }
-            //TODO: only delete if it doesn't have any children
-            node.ingredients.removeAll(node.ingredients);
+
+            //if we are in the last node:
+            if(characterAt == ingredient.length()){
+                //remove the ingredient
+                nodeAt.ingredients.remove(nodeAt.ingredients.size()-1);
+                if(nodeAt.ingredients.size() == 0 && isNull(nodeAt)){
+                    nodeAt = null;
+                }
+
+                return nodeAt;
+            }
+
+            int charAt = ingredient.charAt(characterAt);
+            nodeAt.children[charAt] = removeIngredient(nodeAt.children[charAt], ingredient, characterAt +1 );
+
+            if(isNull(nodeAt) && nodeAt.ingredients.size() == 0){
+                nodeAt = null;
+            }
+
+            return nodeAt;
+
         }
 
-        public boolean isNull(){
-            TrieNode node = root;
+        public boolean isNull(TrieNode node){
             boolean isNull = true;
             for (int i = 0; i < node.children.length; i++){
                 if(node.children[i] != null){
