@@ -52,7 +52,6 @@ public class RecipeSuggestions {
             node.ingredients.add(ingredientObject);
         }
 
-        //TODO: remove all nodes that are associated with that that don't have other ingredients
         public TrieNode removeIngredient(TrieNode nodeAt, String ingredient, int characterAt){
             // if trie is empty
             if (nodeAt == null){
@@ -78,7 +77,6 @@ public class RecipeSuggestions {
             }
 
             return nodeAt;
-
         }
 
         public boolean isNull(TrieNode node){

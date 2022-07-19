@@ -11,23 +11,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.lolamaglione.meplancapstone.R;
-import com.lolamaglione.meplancapstone.RecipeSuggestions;
-import com.lolamaglione.meplancapstone.activities.MainActivity;
-import com.lolamaglione.meplancapstone.adapters.DaysListAdapter;
 import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Ingredient;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -46,10 +45,11 @@ import java.util.List;
 public class AddToCalendarFragment extends DialogFragment {
 
     private static final String TAG = "addActivity";
-    Spinner dropDown;
-    Button btnConfirm;
-    String day;
+    private Spinner dropDown;
+    private Button btnConfirm;
+    private String day;
     public HashMap<String, Integer> dayToInt;
+    private CircularProgressIndicator progressBarConfirm;
 
     public AddToCalendarFragment() {
         // Required empty public constructor
@@ -74,6 +74,8 @@ public class AddToCalendarFragment extends DialogFragment {
         fillHashMap(dayToInt);
         dropDown = view.findViewById(R.id.dropDown);
         btnConfirm = view.findViewById(R.id.btnConfirm);
+        progressBarConfirm = view.findViewById(R.id.linearProgressBarConfirm);
+        progressBarConfirm.setVisibility(CircularProgressIndicator.GONE);
         SpinnerAdapter adapter = ArrayAdapter.createFromResource(getContext(), R.array.days_array, android.R.layout.simple_spinner_item);
         dropDown.setAdapter(adapter);
                 dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -91,6 +93,8 @@ public class AddToCalendarFragment extends DialogFragment {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBarConfirm.setShowAnimationBehavior(CircularProgressIndicator.SHOW_NONE);
+                progressBarConfirm.setVisibility(CircularProgressIndicator.VISIBLE);
                 RecipeController recipeController = null;
                 int day_int = dayToInt.get(day);
                 try {
@@ -111,11 +115,11 @@ public class AddToCalendarFragment extends DialogFragment {
                             Log.e("addActivity", "error: " + e);
                         }
                         Log.i("addActivity", "success!");
+                        progressBarConfirm.setVisibility(CircularProgressIndicator.GONE);
+                        dismiss();
                     }
                 });
                 Toast.makeText(getContext(), "Saved Recipe!", Toast.LENGTH_SHORT).show();
-
-                dismiss();
             }
         });
     }
