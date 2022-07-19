@@ -30,6 +30,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -62,8 +63,8 @@ public class SuggestedRecipesFragment extends Fragment {
     private ParseRecipe parse;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String nextPage = "";
-    private boolean dataBaseWasCalled = false;
     private RecipeDao recipeDao;
+    private HashMap<String, SortedMap<Integer, List<Recipe>>> results;
 
     public SuggestedRecipesFragment() {
         // Required empty public constructor
@@ -120,6 +121,9 @@ public class SuggestedRecipesFragment extends Fragment {
         // implementing database
         recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
 
+        //getting in memory cache
+        results = (((ParseApplication) getActivity().getApplicationContext()).getInMemoryResults());
+
         //query for existing recipes in the DB:
         queryRecipeFromDB(linearLayoutManager);
 
@@ -129,7 +133,11 @@ public class SuggestedRecipesFragment extends Fragment {
     // create cache in the context of the application so that it doesn't get destroyed every time
     private void queryRecipeFromDB(LinearLayoutManager linearLayoutManager) {
         List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
-        if (recipesFromDB.size() == 0 || recipesFromDB == null){
+        if (results.get(mTitle) != null){
+            Log.i(TAG, "fetching from inmemory cache");
+            percentageIngredients = results.get(mTitle);
+            addToFinalRecipeList();
+        } else if (recipesFromDB.size() == 0 || recipesFromDB == null){
             queryRecipesFromAPI(mQuery, 0, nextPage);
             Log.i(TAG, "from API");
             scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -218,6 +226,7 @@ public class SuggestedRecipesFragment extends Fragment {
             recipe.setPercentageMatch(match);
             percentageIngredients.get(match).add(recipe);
         }
+        results.putIfAbsent(mTitle, percentageIngredients);
     }
 
     private int compareIngredients(List<String> ingredients) {
