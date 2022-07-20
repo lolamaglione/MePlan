@@ -65,6 +65,7 @@ public class SuggestedRecipesFragment extends Fragment {
     private String nextPage = "";
     private RecipeDao recipeDao;
     private HashMap<String, SortedMap<Integer, List<Recipe>>> results;
+    private static final int numberOfPages = 5;
 
     public SuggestedRecipesFragment() {
         // Required empty public constructor
@@ -169,7 +170,7 @@ public class SuggestedRecipesFragment extends Fragment {
     public void queryRecipesFromAPI(String query, int page, String nextPage){
         final List<Recipe> queriedRecipes = new ArrayList<>();
         final String[] nextPageFinal = {""};
-        for(int i = 0; i < 5; i++){
+        for(int i = 0; i < numberOfPages; i++){
             client.getRecipeFeed(new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Headers headers, JSON json) {
