@@ -74,6 +74,10 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+//    public void addAll(int position, ){
+//        addedRecipes.get(position).addAll()
+//    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView day;
@@ -109,7 +113,6 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             // Ingredients from the dataBase
             ingredients = new ArrayList<>();
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
-            dailyRecipesList = addedRecipes.get(position);
             if(dailyRecipesList.size() > 0){
                 makeRecipesInDB(recipesInDB);
                 boolean trieState = trie.isNull(trie.root);

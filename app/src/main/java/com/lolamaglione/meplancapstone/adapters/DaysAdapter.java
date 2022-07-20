@@ -178,7 +178,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.ViewHolder>{
                     ParseQuery<RecipeController> queryRecipe = ParseQuery.getQuery(RecipeController.class);
                     queryRecipe.whereEqualTo(RecipeController.KEY_OBJECT_ID, item.getObjectID());
                     queryRecipe.findInBackground(new FindCallback<RecipeController>() {
-                        //TODO: add a progress bar
                         @Override
                         public void done(List<RecipeController> objects, ParseException e) {
                             for (RecipeController object : objects){

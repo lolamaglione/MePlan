@@ -130,10 +130,11 @@ public class SuggestedRecipesFragment extends Fragment {
 
     }
 
-    // TODO: add an inmemory cache so that I don't have to go to the database everytime
     // create cache in the context of the application so that it doesn't get destroyed every time
+    //TODO: rename this method and rework it
     private void queryRecipeFromDB(LinearLayoutManager linearLayoutManager) {
         List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
+
         if (results.get(mTitle) != null){
             Log.i(TAG, "fetching from inmemory cache");
             percentageIngredients = results.get(mTitle);

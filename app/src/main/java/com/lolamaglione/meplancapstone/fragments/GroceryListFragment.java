@@ -101,7 +101,6 @@ public class GroceryListFragment extends Fragment {
 
 
     public void queryUserRecipes(){
-
         ParseQuery<ScheduleController> query = ParseQuery.getQuery(ScheduleController.class);
         // include data referred by user key
         query.include(ScheduleController.KEY_USER);

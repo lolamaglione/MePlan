@@ -167,7 +167,6 @@ public class AddToCalendarFragment extends DialogFragment {
         return recipeController;
     }
 
-    // TODO: you cannot save in the background, make UI so that the user knows it is waiting
     private void createIngredientInDB(List<String> generalIngredientArray, String recipeID, int day, List<Ingredient> updateIngredients) {
         for (String ingredient : generalIngredientArray){
             IngredientController newIngredient = new IngredientController();
