@@ -74,10 +74,6 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
         notifyDataSetChanged();
     }
 
-//    public void addAll(int position, ){
-//        addedRecipes.get(position).addAll()
-//    }
-
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView day;

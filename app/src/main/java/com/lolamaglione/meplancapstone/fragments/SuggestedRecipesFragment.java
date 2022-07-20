@@ -126,48 +126,65 @@ public class SuggestedRecipesFragment extends Fragment {
         results = (((ParseApplication) getActivity().getApplicationContext()).getInMemoryResults());
 
         //query for existing recipes in the DB:
-        queryRecipeFromDB(linearLayoutManager);
+        queryRecipes(linearLayoutManager);
 
     }
 
     // create cache in the context of the application so that it doesn't get destroyed every time
-    //TODO: rename this method and rework it
-    private void queryRecipeFromDB(LinearLayoutManager linearLayoutManager) {
-        List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
+    private void queryRecipes(LinearLayoutManager linearLayoutManager) {
 
+        // look up code in in memory cache
         if (results.get(mTitle) != null){
-            Log.i(TAG, "fetching from inmemory cache");
-            percentageIngredients = results.get(mTitle);
-            addToFinalRecipeList();
-        } else if (recipesFromDB.size() == 0 || recipesFromDB == null){
-            queryRecipesFromAPI(mQuery, 0, nextPage);
-            Log.i(TAG, "from API");
-            scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
-                @Override
-                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                    // Triggered only when new data needs to be appended to the list
-                    // Add whatever code is needed to append new items to the bottom of the list
-                    loadNextDataFromApi(page);
-                }
-            };
-            // Adds the scroll listener to RecyclerView
-            rvRecipeSuggested.addOnScrollListener(scrollListener);
+            queryRecipesFromInMemoryCache();
+            return;
         } else {
-            Log.i(TAG, "fetching data from database");
-            fillPercentageMap(recipesFromDB);
-            if(percentageIngredients.keySet().size() != 0){
-                adapter.clear();
-                addToFinalRecipeList();
-                adapter.addAll(finalList);
+            //look up code in database
+            List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
+            if (recipesFromDB.size() != 0 || recipesFromDB != null){
+                queryRecipesFromDB(recipesFromDB);
+                return;
             }
+        }
+        // look up code in API
+        queryRecipesFromAPI(mQuery, 0, nextPage);
+        Log.i(TAG, "from API");
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvRecipeSuggested.addOnScrollListener(scrollListener);
+
+    }
+
+    // get the recipes from the database
+    private void queryRecipesFromDB(List<Recipe> recipesFromDB) {
+        Log.i(TAG, "fetching data from database");
+        fillPercentageMap(recipesFromDB);
+        if(percentageIngredients.keySet().size() != 0){
+            adapter.clear();
+            addToFinalRecipeList();
+            adapter.addAll(finalList);
         }
     }
 
+    // get the recipes from the in memory cache
+    private void queryRecipesFromInMemoryCache() {
+        Log.i(TAG, "fetching from inmemory cache");
+        percentageIngredients = results.get(mTitle);
+        addToFinalRecipeList();
+    }
 
+    // get more pages from the API
     private void loadNextDataFromApi(int page) {
         queryRecipesFromAPI(mQuery, page, nextPage);
     }
 
+    // query x amount of pages from the API
     public void queryRecipesFromAPI(String query, int page, String nextPage){
         final List<Recipe> queriedRecipes = new ArrayList<>();
         final String[] nextPageFinal = {""};
@@ -204,6 +221,7 @@ public class SuggestedRecipesFragment extends Fragment {
         }
     }
 
+    // add to the adapter list sorted
     private void addToFinalRecipeList() {
         addedRecipesTitle.add(mTitle);
         for (int key : percentageIngredients.keySet()){
@@ -219,6 +237,7 @@ public class SuggestedRecipesFragment extends Fragment {
         adapter.addAll(finalList);
     }
 
+    // set the percentage match and added to the hashmap
     private void fillPercentageMap(List<Recipe> queriedRecipes) {
         percentageIngredients = new TreeMap<>(Collections.reverseOrder());
         for(Recipe recipe : queriedRecipes){
