@@ -68,9 +68,10 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
 
-    compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     implementation "com.github.parse-community:ParseFacebookUtils-Android:latest.release"
+
+    implementation 'com.google.guava:guava:31.1-android'
 
 }

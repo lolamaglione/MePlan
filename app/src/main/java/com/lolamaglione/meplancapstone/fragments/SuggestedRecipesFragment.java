@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.Headers;
 
@@ -65,6 +67,7 @@ public class SuggestedRecipesFragment extends Fragment {
     private String nextPage = "";
     private RecipeDao recipeDao;
     private HashMap<String, SortedMap<Integer, List<Recipe>>> results;
+    ParseApplication context;
     private static final int numberOfPages = 5;
 
     public SuggestedRecipesFragment() {
@@ -124,52 +127,56 @@ public class SuggestedRecipesFragment extends Fragment {
 
         //getting in memory cache
         results = (((ParseApplication) getActivity().getApplicationContext()).getInMemoryResults());
-
+        context = ((ParseApplication) getActivity().getApplicationContext());
         //query for existing recipes in the DB:
-        queryRecipes(linearLayoutManager);
+        try {
+            queryRecipes(linearLayoutManager);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
     }
 
     // create cache in the context of the application so that it doesn't get destroyed every time
-    private void queryRecipes(LinearLayoutManager linearLayoutManager) {
+    private void queryRecipes(LinearLayoutManager linearLayoutManager) throws ExecutionException {
 
         // look up code in in memory cache
-        if (results.get(mTitle) != null){
-            queryRecipesFromInMemoryCache();
-            return;
-        } else {
-            //look up code in database
-            List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
-            if (recipesFromDB.size() != 0 || recipesFromDB != null){
-                queryRecipesFromDB(recipesFromDB);
-                return;
-            }
-        }
-        // look up code in API
-        queryRecipesFromAPI(mQuery, 0, nextPage);
-        Log.i(TAG, "from API");
-        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+        Log.i(TAG, "fetching from cache");
+        percentageIngredients = context.getGuavaCache().get(mTitle, new Callable<SortedMap<Integer, List<Recipe>>>() {
             @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
-                loadNextDataFromApi(page);
+            public SortedMap<Integer, List<Recipe>> call() throws Exception {
+                return queryRecipesFromDBorAPI(linearLayoutManager);
             }
-        };
-        // Adds the scroll listener to RecyclerView
-        rvRecipeSuggested.addOnScrollListener(scrollListener);
-
-    }
-
-    // get the recipes from the database
-    private void queryRecipesFromDB(List<Recipe> recipesFromDB) {
-        Log.i(TAG, "fetching data from database");
-        fillPercentageMap(recipesFromDB);
+        });
         if(percentageIngredients.keySet().size() != 0){
             adapter.clear();
             addToFinalRecipeList();
             adapter.addAll(finalList);
         }
+    }
+
+    // get the recipes from the database
+    private SortedMap<Integer, List<Recipe>> queryRecipesFromDBorAPI(LinearLayoutManager linearLayoutManager) {
+        List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
+        if (recipesFromDB.size() != 0 || recipesFromDB != null){
+            Log.i(TAG, "fetching data from database");
+            fillPercentageMap(recipesFromDB);
+            return percentageIngredients;
+        } else {
+            queryRecipesFromAPI(mQuery, 0, nextPage);
+            Log.i(TAG, "fetching from API");
+            scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    // Triggered only when new data needs to be appended to the list
+                    // Add whatever code is needed to append new items to the bottom of the list
+                    loadNextDataFromApi(page);
+                }
+            };
+            // Adds the scroll listener to RecyclerView
+            rvRecipeSuggested.addOnScrollListener(scrollListener);
+        }
+        return null;
     }
 
     // get the recipes from the in memory cache

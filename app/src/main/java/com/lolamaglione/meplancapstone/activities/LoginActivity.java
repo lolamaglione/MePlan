@@ -1,56 +1,23 @@
 package com.lolamaglione.meplancapstone.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.lolamaglione.meplancapstone.Constants;
 import com.lolamaglione.meplancapstone.ParseFacebookUtils;
 import com.lolamaglione.meplancapstone.databinding.ActivityLoginBinding;
-import com.parse.LogInCallback;
-import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
-
 import java.util.Arrays;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
-import com.parse.ParseUser;
-import androidx.fragment.app.FragmentActivity;
 import org.json.JSONException;
-import java.util.Arrays;
 import java.util.Collection;
-import androidx.appcompat.app.AppCompatActivity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.Button;
-import com.facebook.login.LoginManager;
-import com.parse.ParseUser;
 
 /**
  * Used to Login if a user is authorized through back4App
@@ -85,108 +52,57 @@ public class LoginActivity extends AppCompatActivity {
         btnFbLogin = binding.btnFacebookLogin;
 
         // go to MainActivity if the user is created in Parse
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = etUsername.getText().toString();
-                String password = etPassword.getText().toString();
-                loginUser(username, password);
-            }
+        btnLogin.setOnClickListener(v -> {
+            String username = etUsername.getText().toString();
+            String password = etPassword.getText().toString();
+            loginUser(username, password);
         });
 
         // going to SignUp activity to create a new ParseUser
-        btnSignup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToSignUp();
-            }
-        });
+        btnSignup.setOnClickListener(v -> goToSignUp());
 
-        btnFbLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
-                dialog.setTitle("Please, wait a moment.");
-                dialog.setMessage("Logging in...");
-                dialog.show();
-                Collection<String> permissions = Arrays.asList("public_profile", "email");
-                ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, permissions, (user, err) -> {
-                    dialog.dismiss();
-                    if (err != null) {
-                        Log.e("FacebookLoginExample", "done: ", err);
-                        Toast.makeText(LoginActivity.this, err.getMessage(), Toast.LENGTH_LONG).show();
-                    } else if (user == null) {
-                        Toast.makeText(LoginActivity.this, "The user cancelled the Facebook login.", Toast.LENGTH_LONG).show();
-                        Log.d("FacebookLoginExample", "Uh oh. The user cancelled the Facebook login.");
-                    } else if (user.isNew()) {
-                        Toast.makeText(LoginActivity.this, "User signed up and logged in through Facebook.", Toast.LENGTH_LONG).show();
-                        Log.d("FacebookLoginExample", "User signed up and logged in through Facebook!");
-                        getUserDetailFromFB();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "User logged in through Facebook.", Toast.LENGTH_LONG).show();
-                        Log.d("FacebookLoginExample", "User logged in through Facebook!");
-                        showAlert("Oh, you!", "Welcome back!");
-                    }
-                });
+        btnFbLogin.setOnClickListener(v -> logInWithFB());
+    }
+
+    // TODO: make sure I can logout
+    // login with facebook, implement oauth
+    private void logInWithFB() {
+        final ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
+        dialog.setTitle("Please, wait a moment.");
+        dialog.setMessage("Logging in...");
+        dialog.show();
+        Collection<String> permissions = Arrays.asList("public_profile", "email");
+        ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, permissions, (user, err) -> {
+            dialog.dismiss();
+            if (err != null) {
+                Log.e("FacebookLoginExample", "done: ", err);
+                Toast.makeText(LoginActivity.this, err.getMessage(), Toast.LENGTH_LONG).show();
+            } else if (user == null) {
+                Toast.makeText(LoginActivity.this, "The user cancelled the Facebook login.", Toast.LENGTH_LONG).show();
+                Log.d("FacebookLoginExample", "Uh oh. The user cancelled the Facebook login.");
+            } else if (user.isNew()) {
+                Toast.makeText(LoginActivity.this, "User signed up and logged in through Facebook.", Toast.LENGTH_LONG).show();
+                Log.d("FacebookLoginExample", "User signed up and logged in through Facebook!");
+                getUserDetailFromFB();
+            } else {
+                Toast.makeText(LoginActivity.this, "User logged in through Facebook.", Toast.LENGTH_LONG).show();
+                Log.d("FacebookLoginExample", "User logged in through Facebook!");
+                showAlert("Hi," + user.getUsername(), "Welcome back!");
             }
         });
     }
 
     // use the LogInBackground method to login with username and password
     private void loginUser(String username, String password) {
-        ParseUser.logInInBackground(username, password, new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-                if (e != null){
-                    Log.e(TAG, "Issue with Login " + e);
-                    Toast.makeText(LoginActivity.this, "Username or Password is incorrect", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                Log.i(TAG, "attempting to login: " + username);
-                goToMainActivity();
+        ParseUser.logInInBackground(username, password, (user, e) -> {
+            if (e != null){
+                Log.e(TAG, "Issue with Login " + e);
+                Toast.makeText(LoginActivity.this, "Username or Password is incorrect", Toast.LENGTH_SHORT).show();
+                return;
             }
+            Log.i(TAG, "attempting to login: " + username);
+            goToMainActivity();
         });
-    }
-
-    // use the LogInBackground method to login with username and password
-    private void loginUserFromFB(String username, String password) {
-        ParseUser.logInInBackground(username, password, new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-                if (e != null){
-                    Log.e(TAG, "Issue with Login " + e);
-                    ParseUser newUser = new ParseUser();
-                    newUser.setUsername(username);
-                    newUser.setPassword(password);
-                    newUser.signUpInBackground(new SignUpCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e != null) {
-                                Log.e(TAG, "issue with Signup " + e);
-                                return;
-                            }
-                        }
-                    });
-                    goToMainActivity();
-                } else {
-                    ParseUser newUser = new ParseUser();
-                    newUser.setUsername(username);
-                    newUser.setPassword(password);
-                    newUser.signUpInBackground(new SignUpCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e != null) {
-                                Log.e(TAG, "issue with Signup " + e);
-                                return;
-                            }
-                            goToMainActivity();
-                        }
-                    });
-                    goToMainActivity();
-                }
-            }
-        });
-
     }
 
     private void getUserDetailFromFB() {

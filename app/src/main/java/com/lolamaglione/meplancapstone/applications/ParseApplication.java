@@ -3,9 +3,8 @@ package com.lolamaglione.meplancapstone.applications;
 import android.app.Application;
 
 import androidx.room.Room;
-
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.lolamaglione.meplancapstone.MyDatabase;
 import com.lolamaglione.meplancapstone.ParseFacebookUtils;
 import com.lolamaglione.meplancapstone.controllers.IngredientController;
@@ -14,7 +13,6 @@ import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Recipe;
 import com.parse.Parse;
 import com.parse.ParseObject;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
@@ -23,9 +21,11 @@ import java.util.SortedMap;
  * This enables the code to communicate with ParseApplication in order to create
  * new users and keep track of current users.
  */
+// TODO: implement GUAVA, or do your own inmemory cache
 public class ParseApplication extends Application {
     private static MyDatabase myDatabase;
     private static HashMap<String, SortedMap<Integer, List<Recipe>>> inMemoryResults;
+    private Cache<String, SortedMap<Integer, List<Recipe>>> cache;
 
     @Override
     public void onCreate() {
@@ -45,6 +45,7 @@ public class ParseApplication extends Application {
         ParseFacebookUtils.initialize(this);
         myDatabase = Room.databaseBuilder(this, MyDatabase.class, MyDatabase.NAME).allowMainThreadQueries().fallbackToDestructiveMigration().build();
         inMemoryResults = new HashMap<>();
+        cache = CacheBuilder.newBuilder().maximumSize(20).build();
     }
 
     public MyDatabase getMyDatabase() {
@@ -53,6 +54,9 @@ public class ParseApplication extends Application {
 
     public HashMap<String, SortedMap<Integer, List<Recipe>>> getInMemoryResults() {
         return inMemoryResults;
+    }
+    public Cache<String, SortedMap<Integer, List<Recipe>>> getGuavaCache() {
+        return cache;
     }
 
 }
