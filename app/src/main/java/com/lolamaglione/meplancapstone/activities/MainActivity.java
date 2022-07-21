@@ -11,23 +11,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lolamaglione.meplancapstone.R;
-import com.lolamaglione.meplancapstone.RecipeSuggestions;
-import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.databinding.ActivityMainBinding;
 import com.lolamaglione.meplancapstone.fragments.FeedFragment;
 import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;
 import com.lolamaglione.meplancapstone.fragments.MealPlanFragment;
-import com.lolamaglione.meplancapstone.models.Ingredient;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import java.util.List;
-import java.util.Scanner;
+import androidx.appcompat.app.AppCompatActivity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import com.facebook.login.LoginManager;
+import com.parse.ParseUser;
 
 /**
  * MainActivity handles the Main Fragments to make the app functionable, like the feedFragment

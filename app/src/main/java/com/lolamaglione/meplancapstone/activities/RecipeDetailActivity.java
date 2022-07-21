@@ -4,23 +4,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.viewpager.widget.ViewPager;
-
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.google.android.material.tabs.TabLayout;
 import com.lolamaglione.meplancapstone.Constants;
-import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.adapters.SampleFragmentPageAdapter;
 import com.lolamaglione.meplancapstone.databinding.ActivityRecipeDetailBinding;
 import com.lolamaglione.meplancapstone.models.Recipe;
-
 import org.parceler.Parcels;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import com.facebook.login.LoginManager;
+import com.parse.ParseUser;
 
 /**
  * RecipeDetailActivity gives you access to the currentRecipe you chose and adds a new tab

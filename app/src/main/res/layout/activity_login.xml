@@ -38,12 +38,12 @@
         android:id="@+id/etPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/btnLogin"
+        android:layout_above="@+id/btnFacebookLogin"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="10dp"
         android:hint="password"
         android:inputType="textPassword"
         tools:layout_editor_absoluteX="159dp"
@@ -72,5 +72,29 @@
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="50dp"
         android:text="SignUp" />
+
+    <Button
+        android:id="@+id/btnFacebookLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnLogin"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="51dp"
+        android:layout_marginEnd="51dp"
+        android:layout_marginBottom="25dp"
+        android:text="Login With Facebook" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/etUsername"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="138dp"
+        android:layout_marginEnd="145dp"
+        android:layout_marginBottom="140dp"
+        tools:srcCompat="@tools:sample/avatars" />
 
 </RelativeLayout>

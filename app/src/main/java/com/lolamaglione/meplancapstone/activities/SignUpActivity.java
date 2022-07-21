@@ -17,6 +17,15 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import androidx.appcompat.app.AppCompatActivity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import com.facebook.login.LoginManager;
+import com.parse.ParseUser;
+
 /**
  * this activity enables users to signup and then login
  */

@@ -4,7 +4,10 @@ import android.app.Application;
 
 import androidx.room.Room;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.lolamaglione.meplancapstone.MyDatabase;
+import com.lolamaglione.meplancapstone.ParseFacebookUtils;
 import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
@@ -39,7 +42,7 @@ public class ParseApplication extends Application {
                 .server("https://parseapi.back4app.com")
                 .build()
         );
-
+        ParseFacebookUtils.initialize(this);
         myDatabase = Room.databaseBuilder(this, MyDatabase.class, MyDatabase.NAME).allowMainThreadQueries().fallbackToDestructiveMigration().build();
         inMemoryResults = new HashMap<>();
     }
