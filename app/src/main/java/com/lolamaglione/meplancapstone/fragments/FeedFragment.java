@@ -76,6 +76,7 @@ public class FeedFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cuisine = " ";
         setHasOptionsMenu(true);
     }
 
@@ -95,7 +96,6 @@ public class FeedFragment extends Fragment{
         rvRecipes = view.findViewById(R.id.rvRecipes);
         //searchBar = (Toolbar) view.findViewById(R.id.tbSearch);
         allRecipes = new ArrayList<>();
-        cuisine = " ";
         recipeAdapter = new RecipeAdapter(getContext(), allRecipes);
         ParseUser.getCurrentUser().put(Constants.KEY_LAST_QUERY, current_query);
         client = new EdamamClient();
@@ -128,7 +128,7 @@ public class FeedFragment extends Fragment{
     private void populateRecipesFromDataBase() {
         List<Recipe> recipesFromDB = recipeDao.recentItems(current_query, cuisine);
         if (recipesFromDB.size() == 0 || recipesFromDB == null){
-            Log.i(TAG, "fetchign from the API");
+            Log.i(TAG, "fetching from the API");
             populateRecipeFromAPI(current_query, 0, next_page, cuisine);
             scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
                 @Override
