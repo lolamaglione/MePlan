@@ -30,11 +30,9 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 import okhttp3.Headers;
@@ -66,7 +64,6 @@ public class SuggestedRecipesFragment extends Fragment {
     private EndlessRecyclerViewScrollListener scrollListener;
     private String nextPage = "";
     private RecipeDao recipeDao;
-    private HashMap<String, SortedMap<Integer, List<Recipe>>> results;
     ParseApplication context;
     private static final int numberOfPages = 5;
 
@@ -125,8 +122,6 @@ public class SuggestedRecipesFragment extends Fragment {
         // implementing database
         recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
 
-        //getting in memory cache
-        results = (((ParseApplication) getActivity().getApplicationContext()).getInMemoryResults());
         context = ((ParseApplication) getActivity().getApplicationContext());
         //query for existing recipes in the DB:
         try {
@@ -142,12 +137,7 @@ public class SuggestedRecipesFragment extends Fragment {
 
         // look up code in in memory cache
         Log.i(TAG, "fetching from cache");
-        percentageIngredients = context.getGuavaCache().get(mTitle, new Callable<SortedMap<Integer, List<Recipe>>>() {
-            @Override
-            public SortedMap<Integer, List<Recipe>> call() throws Exception {
-                return queryRecipesFromDBorAPI(linearLayoutManager);
-            }
-        });
+        percentageIngredients = context.getGuavaCache().get(mTitle, () -> queryRecipesFromDBorAPI(linearLayoutManager));
         if(percentageIngredients.keySet().size() != 0){
             adapter.clear();
             addToFinalRecipeList();
@@ -177,13 +167,6 @@ public class SuggestedRecipesFragment extends Fragment {
             rvRecipeSuggested.addOnScrollListener(scrollListener);
         }
         return null;
-    }
-
-    // get the recipes from the in memory cache
-    private void queryRecipesFromInMemoryCache() {
-        Log.i(TAG, "fetching from inmemory cache");
-        percentageIngredients = results.get(mTitle);
-        addToFinalRecipeList();
     }
 
     // get more pages from the API
@@ -254,7 +237,6 @@ public class SuggestedRecipesFragment extends Fragment {
             recipe.setPercentageMatch(match);
             percentageIngredients.get(match).add(recipe);
         }
-        results.putIfAbsent(mTitle, percentageIngredients);
     }
 
     private int compareIngredients(List<String> ingredients) {

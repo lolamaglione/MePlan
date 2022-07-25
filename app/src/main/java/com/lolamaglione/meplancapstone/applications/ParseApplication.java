@@ -21,7 +21,6 @@ import java.util.SortedMap;
  * This enables the code to communicate with ParseApplication in order to create
  * new users and keep track of current users.
  */
-// TODO: implement GUAVA, or do your own inmemory cache
 public class ParseApplication extends Application {
     private static MyDatabase myDatabase;
     private static HashMap<String, SortedMap<Integer, List<Recipe>>> inMemoryResults;
