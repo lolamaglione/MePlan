@@ -23,7 +23,10 @@
         android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold"
-        tools:text="Chicken Picata" />
+        tools:text="Chicken Picata"
+        android:fontFamily="@font/arvo"
+        android:background="@drawable/shape"
+        android:backgroundTint="@color/light_green"/>
 
     <TextView
         android:id="@+id/tvUrlDetail"
@@ -37,7 +40,7 @@
         android:clickable="true"
         tools:text="URL" />
 
-    <ImageButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/ibAddToSched"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,8 +48,9 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="5dp"
-        android:backgroundTint="#FFFFFF"
-        android:src="@android:drawable/ic_menu_add" />
+        app:backgroundTint="@color/light_green"
+        app:fabSize="mini"
+        app:srcCompat="@android:drawable/ic_menu_add" />
 
 
     <ListView
