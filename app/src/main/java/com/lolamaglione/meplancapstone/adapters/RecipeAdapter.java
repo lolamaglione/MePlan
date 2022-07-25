@@ -1,5 +1,7 @@
 package com.lolamaglione.meplancapstone.adapters;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -103,7 +105,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
                         intent.putExtra(Recipe.class.getSimpleName(), Parcels.wrap(recipe));
                         intent.putExtra(Constants.KEY_QUERY, ParseUser.getCurrentUser().getString(Constants.KEY_LAST_QUERY));
                         intent.putExtra(Constants.KEY_TITLE, recipe.title);
-                        context.startActivity(intent);
+                        context.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation((Activity) context).toBundle());
                     }
                 }
             });

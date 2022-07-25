@@ -38,7 +38,7 @@ public class RecipeWebFragment extends Fragment {
      * @return A new instance of fragment RecipeWebFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RecipeWebFragment newInstance(String param1, String param2) {
+    public static RecipeWebFragment newInstance(String param1) {
         RecipeWebFragment fragment = new RecipeWebFragment();
         Bundle args = new Bundle();
         args.putString(RECIPE_URL, param1);
@@ -65,6 +65,7 @@ public class RecipeWebFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        wvURL = view.findViewById(R.id.wvURL);
+        wvURL.loadUrl(mRecipeURL);
     }
 }

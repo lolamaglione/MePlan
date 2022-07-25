@@ -45,7 +45,6 @@ public class RecipeDetailFragment extends Fragment {
     ImageButton btnAddToSched;
     Toolbar toolBar;
     CollapsingToolbarLayout collapsingToolbar;
-    WebView wvUrl;
 
     private static final String RECIPE_OBJ = "recipe_obj";
 
@@ -95,14 +94,12 @@ public class RecipeDetailFragment extends Fragment {
         tvDetailUrl = view.findViewById(R.id.tvUrlDetail);
         lvIngredients = view.findViewById(R.id.lvIngredientList);
         btnAddToSched = view.findViewById(R.id.ibAddToSched);
-        wvUrl = view.findViewById(R.id.wvInstructions);
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(getContext(), R.layout.ingredient_list_item, mRecipe_obj.getSpecificIngredients());
 
         lvIngredients.setAdapter(itemsAdapter);
         tvLabel.setText(mRecipe_obj.getTitle());
         tvDetailUrl.setText(mRecipe_obj.getURL());
-        wvUrl.loadUrl(mRecipe_obj.getURL());
         btnAddToSched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

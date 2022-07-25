@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.lolamaglione.meplancapstone.fragments.RecipeDetailFragment;
+import com.lolamaglione.meplancapstone.fragments.RecipeWebFragment;
 import com.lolamaglione.meplancapstone.fragments.SuggestedRecipesFragment;
 import com.lolamaglione.meplancapstone.models.Recipe;
 
@@ -22,8 +23,8 @@ import java.util.ArrayList;
  */
 public class SampleFragmentPageAdapter extends FragmentPagerAdapter {
 
-    final int PAGE_COUNT = 2;
-    private String tabTitles[] = new String[] {"Recipe", "Suggested Recipes"};
+    final int PAGE_COUNT = 3;
+    private String tabTitles[] = new String[] {"Recipe", "Recipe Website", "Suggested Recipes"};
     private Context context;
     private Recipe recipe;
     private String query;
@@ -43,6 +44,8 @@ public class SampleFragmentPageAdapter extends FragmentPagerAdapter {
         if (position == 0){
             return RecipeDetailFragment.newInstance(Parcels.wrap(recipe));
         } else if (position == 1){
+            return RecipeWebFragment.newInstance(recipe.getURL());
+        } else if (position == 2){
             return SuggestedRecipesFragment.newInstance((ArrayList<String>) recipe.getGeneralIngredients(), query, title);
         }
         return null;

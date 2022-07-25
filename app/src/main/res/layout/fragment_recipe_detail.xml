@@ -55,12 +55,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvUrlDetail" />
 
-    <WebView
-        android:id="@+id/wvInstructions"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/lvIngredientList" />
-
 
 
 
