@@ -46,7 +46,7 @@ public class SampleFragmentPageAdapter extends FragmentPagerAdapter {
         } else if (position == 1){
             return RecipeWebFragment.newInstance(recipe.getURL());
         } else if (position == 2){
-            return SuggestedRecipesFragment.newInstance((ArrayList<String>) recipe.getGeneralIngredients(), query, title);
+            return SuggestedRecipesFragment.newInstance((ArrayList<String>) recipe.getGeneralIngredients(), query, title, recipe.getCuisine());
         }
         return null;
     }

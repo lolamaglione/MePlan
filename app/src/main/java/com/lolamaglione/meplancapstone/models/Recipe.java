@@ -53,6 +53,9 @@ public class Recipe {
     @ColumnInfo
     private String objectID;
 
+    @ColumnInfo
+    private String cuisine;
+
 
     public Recipe(String title, String url, List<String> specificIngredients, String imageURL,
                   List<String> generalIngredients, boolean hasBeenSaved, String query){
@@ -139,5 +142,13 @@ public class Recipe {
 
     public void setObjectID(String objectID) {
         this.objectID = objectID;
+    }
+
+    public String getCuisine() {
+        return cuisine;
+    }
+
+    public void setCuisine(String cuisine) {
+        this.cuisine = cuisine;
     }
 }

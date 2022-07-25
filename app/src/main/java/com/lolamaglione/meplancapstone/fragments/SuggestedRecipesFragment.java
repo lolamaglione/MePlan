@@ -49,11 +49,13 @@ public class SuggestedRecipesFragment extends Fragment {
 
     private static final String CURR_ING = "current_ingredients";
     private static final String QUERY = "query";
+    private static final String CUISINE = "cuisine";
     private static final String TITLE = "title";
     private static final String TAG = "suggest recipe";
     private List<String> mList_ing;
     private String mQuery;
     private String mTitle;
+    private String mCuisine;
     private EdamamClient client;
     private SortedMap<Integer, List<Recipe>> percentageIngredients;
     private List<Recipe> finalList;
@@ -78,12 +80,13 @@ public class SuggestedRecipesFragment extends Fragment {
      * @param param1 Parameter 1.
      * @return A new instance of fragment SuggestedRecipesFragment.
      */
-    public static SuggestedRecipesFragment newInstance(ArrayList<String> param1, String param2, String param3) {
+    public static SuggestedRecipesFragment newInstance(ArrayList<String> param1, String param2, String param3, String param4) {
         SuggestedRecipesFragment fragment = new SuggestedRecipesFragment();
         Bundle args = new Bundle();
         args.putStringArrayList(CURR_ING, param1);
         args.putString(QUERY, param2);
         args.putString(TITLE, param3);
+        args.putString(CUISINE, param4);
         fragment.setArguments(args);
         return fragment;
     }
@@ -95,6 +98,7 @@ public class SuggestedRecipesFragment extends Fragment {
             mList_ing = getArguments().getStringArrayList(CURR_ING);
             mQuery = getArguments().getString(QUERY);
             mTitle = getArguments().getString(TITLE);
+            mCuisine = getArguments().getString(CUISINE);
         }
     }
 
@@ -147,7 +151,7 @@ public class SuggestedRecipesFragment extends Fragment {
 
     // get the recipes from the database
     private SortedMap<Integer, List<Recipe>> queryRecipesFromDBorAPI(LinearLayoutManager linearLayoutManager) {
-        List<Recipe> recipesFromDB = recipeDao.sortedSuggestions(mQuery);
+        List<Recipe> recipesFromDB = recipeDao.recentItems(mQuery, mCuisine);
         if (recipesFromDB.size() != 0 || recipesFromDB != null){
             Log.i(TAG, "fetching data from database");
             fillPercentageMap(recipesFromDB);
@@ -186,7 +190,7 @@ public class SuggestedRecipesFragment extends Fragment {
                     try {
                         jsonArray = json.jsonObject.getJSONArray("hits");
                         nextPageFinal[0] = getNextPage(json);
-                        final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
+                        final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query, mCuisine);
                         queriedRecipes.addAll(recipesFromNetwork);
                         AsyncTask.execute(new Runnable() {
                             @Override

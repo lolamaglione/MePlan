@@ -45,7 +45,6 @@ import okhttp3.Headers;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FeedFragment#newInstance} factory method to
  * create an instance of this fragment.
  * This fragment shows the recipe feed in the home button frgament
  * connects to recipe detail fragment and suggesting recipes with similar ingredients
@@ -127,7 +126,7 @@ public class FeedFragment extends Fragment{
     }
 
     private void populateRecipesFromDataBase() {
-        List<Recipe> recipesFromDB = recipeDao.recentItemsNoQuery(current_query);
+        List<Recipe> recipesFromDB = recipeDao.recentItems(current_query, cuisine);
         if (recipesFromDB.size() == 0 || recipesFromDB == null){
             Log.i(TAG, "fetchign from the API");
             populateRecipeFromAPI(current_query, 0, next_page, cuisine);
@@ -244,7 +243,7 @@ public class FeedFragment extends Fragment{
                     if (page == 0){
                         recipeAdapter.clear();
                     }
-                    final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query);
+                    final List<Recipe> recipesFromNetwork = parse.fromJsonArray(jsonArray, query, cuisine);
                     allRecipes.addAll(recipesFromNetwork);
                     recipeAdapter.notifyDataSetChanged();
                     AsyncTask.execute(new Runnable() {
@@ -284,7 +283,7 @@ public class FeedFragment extends Fragment{
                                 if (page == 0){
                                     recipeAdapter.clear();
                                 }
-                                final List<Recipe> recipesFromNetwork = ParseRecipe.fromJsonArray(jsonArray, query);
+                                final List<Recipe> recipesFromNetwork = ParseRecipe.fromJsonArray(jsonArray, query, cuisine);
                                 allRecipes.addAll(recipesFromNetwork);
                                 recipeAdapter.notifyDataSetChanged();
                                 AsyncTask.execute(new Runnable() {

@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * This class creates the room sqlite database
  */
-@Database(entities={Recipe.class}, version=9)
+@Database(entities={Recipe.class}, version=10)
 @TypeConverters({ListConverter.class})
 public abstract class MyDatabase extends RoomDatabase {
     public abstract RecipeDao recipeDao();
