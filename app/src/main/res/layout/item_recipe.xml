@@ -36,6 +36,7 @@
                 android:layout_marginBottom="10dp"
                 android:contentDescription="Recipe Picture"
                 android:scaleType="fitXY"
+                android:transitionName="imageURL"
                 android:src="@color/cardview_light_background" />
 
             <TextView

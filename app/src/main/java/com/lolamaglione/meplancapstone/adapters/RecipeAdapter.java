@@ -92,6 +92,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            final View pictureView = itemView.findViewById(R.id.ivFeedRecipe);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             ivFeedRecipe = itemView.findViewById(R.id.ivFeedRecipe);
             tvCookTime = itemView.findViewById(R.id.tvCookTime);
@@ -105,13 +106,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
                         intent.putExtra(Recipe.class.getSimpleName(), Parcels.wrap(recipe));
                         intent.putExtra(Constants.KEY_QUERY, ParseUser.getCurrentUser().getString(Constants.KEY_LAST_QUERY));
                         intent.putExtra(Constants.KEY_TITLE, recipe.title);
-                        context.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation((Activity) context).toBundle());
+                        context.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation((Activity) context, pictureView, "imageURL").toBundle());
                     }
                 }
             });
         }
 
         public void bind(Recipe recipe){
+
             tvTitle.setText(recipe.getTitle());
             tvCookTime.setText(String.valueOf(recipe.getCookTime()));
             //Glide.with(context).load(recipe.getImageURL()).centerCrop().into(ivFeedRecipe);
