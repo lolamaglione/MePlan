@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.FeedFragment">
 
+    //TODO: add a better spinner and make an "ALL"
     <Spinner
         android:id="@+id/spinnerCusines"
         android:layout_width="wrap_content"
@@ -14,7 +15,6 @@
         android:layout_marginStart="0dp"
         android:background="@android:drawable/btn_dropdown"
         android:spinnerMode="dropdown">
-
     </Spinner>
 
     <androidx.recyclerview.widget.RecyclerView

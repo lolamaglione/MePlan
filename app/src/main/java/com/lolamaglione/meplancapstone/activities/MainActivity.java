@@ -86,10 +86,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logoutUser() {
-        Log.i(TAG, "attempting ot logout user");
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setTitle("Please, wait a moment.");
+        dialog.setMessage("Logging out...");
+        dialog.show();
+        LoginManager.getInstance().logOut();
         ParseUser.logOut();
+        Log.i(TAG, "attempting ot logout user");
         ParseUser currentUser = ParseUser.getCurrentUser();
-
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
     }
