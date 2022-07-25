@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterInside;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.lolamaglione.meplancapstone.Constants;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.activities.RecipeDetailActivity;
@@ -110,7 +112,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         public void bind(Recipe recipe){
             tvTitle.setText(recipe.getTitle());
             tvCookTime.setText(String.valueOf(recipe.getCookTime()));
-            Glide.with(context).load(recipe.getImageURL()).centerCrop().into(ivFeedRecipe);
+            //Glide.with(context).load(recipe.getImageURL()).centerCrop().into(ivFeedRecipe);
+            String imageURL = recipe.getImageURL();
+            Glide.with(context).load(imageURL).centerCrop().
+                    placeholder(R.drawable.recipe_placeholder_image).
+                    error(R.drawable.recipe_placeholder_image).into(ivFeedRecipe);
         }
     }
 }
