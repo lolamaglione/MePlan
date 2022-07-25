@@ -48,7 +48,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(view);
         bottomNavigationView = binding.bottomNavigation;
         bottomNavigationView.setSelectedItemId(R.id.action_plan);
-        Fragment fragment = new MealPlanFragment();
+        String fragment_start = getIntent().getStringExtra("fragment");
+        Fragment fragment = null;
+        if(fragment_start.equals("feed")){
+            fragment = new FeedFragment();
+        } else {
+            fragment = new MealPlanFragment();
+        }
         fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

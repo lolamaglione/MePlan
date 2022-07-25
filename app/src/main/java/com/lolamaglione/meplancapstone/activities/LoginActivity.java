@@ -3,6 +3,7 @@ package com.lolamaglione.meplancapstone.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.lolamaglione.meplancapstone.ParseFacebookUtils;
 import com.lolamaglione.meplancapstone.databinding.ActivityLoginBinding;
+import com.lolamaglione.meplancapstone.fragments.MealPlanFragment;
 import com.parse.ParseUser;
 import java.util.Arrays;
 import android.app.AlertDialog;
@@ -152,6 +154,7 @@ public class LoginActivity extends AppCompatActivity {
     // create new Intent to MainActivity
     private void goToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("fragment", "meal plan");
         this.startActivity(intent);
         finish();
     }

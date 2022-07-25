@@ -66,6 +66,6 @@ public class RecipeWebFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         wvURL = view.findViewById(R.id.wvURL);
-        wvURL.loadUrl(mRecipeURL);
+        //wvURL.loadUrl(mRecipeURL);
     }
 }
