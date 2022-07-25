@@ -53,6 +53,7 @@ public class Recipe {
     @ColumnInfo
     private String objectID;
 
+
     public Recipe(String title, String url, List<String> specificIngredients, String imageURL,
                   List<String> generalIngredients, boolean hasBeenSaved, String query){
         this.title = title;
