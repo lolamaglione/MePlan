@@ -23,6 +23,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListPopupWindow;
+import android.widget.PopupMenu;
 import android.widget.Spinner;
 
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -64,7 +67,6 @@ public class FeedFragment extends Fragment{
     private EndlessRecyclerViewScrollListener scrollListener;
     private String next_page = "";
     private String current_query = default_query;
-    private boolean dataBaseWasCalled = false;
     LinearLayoutManager linearLayoutManager;
     private Spinner spinnerCuisines;
 
@@ -132,12 +134,24 @@ public class FeedFragment extends Fragment{
             // set the value of the spinner
             spinnerCuisines.setSelection(spinnerValue,true);
         }
-
         // implementing database
         recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
         //query for existing recipes in the DB:
 
         populateRecipesFromDataBase();
+    }
+
+    private void showMenu(View v, int popup_menu, ParseApplication app) {
+        PopupMenu popup = new PopupMenu(getContext(), v);
+        popup.getMenuInflater().inflate(popup_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                app.setCuisine(item.toString());
+                cuisine = app.getCuisine();
+                return true;
+            }
+        });
     }
 
     private void populateRecipesFromDataBase() {
@@ -266,8 +280,7 @@ public class FeedFragment extends Fragment{
                         public void run() {
                             Log.i(TAG, "saving data into the database");
                             recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
-                            dataBaseWasCalled = true;
-                        }
+                           }
                     });
                     recipeAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
@@ -306,7 +319,6 @@ public class FeedFragment extends Fragment{
                                     public void run() {
                                         Log.i(TAG, "saving data into the database");
                                         recipeDao.insertModel(recipesFromNetwork.toArray(new Recipe[0]));
-                                        dataBaseWasCalled = true;
                                     }
                                 });
                                 recipeAdapter.notifyDataSetChanged();

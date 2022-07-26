@@ -19,7 +19,7 @@
         <entry key="app/src/main/res/layout/day_item.xml" value="0.9995239257812502" />
         <entry key="app/src/main/res/layout/day_list_item.xml" value="0.32318840579710145" />
         <entry key="app/src/main/res/layout/fragment_add_to_calendar.xml" value="0.25316009521484373" />
-        <entry key="app/src/main/res/layout/fragment_feed.xml" value="0.19599151611328125" />
+        <entry key="app/src/main/res/layout/fragment_feed.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_grocery_list.xml" value="0.31302083333333336" />
         <entry key="app/src/main/res/layout/fragment_meal_plan.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_recipe_detail.xml" value="0.18998260498046876" />
@@ -36,6 +36,7 @@
         <entry key="app/src/main/res/menu/menu_bottom_navigation.xml" value="0.19446411132812502" />
         <entry key="app/src/main/res/menu/menu_clear.xml" value="0.4646153846153846" />
         <entry key="app/src/main/res/menu/menu_search_bar.xml" value="0.21614583333333334" />
+        <entry key="app/src/main/res/menu/popup_menu.xml" value="0.1" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_logo.xml" value="0.177" />
       </map>
     </option>
