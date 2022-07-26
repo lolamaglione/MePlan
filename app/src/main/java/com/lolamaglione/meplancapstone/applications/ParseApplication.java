@@ -23,8 +23,8 @@ import java.util.SortedMap;
  */
 public class ParseApplication extends Application {
     private static MyDatabase myDatabase;
-    private static HashMap<String, SortedMap<Integer, List<Recipe>>> inMemoryResults;
     private Cache<String, SortedMap<Integer, List<Recipe>>> cache;
+    private String cuisine;
 
     @Override
     public void onCreate() {
@@ -43,17 +43,20 @@ public class ParseApplication extends Application {
         );
         ParseFacebookUtils.initialize(this);
         myDatabase = Room.databaseBuilder(this, MyDatabase.class, MyDatabase.NAME).allowMainThreadQueries().fallbackToDestructiveMigration().build();
-        inMemoryResults = new HashMap<>();
         cache = CacheBuilder.newBuilder().maximumSize(20).build();
+        cuisine = "american";
     }
 
     public MyDatabase getMyDatabase() {
         return myDatabase;
     }
 
-    public HashMap<String, SortedMap<Integer, List<Recipe>>> getInMemoryResults() {
-        return inMemoryResults;
+    public String getCuisine() {return cuisine;}
+
+    public void setCuisine(String cuisine){
+        this.cuisine = cuisine;
     }
+
     public Cache<String, SortedMap<Integer, List<Recipe>>> getGuavaCache() {
         return cache;
     }

@@ -1,5 +1,6 @@
 package com.lolamaglione.meplancapstone.fragments;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -76,7 +78,6 @@ public class FeedFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cuisine = " ";
         setHasOptionsMenu(true);
     }
 
@@ -91,6 +92,7 @@ public class FeedFragment extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         parse = new ParseRecipe();
+        ParseApplication app = ((ParseApplication) getActivity().getApplicationContext());
         default_query = ParseUser.getCurrentUser().getString(Constants.KEY_LAST_QUERY);
         current_query = default_query;
         rvRecipes = view.findViewById(R.id.rvRecipes);
@@ -107,17 +109,30 @@ public class FeedFragment extends Fragment{
                 R.array.cuisines_array, android.R.layout.simple_spinner_item);
         cuisineAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCuisines.setAdapter(cuisineAdapter);
+        cuisine = app.getCuisine();
         spinnerCuisines.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                cuisine = (String) parent.getItemAtPosition(position);
+                app.setCuisine((String) parent.getItemAtPosition(position));
+                cuisine = app.getCuisine();
+                int selected_item = spinnerCuisines.getSelectedItemPosition();
+                SharedPreferences sharedPref = getActivity().getSharedPreferences("Position",0);
+                SharedPreferences.Editor prefEditor = sharedPref.edit();
+                prefEditor.putInt("spinner_item", selected_item);
+                prefEditor.commit();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                cuisine = null;
             }
         });
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("Position", getContext().MODE_PRIVATE);
+        int spinnerValue = sharedPref.getInt("spinner_item",-1);
+        if(spinnerValue != -1) {
+            // set the value of the spinner
+            spinnerCuisines.setSelection(spinnerValue,true);
+        }
+
         // implementing database
         recipeDao = ((ParseApplication) getActivity().getApplicationContext()).getMyDatabase().recipeDao();
         //query for existing recipes in the DB:
