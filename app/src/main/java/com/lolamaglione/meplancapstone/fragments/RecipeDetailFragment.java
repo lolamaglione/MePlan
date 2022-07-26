@@ -91,7 +91,7 @@ public class RecipeDetailFragment extends Fragment {
         toolBar = view.findViewById(R.id.toolbar);
         collapsingToolbar = view.findViewById(R.id.collapsing_toolbar);
         tvLabel = view.findViewById(R.id.tvLabelDetail);
-        tvDetailUrl = view.findViewById(R.id.tvUrlDetail);
+        //tvDetailUrl = view.findViewById(R.id.tvUrlDetail);
         lvIngredients = view.findViewById(R.id.lvIngredientList);
         btnAddToSched = view.findViewById(R.id.ibAddToSched);
         ArrayAdapter<String> itemsAdapter =
@@ -99,7 +99,7 @@ public class RecipeDetailFragment extends Fragment {
 
         lvIngredients.setAdapter(itemsAdapter);
         tvLabel.setText(mRecipe_obj.getTitle());
-        tvDetailUrl.setText(mRecipe_obj.getURL());
+        //tvDetailUrl.setText(mRecipe_obj.getURL());
         btnAddToSched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

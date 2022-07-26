@@ -4,8 +4,8 @@
 
 
     <item
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
         android:id="@+id/action_logout"
+        android:icon="@drawable/logou_icon"
         android:title="logout"
         app:showAsAction="always" />
 

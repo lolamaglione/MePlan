@@ -139,6 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                 .setPositiveButton("OK", (dialog, which) -> {
                     dialog.cancel();
                     Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("fragment", "meal plan");
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 });

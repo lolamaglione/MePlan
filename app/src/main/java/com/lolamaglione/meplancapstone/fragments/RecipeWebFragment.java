@@ -1,5 +1,7 @@
 package com.lolamaglione.meplancapstone.fragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
 
 import com.lolamaglione.meplancapstone.R;
 
@@ -25,6 +29,7 @@ public class RecipeWebFragment extends Fragment {
 
     private String mRecipeURL;
     private WebView wvURL;
+    private Button btnGoToUrl;
 
     public RecipeWebFragment() {
         // Required empty public constructor
@@ -66,6 +71,20 @@ public class RecipeWebFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         wvURL = view.findViewById(R.id.wvURL);
-        //wvURL.loadUrl(mRecipeURL);
+        wvURL.getSettings().setJavaScriptEnabled(true);
+        wvURL.getSettings().setDomStorageEnabled(true);
+
+
+        wvURL.setWebViewClient(new WebViewClient());
+        wvURL.loadUrl(mRecipeURL);
+        btnGoToUrl = view.findViewById(R.id.btnGoToUrl);
+        btnGoToUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(mRecipeURL));
+                startActivity(i);
+            }
+        });
     }
 }
