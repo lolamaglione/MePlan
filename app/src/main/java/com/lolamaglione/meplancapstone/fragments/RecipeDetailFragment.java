@@ -1,5 +1,6 @@
 package com.lolamaglione.meplancapstone.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.models.Recipe;
 
@@ -47,7 +49,7 @@ public class RecipeDetailFragment extends Fragment {
     CollapsingToolbarLayout collapsingToolbar;
 
     private static final String RECIPE_OBJ = "recipe_obj";
-
+    private FloatingActionButton btnShare;
     private Recipe mRecipe_obj;
 
     public RecipeDetailFragment() {
@@ -91,20 +93,26 @@ public class RecipeDetailFragment extends Fragment {
         toolBar = view.findViewById(R.id.toolbar);
         collapsingToolbar = view.findViewById(R.id.collapsing_toolbar);
         tvLabel = view.findViewById(R.id.tvLabelDetail);
-        //tvDetailUrl = view.findViewById(R.id.tvUrlDetail);
         lvIngredients = view.findViewById(R.id.lvIngredientList);
+        btnShare = view.findViewById(R.id.ibShareRecipe);
         btnAddToSched = view.findViewById(R.id.ibAddToSched);
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(getContext(), R.layout.ingredient_list_item, mRecipe_obj.getSpecificIngredients());
 
         lvIngredients.setAdapter(itemsAdapter);
         tvLabel.setText(mRecipe_obj.getTitle());
-        //tvDetailUrl.setText(mRecipe_obj.getURL());
         btnAddToSched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
                 showAddScheduleDialog();
+            }
+        });
+
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareUrl(mRecipe_obj.getURL());
             }
         });
 
@@ -117,5 +125,15 @@ public class RecipeDetailFragment extends Fragment {
         bundle.putParcelable(Recipe.class.getSimpleName(), Parcels.wrap(mRecipe_obj));
         addToCal.setArguments(bundle);
         addToCal.show(fm, "fragment_add_to_calendar");
+    }
+
+    private void shareUrl(String recipeUrl){
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, recipeUrl);
+        sendIntent.setType("text/plain");
+
+        Intent shareIntent = Intent.createChooser(sendIntent, null);
+        startActivity(shareIntent);
     }
 }

@@ -51,12 +51,24 @@
         app:fabSize="mini"
         app:srcCompat="@android:drawable/ic_menu_add" />
 
-
     <ListView
         android:id="@+id/lvIngredientList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvUrlDetail" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/ibShareRecipe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="350dp"
+        app:backgroundTint="@color/light_green"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/share_icon" />
 
 
 

@@ -11,6 +11,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="300dp"
+            android:id="@+id/collapsing_toolbar"
             app:layout_scrollFlags="scroll"
             app:contentScrim="@color/white">
 
@@ -85,41 +86,4 @@
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-<!--<LinearLayout-->
-<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    android:orientation="vertical">-->
 
-<!--    <ImageView-->
-<!--        android:id="@+id/ivRecipeDetail"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="1"-->
-<!--        tools:srcCompat="@tools:sample/avatars" />-->
-
-
-<!--    <androidx.viewpager.widget.ViewPager-->
-<!--        android:id="@+id/viewPager"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_marginStart="0dp"-->
-<!--        android:layout_marginTop="100dp"-->
-<!--        android:layout_weight="1"-->
-<!--        android:background="@android:color/white">-->
-
-<!--        <com.google.android.material.tabs.TabLayout-->
-<!--            android:id="@+id/slidingTabs"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            app:tabMode="fixed" />-->
-
-
-<!--    </androidx.viewpager.widget.ViewPager>-->
-
-
-
-<!--</LinearLayout>-->
