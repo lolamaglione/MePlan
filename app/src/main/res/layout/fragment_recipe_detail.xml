@@ -19,14 +19,14 @@
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@+id/ibAddToSched"
         android:autoSizeMaxTextSize="50sp"
+        android:background="@drawable/shape"
+        android:backgroundTint="@color/light_green"
+        android:fontFamily="@font/gelasio_medium"
         android:gravity="center_horizontal"
         android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold"
-        tools:text="Chicken Picata"
-        android:fontFamily="@font/arvo"
-        android:background="@drawable/shape"
-        android:backgroundTint="@color/light_green"/>
+        tools:text="Chicken Picata" />
 
     <TextView
         android:id="@+id/tvUrlDetail"

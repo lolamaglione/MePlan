@@ -110,6 +110,7 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
             ingredients = new ArrayList<>();
             rlExpandaleLayout.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
             if(dailyRecipesList.size() > 0){
+                ivArrow.setImageResource(R.drawable.arrow_down);
                 makeRecipesInDB(recipesInDB);
                 boolean trieState = trie.isNull(trie.root);
                 addToIngredientList(recipesInDB, position, trieState);
@@ -137,6 +138,8 @@ public class DaysListAdapter extends RecyclerView.Adapter<DaysListAdapter.ViewHo
                         });
                     }
                 });
+            }else{
+                ivArrow.setImageResource(R.drawable.ic_not_added);
             }
 
 

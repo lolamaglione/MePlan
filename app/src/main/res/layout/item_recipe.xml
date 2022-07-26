@@ -52,6 +52,7 @@
                 android:background="@color/light_green"
                 android:backgroundTint="@color/light_green"
                 android:drawableTop="@color/black"
+                android:fontFamily="@font/gelasio_medium"
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:textStyle="bold"
