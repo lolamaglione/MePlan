@@ -66,7 +66,6 @@ public class LoginActivity extends AppCompatActivity {
         btnFbLogin.setOnClickListener(v -> logInWithFB());
     }
 
-    // TODO: make sure I can logout
     // login with facebook, implement oauth
     private void logInWithFB() {
         final ProgressDialog dialog = new ProgressDialog(LoginActivity.this);

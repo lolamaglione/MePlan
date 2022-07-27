@@ -42,7 +42,6 @@ public class RecipeWebFragment extends Fragment {
      * @param param1 Parameter 1.
      * @return A new instance of fragment RecipeWebFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static RecipeWebFragment newInstance(String param1) {
         RecipeWebFragment fragment = new RecipeWebFragment();
         Bundle args = new Bundle();
@@ -73,7 +72,6 @@ public class RecipeWebFragment extends Fragment {
         wvURL = view.findViewById(R.id.wvURL);
         wvURL.getSettings().setJavaScriptEnabled(true);
         wvURL.getSettings().setDomStorageEnabled(true);
-
 
         wvURL.setWebViewClient(new WebViewClient());
         wvURL.loadUrl(mRecipeURL);

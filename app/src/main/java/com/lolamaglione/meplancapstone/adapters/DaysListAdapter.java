@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lolamaglione.meplancapstone.R;
 import com.lolamaglione.meplancapstone.RecipeSuggestions;
-import com.lolamaglione.meplancapstone.activities.MainActivity;
 import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.RecipeController;
 import com.lolamaglione.meplancapstone.fragments.GroceryListFragment;

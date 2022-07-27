@@ -3,10 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.FeedFragment">
 
-    //TODO: add a better spinner and make an "ALL"
     <Spinner
         android:id="@+id/spinnerCusines"
         android:layout_width="wrap_content"

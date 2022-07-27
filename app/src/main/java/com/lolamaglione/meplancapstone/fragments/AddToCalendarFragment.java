@@ -1,5 +1,8 @@
 package com.lolamaglione.meplancapstone.fragments;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,7 +24,9 @@ import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.activities.MainActivity;
 import com.lolamaglione.meplancapstone.controllers.IngredientController;
 import com.lolamaglione.meplancapstone.controllers.ScheduleController;
 import com.lolamaglione.meplancapstone.models.Ingredient;
@@ -116,12 +121,27 @@ public class AddToCalendarFragment extends DialogFragment {
                         }
                         Log.i("addActivity", "success!");
                         progressBarConfirm.setVisibility(CircularProgressIndicator.GONE);
-                        dismiss();
+                        goToMealPlan(view);
                     }
                 });
                 Toast.makeText(getContext(), "Saved Recipe!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void goToMealPlan(View view){
+        Snackbar snackbar = Snackbar.make(view, "Added Recipe to Meal Plan!", Snackbar.LENGTH_LONG);
+        snackbar.setAction("GO TO MEAL PLAN", new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                intent.putExtra("fragment", "meal plan");
+                startActivity(intent);
+            }
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
     }
 
     private void fillHashMap(HashMap<String, Integer> dayToInt){

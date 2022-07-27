@@ -1,6 +1,8 @@
 package com.lolamaglione.meplancapstone.fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,7 +27,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.lolamaglione.meplancapstone.R;
+import com.lolamaglione.meplancapstone.activities.MainActivity;
 import com.lolamaglione.meplancapstone.models.Recipe;
 
 import org.parceler.Parcels;
