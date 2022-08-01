@@ -115,7 +115,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         public void bind(Recipe recipe){
 
             tvTitle.setText(recipe.getTitle());
-            tvCookTime.setText(String.valueOf(recipe.getCookTime()));
+            if(recipe.getPercentageMatch() != 0){
+                tvCookTime.setText("Similarity Weight: " + recipe.getPercentageMatch());
+            }
+
             //Glide.with(context).load(recipe.getImageURL()).centerCrop().into(ivFeedRecipe);
             String imageURL = recipe.getImageURL();
             Glide.with(context).load(imageURL).centerCrop().

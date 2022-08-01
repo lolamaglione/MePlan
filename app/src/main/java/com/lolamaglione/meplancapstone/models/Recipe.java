@@ -109,7 +109,7 @@ public class Recipe {
     }
 
     public int getPercentageMatch(){
-        return percentageMatch;
+        return percentageMatch ;
     }
 
     public void setPercentageMatch(int percentage) {
